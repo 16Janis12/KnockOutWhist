@@ -1,4 +1,4 @@
-val eol = sys.props("line.seperator") // String =
+val eol = sys.props("line.separator") // String =
 def bar(cellwidth: Int = 3, cellNum: Int = 3) = (("+" + "-" * cellwidth)*cellNum) + "+" + eol
 def cells(cellwidth: Int = 3, cellNum: Int = 3) = ("|" + " " * cellwidth) *cellNum + "|" + eol
 def mesh(cellwidth: Int = 3, cellNum: Int = 3) = (bar(cellwidth, cellNum) + cells(cellwidth, cellNum)) * cellNum + eol
