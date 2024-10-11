@@ -2,7 +2,7 @@
 object Main {
 
   class KnockOutWhist {
-    // Dieser Janis ist git
+
   }
 
   val eol = sys.props("line.separator")
