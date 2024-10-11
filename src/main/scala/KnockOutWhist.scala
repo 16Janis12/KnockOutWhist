@@ -5,29 +5,28 @@ object H {
 
   }
 
-  def main(args: Array[String]): Unit = {
-    println("Welcome to Knock out Whist")
+  val eol = sys.props("line.separator")
 
-
-    val eol = sys.props("line.seperator") // String =
-
-    def bar(cellWidth: Int = 9, cellNum: Int = 1) =
-      (("-" * cellWidth) * cellNum) + "\n"
+  def bar(cellWidth: Int = 9, cellNum: Int = 1) =
+      (("-" * cellWidth) * cellNum) + eol
 
     def cells(cellWidth: Int = 7, cellNum: Int = 1) =
-      ("|" + " " * cellWidth) * cellNum + "|" + "\n"
+      ("|" + " " * cellWidth) * cellNum + "|" + eol
 
     def meshk =
-      bar() + cells() + "|Karten | \n" + cells() * 2 + bar()
+      bar() + cells() + "|Karten | " + eol + cells() * 2 + bar()
 
     def mesha =
-      bar() + cells() + "|Ablage |\n" + cells() * 2 + bar()
+      bar() + cells() + "|Ablage | " + eol + cells() * 2 + bar()
 
     def mesht1 =
-      bar() + cells() + "|Trumpfe|\n" + "|s1     |\n" + cells() + bar()
+      bar() + cells() + "|Trumpfe| " + eol + "|s1     |\n" + cells() + bar()
 
     def mesht2 =
-      bar() + cells() + "|Trumpfe|\n" + "|s2     |\n" + cells() + bar()
+      bar() + cells() + "|Trumpfe|" + eol + "|s2     |\n" + cells() + bar()
+
+  def main(args: Array[String]): Unit = {
+    println("Welcome to Knock out Whist")
 
     print(meshk)
     print(mesha)
