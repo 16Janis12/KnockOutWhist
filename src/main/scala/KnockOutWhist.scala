@@ -6,7 +6,7 @@ object H {
   }
 
   def main(args: Array[String]): Unit = {
-    println("Welcome to TicTacToe!")
+    println("Welcome to Knock out Whis")
 
 
     val eol = sys.props("line.seperator") // String =
