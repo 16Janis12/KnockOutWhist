@@ -2,7 +2,7 @@
 object Main {
 
   class KnockOutWhist {
-
+    //Conflict reason
   }
 
   val eol = sys.props("line.separator")
