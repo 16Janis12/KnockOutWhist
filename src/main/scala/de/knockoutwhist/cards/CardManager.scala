@@ -1,20 +1,19 @@
 package de.knockoutwhist.cards
 
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 object CardManager {
 
 
-  val cardContainer: Array[Card] = {
-    val cc = new Array[Card](52)
-    var i = 0
+  val cardContainer: List[Card] = {
+    val cc = ListBuffer[Card]()
     for (suit <- Suit.values) {
       for (cardValue <- CardValue.values) {
-        cc(i) = Card(cardValue, suit)
-        i+=1
+        cc += Card(cardValue, suit)
       }
     }
-    cc
+    cc.toList
   }
   private var currentIdx = 0
 
@@ -28,6 +27,14 @@ object CardManager {
     currentIdx += 1
     card
   }
+  
+  def createHand(amount: Int): Hand = {
+    val hand = ListBuffer[Card]()
+    for (_ <- 1 to amount) {
+      hand += nextCard()
+    }
+    Hand(hand.toList)
+  } 
 
 
 
