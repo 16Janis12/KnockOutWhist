@@ -34,7 +34,7 @@ object CardManager {
       hand += nextCard()
     }
     Hand(hand.toList)
-  } 
+  }
 
 
 
