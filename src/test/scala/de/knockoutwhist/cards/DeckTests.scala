@@ -55,7 +55,18 @@ class DeckTests extends AnyWordSpec with Matchers{
       val card = Card(CardValue.Ace, Suit.Spades)
       val e = "Ace of Spades"
       card.toString.equals(e) shouldBe true
-
+    }
+    "can be rendered" in {
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val expectedResult = Array[String](
+        "┌─────────┐",
+        "│A        │",
+        "│         │",
+        "│    ♠    │",
+        "│         │",
+        "│        A│",
+        "└─────────┘"
+      )
     }
   }
   "A player" should {
@@ -83,6 +94,22 @@ class DeckTests extends AnyWordSpec with Matchers{
       handholder.addOne(Card(CardValue.Ace, Suit.Spades))
       val hand = Hand(handholder.toList)
       hand.hasTrumpSuit(Suit.Spades) shouldBe true
+    }
+    "be able to render his hand" in {
+      val handholder = ListBuffer[Card]()
+      handholder.addOne(Card(CardValue.Ace, Suit.Spades))
+      handholder.addOne(Card(CardValue.Queen, Suit.Diamonds))
+      val hand = Hand(handholder.toList)
+      val expectedResult = List(
+        "┌─────────┐ ┌─────────┐",
+        "│A        │ │Q        │",
+        "│         │ │         │",
+        "│    ♠    │ │    ♦    │",
+        "│         │ │         │",
+        "│        A│ │        Q│",
+        "└─────────┘ └─────────┘"
+      )
+      hand.renderAsString() shouldBe expectedResult
     }
   }
 
