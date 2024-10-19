@@ -1,10 +1,7 @@
 package de.knockoutwhist.cards
 
-import de.knockoutwhist.cards.CardValue.Ace
-import de.knockoutwhist.cards.Suit.{Clubs, Spades}
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.matchers.should.Matchers.should
-import org.scalatest.matchers.should.Matchers.shouldBe
+import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.collection.mutable.ListBuffer
@@ -46,8 +43,12 @@ class DeckTests extends AnyWordSpec with Matchers{
       nextCard should not equal nextCard2
     }
     "supply a hand of 7 cards for the first round" in {
-      val hand = CardManager.createHand(7)
+      val hand = CardManager.createHand()
       hand.cards should have size 7
+    }
+    "supply a hand of 2 cards" in {
+      val hand = CardManager.createHand(2)
+      hand.cards should have size 2
     }
   }
   "A card" should {
