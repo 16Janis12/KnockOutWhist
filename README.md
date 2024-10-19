@@ -29,9 +29,9 @@ If they win a trick, they re-enter the game in the following round. When this ha
 ## About the project
 This project is a Scala implementation of the Knock-out Whist card game. It is maintained by 2 students of the HTWG Konstanz.
 
-Last stable build: ![Build-Status-Master](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:master/statusIcon.png)
+Last stable build: [![Build-Status-Master](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:master/statusIcon.png)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=master)
 
-Last development build: ![Build-Status-Dev](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:development/statusIcon.png)
+Last development build: [![Build-Status-Dev](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:development/statusIcon.png)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=development)
 
 Gitea: [https://git.janis-eccarius.de/KnockOutWhist/KnockOutWhist](https://git.janis-eccarius.de/KnockOutWhist/KnockOutWhist)
 
