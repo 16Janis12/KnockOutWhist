@@ -1,30 +1,34 @@
+package de.knockoutwhist
 
-object Main {
+import de.knockoutwhist.cards.CardManager
+
+
+object KnockOutWhist {
 
   class KnockOutWhist {
 
   }
 
-  val eol = sys.props("line.separator")
+  val eol: String = sys.props("line.separator")
 
-  def bar(cellWidth: Int = 9, cellNum: Int = 1) =
+  def bar(cellWidth: Int = 9, cellNum: Int = 1): String =
     ("-" * cellWidth) * cellNum
 
-  def cells(cellWidth: Int = 7, cellNum: Int = 1) =
+  def cells(cellWidth: Int = 7, cellNum: Int = 1): String =
     ("|" + " " * cellWidth) * cellNum + "|"
 
-  def meshk =
+  def meshk: String =
     bar() + cells() + eol + "|Karten | " + eol + (cells()+ eol) * 2 + bar() + eol
 
-  def mesha =
+  def mesha: String =
     bar() + cells() + eol + "|Ablage | " + eol + (cells()+ eol) * 2 + bar() + eol
 
-  def mesht1 =
+  private def mesht1 =
     bar() + eol + cells() + eol + "|Trumpfe| " + eol + "|s1     |\n" + cells() + eol + bar() + eol
 
-  def mesht2 =
+  private def mesht2 =
     bar() + eol + cells() + eol + "|Trumpfe|" + eol + "|s2     |\n" + cells() + eol + bar() + eol
-  def meshTable = {
+  private def meshTable = {
     bar() + "\t" + bar() + eol + cells() + "\t" + cells() + eol +
       "|Karten |" + "\t" + "|Ablage |" + eol + (cells() + "\t" + cells() + eol) * 2 +
       bar() + "\t" + bar() + eol
@@ -36,5 +40,7 @@ object Main {
     print(meshTable)
     print(mesht1)
     print(mesht2)
+
+
   }
 }
