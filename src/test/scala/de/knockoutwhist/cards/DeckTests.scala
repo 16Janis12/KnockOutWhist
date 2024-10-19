@@ -2,6 +2,7 @@ package de.knockoutwhist.cards
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.should
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 
 class DeckTests extends AnyWordSpec with Matchers{
@@ -44,7 +45,14 @@ class DeckTests extends AnyWordSpec with Matchers{
       val hand = CardManager.createHand(7)
       hand.cards should have size 7
     }
+  }
+  "A card" should {
+    "be displayed with correct value and Suit" in {
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val e = "Ace of Spades"
+      card.toString.equals(e) shouldBe true
 
+    }
   }
 
 }
