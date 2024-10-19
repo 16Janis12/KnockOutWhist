@@ -4,7 +4,8 @@ case class Hand(cards: List[Card]) {
   
 
   def removeCard(card: Card): Hand = {
-    Hand(cards.filterNot(_ == card))
+    Hand(cards.filter(_ != card))
+    //Hand(cards.filterNot(_ == card)) isch wurscht welches wir nehmen
   }
 
   def hasSuit(suit: Suit): Boolean = {
