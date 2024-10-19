@@ -1,6 +1,9 @@
 package de.knockoutwhist.cards
 
 enum Suit(identifier: String):
+
+  def cardType(): String = identifier
+  
   case Spades extends Suit("♠")
   case Hearts extends Suit("♥")
   case Diamonds extends Suit("♦")
@@ -8,6 +11,9 @@ enum Suit(identifier: String):
 end Suit
 
 enum CardValue(identifier: String):
+  
+  def cardType(): String = identifier
+  
   case Two extends CardValue("2")
   case Three extends CardValue("3")
   case Four extends CardValue("4")
@@ -24,6 +30,18 @@ enum CardValue(identifier: String):
 end CardValue
 
 case class Card(cardValue: CardValue, suit: Suit) {
+  
+  def renderAsString(): Array[String] = {
+    Array(
+      s"┌─────────┐",
+      s"│${cardValue.cardType()}        │",
+      "│         │",
+      s"│    ${suit.cardType()}    │",
+      "│         │",
+      s"│        ${cardValue.cardType()}│",
+      s"└─────────┘"
+    )
+  }
+  
   override def toString: String = s"$cardValue of $suit" //Combined String
-
 }

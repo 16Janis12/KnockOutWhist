@@ -28,14 +28,12 @@ object CardManager {
     card
   }
   
-  def createHand(amount: Int): Hand = {
+  def createHand(amount: Int = 7): Hand = {
     val hand = ListBuffer[Card]()
     for (_ <- 1 to amount) {
       hand += nextCard()
     }
     Hand(hand.toList)
   }
-
-
 
 }
