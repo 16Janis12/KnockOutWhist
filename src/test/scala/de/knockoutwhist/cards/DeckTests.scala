@@ -16,10 +16,10 @@ class DeckTests extends AnyWordSpec with Matchers{
     "contain 13 cards of spades" in {
       CardManager.cardContainer.count(_.suit == Suit.Spades) mustBe 13
     }
-    "contain cards of hearts" in {
+    "contain 13 cards of hearts" in {
       CardManager.cardContainer.count(_.suit == Suit.Hearts) mustBe 13
     }
-    "contain cards of diamonds" in {
+    "contain 13 cards of diamonds" in {
       CardManager.cardContainer.count(_.suit == Suit.Diamonds) mustBe 13
     }
     "contain 13 cards of clubs" in {
@@ -40,7 +40,7 @@ class DeckTests extends AnyWordSpec with Matchers{
       val nextCard2 = CardManager.nextCard()
       nextCard should not equal nextCard2
     }
-    "supply a hand of 7 cards" in {
+    "supply a hand of 7 cards for the first round" in {
       val hand = CardManager.createHand(7)
       hand.cards should have size 7
     }

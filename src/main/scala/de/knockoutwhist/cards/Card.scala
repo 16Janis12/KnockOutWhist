@@ -24,6 +24,6 @@ enum CardValue(identifier: String):
 end CardValue
 
 case class Card(cardValue: CardValue, suit: Suit) {
-  override def toString: String = s"$cardValue of $suit"
+  override def toString: String = s"$cardValue of $suit" //Combined String
 
 }
