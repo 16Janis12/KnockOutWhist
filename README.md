@@ -1,6 +1,6 @@
 # Knock-out Whist
 ## About the Game
-Knock-out Whist is a trick-taking card game designed for 3 to 7 players. It uses a standard 52-card deck.
+Knock-out Whist is a trick-taking card game designed for 2 to 7 players. It uses a standard 52-card deck.
 The objective is to win tricks. Players who fail to win at least one trick in a round are eliminated.
 The game continues through several rounds until only one player remains.
 
