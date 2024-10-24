@@ -3,7 +3,11 @@ package de.knockoutwhist.cards
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
+import de.knockoutwhist.rounds.Trick
+import de.knockoutwhist.rounds.Round
+import de.knockoutwhist.cards.Player
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class DeckTests extends AnyWordSpec with Matchers{
@@ -111,6 +115,31 @@ class DeckTests extends AnyWordSpec with Matchers{
         "└─────────┘ └─────────┘"
       )
       hand.renderAsString() shouldBe expectedResult
+    }
+  }
+  "A trick" should {
+    "be able to place a card in the HashMap" in {
+      val playerlist = List(Player("Gunter"))
+      val player = Player("Gunter")
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val trick = new Trick(round)
+      trick.playCard(card, player) shouldBe true
+    }
+    "be able to tell who won the trick" in {
+      val playerlist = List(Player("Gunter"))
+      val player = Player("Gunter")
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val trick = new Trick(round)
+      // val hashMap: mutable.HashMap[Card, Player] = mutable.HashMap.empty[Card, Player]
+      // hashMap += (card, player)
+
+      trick.playCard(card, player)
+      trick.wonTrick() shouldBe (player,trick)
+
     }
   }
 
