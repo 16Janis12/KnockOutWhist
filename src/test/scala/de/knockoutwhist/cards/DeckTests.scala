@@ -117,8 +117,8 @@ class DeckTests extends AnyWordSpec with Matchers{
       hand.renderAsString() shouldBe expectedResult
     }
   }
-  "A trick" should {
-    "be able to place a card in the HashMap" in {
+  "The playCard() Function" should {
+    "be true for the first card played in a trick" in {
       val playerlist = List(Player("Gunter"))
       val player = Player("Gunter")
       val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
@@ -127,20 +127,64 @@ class DeckTests extends AnyWordSpec with Matchers{
       val trick = new Trick(round)
       trick.playCard(card, player) shouldBe true
     }
-    "be able to tell who won the trick" in {
-      val playerlist = List(Player("Gunter"))
+    "be true if the suit matches the first card played" in {
       val player = Player("Gunter")
+      val player2 = Player("Peter")
+      val playerlist = List(player, player2)
       val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
-      val card = Card(CardValue.Ace, Suit.Spades)
+      val round = Round(Suit.Diamonds, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Two, Suit.Spades)
+      val card2 = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
-      // val hashMap: mutable.HashMap[Card, Player] = mutable.HashMap.empty[Card, Player]
-      // hashMap += (card, player)
-
       trick.playCard(card, player)
-      trick.wonTrick() shouldBe (player,trick)
-
+      trick.playCard(card2, player2) shouldBe true
     }
+    "be true if the card matches the trump-card" in {
+      val player = Player("Gunter")
+      val player2 = Player("Peter")
+      val playerlist = List(player, player2)
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Diamonds, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val card2 = Card(CardValue.Two, Suit.Diamonds)
+      val trick = new Trick(round)
+      trick.playCard(card, player)
+      trick.playCard(card2, player2) shouldBe true
+    }
+    "be false if the card doesn't match the suit of the trump-card + first-card" in {
+      val player = Player("Gunter")
+      val player2 = Player("Peter")
+      val playerlist = List(player, player2)
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Diamonds, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val card2 = Card(CardValue.Two, Suit.Clubs)
+      val trick = new Trick(round)
+      trick.playCard(card, player)
+      trick.playCard(card2, player2) shouldBe false
+    }
+
+
+
+//    "be able to tell who won the trick" in {
+//      val playerlist = List(Player("Gunter"))
+//      val player = Player("Gunter")
+//      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+//      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+//      val card = Card(CardValue.Ace, Suit.Spades)
+//      val trick = new Trick(round)
+//      //val hashMap: mutable.HashMap[Card, Player] = mutable.HashMap.empty[Card, Player]
+//      //hashMap += (card, player)
+//
+//      trick.playCard(card, player)
+//      trick.wonTrick() shouldBe (player,trick)
+//
+//    }
+
+      
+  }
+  "A player" should {
+    
   }
 
 }

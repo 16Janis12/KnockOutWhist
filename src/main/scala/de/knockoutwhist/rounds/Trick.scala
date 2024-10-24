@@ -24,7 +24,7 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
         first_card = Some(card.suit)
         cards += (card -> player)
         true
-      } else if (card.suit == first_card) {
+      } else if (card.suit == first_card.getOrElse(card.suit)) { // Wert aus Option extrahieren
         cards += (card -> player)
         true
       } else if (card.suit == round.trumpSuit) {
@@ -42,7 +42,7 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
       if (cards.keys.exists(_.suit == round.trumpSuit)) {
         cards.keys.filter(_.suit == round.trumpSuit).maxBy(_.cardValue.ordinal) //stream
       } else {
-        cards.keys.filter(_.suit == first_card).maxBy(_.cardValue.ordinal) //stream
+        cards.keys.filter(_.suit == first_card.getOrElse(Suit.Spades)).maxBy(_.cardValue.ordinal) //stream
       }
     } 
     val winningPlayer = cards(winningCard)
