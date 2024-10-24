@@ -166,20 +166,23 @@ class DeckTests extends AnyWordSpec with Matchers{
 
 
 
-//    "be able to tell who won the trick" in {
-//      val playerlist = List(Player("Gunter"))
-//      val player = Player("Gunter")
-//      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-//      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
-//      val card = Card(CardValue.Ace, Suit.Spades)
-//      val trick = new Trick(round)
-//      //val hashMap: mutable.HashMap[Card, Player] = mutable.HashMap.empty[Card, Player]
-//      //hashMap += (card, player)
-//
-//      trick.playCard(card, player)
-//      trick.wonTrick() shouldBe (player,trick)
-//
-//    }
+    "be able to tell who won the trick" in {
+      val playerlist = List(Player("Gunter"))
+      val player = Player("Gunter")
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val trick = new Trick(round)
+
+      trick.playCard(card, player)
+
+      val won = trick.wonTrick()
+
+      won(0) shouldBe player
+      won(1).cards should equal(trick.cards)
+      won(1).winner should equal(player)
+      won(1).winner should equal (won(0))
+    }
 
       
   }
