@@ -1,12 +1,16 @@
 package de.knockoutwhist.cards
 
+import de.knockoutwhist.KnockOutWhist.KnockOutWhist
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 import de.knockoutwhist.rounds.Trick
 import de.knockoutwhist.rounds.Round
 import de.knockoutwhist.cards.Player
+import de.knockoutwhist.cards.CardManager
+import de.knockoutwhist.cards.Card
 
+import java.io.{ByteArrayOutputStream, PrintStream}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
@@ -163,9 +167,8 @@ class DeckTests extends AnyWordSpec with Matchers{
       trick.playCard(card, player)
       trick.playCard(card2, player2) shouldBe false
     }
-
-
-
+  }
+  "A trick" should {
     "be able to tell who won the trick" in {
       val playerlist = List(Player("Gunter"))
       val player = Player("Gunter")
@@ -181,13 +184,61 @@ class DeckTests extends AnyWordSpec with Matchers{
       won(0) shouldBe player
       won(1).cards should equal(trick.cards)
       won(1).winner should equal(player)
-      won(1).winner should equal (won(0))
+      won(1).winner should equal(won(0))
+    }
+    "throw a IllegalStateException if it is already finished" in {
+      val playerlist = List(Player("Gunter"))
+      val player = Player("Gunter")
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val trick = new Trick(round)
+      trick.playCard(card, player)
+
+      val won = trick.wonTrick()
+      assertThrows[IllegalStateException] { //If exception is thrown, assertThrows returns succeeded
+        won(1).playCard(card, player)
+      }
+    }
+    "filter the cards by suit correctly if no trump was played" in {
+      val player = Player("Gunter")
+      val player2 = Player("Peter")
+      val playerlist = List(player, player2)
+      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
+      val round = Round(Suit.Hearts, 7, tricks_played, playerlist)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val card2 = Card(CardValue.Ten, Suit.Spades)
+      val trick = new Trick(round)
+      trick.playCard(card, player)
+      trick.playCard(card2, player2)
+      val won = trick.wonTrick()
+      won(0) shouldBe player
+
     }
 
-      
   }
   "A player" should {
-    
-  }
+    "be able to have a hand" in {
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val card2 = Card(CardValue.Ten, Suit.Spades)
+      val card3 = Card(CardValue.Ten, Suit.Diamonds)
+      val listCard = List(card, card2, card3)
+      val testhand = Hand(listCard)
+      val player = Player("Gunter")
+      player.provideHand(testhand) shouldBe true
 
+
+
+
+    }
+  }
+//  "Knock-out Whist" should {
+//    "give me a hand" in {
+//      val hand1 = CardManager.createHand()
+//      val handtoString = hand1.renderAsString()
+//      val card1 = (CardValue.Two, Suit.Spades)
+//      val list = List(card1, )
+//      //handtoString.foreach(println) shouldBe 
+//    }
+//  }
 }
