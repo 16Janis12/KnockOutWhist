@@ -33,9 +33,9 @@ end CardValue
 
 case class Card(cardValue: CardValue, suit: Suit) {
   
-  def renderAsString(): Array[String] = {
+  def renderAsString(): Vector[String] = {
     if(cardValue == Ten) {
-      return Array(
+      return Vector(
         s"┌─────────┐",
         s"│${cardValue.cardType()}       │",
         "│         │",
@@ -45,7 +45,7 @@ case class Card(cardValue: CardValue, suit: Suit) {
         s"└─────────┘"
       )
     }
-    Array(
+    Vector(
       s"┌─────────┐",
       s"│${cardValue.cardType()}        │",
       "│         │",
