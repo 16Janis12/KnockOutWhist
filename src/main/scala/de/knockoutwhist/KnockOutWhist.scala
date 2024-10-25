@@ -9,10 +9,10 @@ object KnockOutWhist {
 
   }
   def main(args: Array[String]): Unit = {
+    CardManager.shuffleAndReset()
     val hand1 = CardManager.createHand()
     val handtoString = hand1.renderAsString()
     handtoString.foreach(println)
-
     
 
 

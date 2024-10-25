@@ -4,7 +4,6 @@ import de.knockoutwhist.cards.{Card, Player}
 import de.knockoutwhist.cards.Suit
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 
 case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], winner: Player = null, finished: Boolean = false) {
