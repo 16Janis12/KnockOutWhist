@@ -1,12 +1,13 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.5.1"
 
+Compile/mainClass := Some("de.knockoutwhist.KnockOutWhist")
 
 name := "KnockOutWhist"
 version := {
-  val major = sys.env.get("MAJOR_VERSION").getOrElse("0")
-  val minor = sys.env.get("MINOR_VERSION").getOrElse("0")
-  val buildNR = sys.env.get("BUI_COUNTER").getOrElse("1")
+  val major = sys.env.getOrElse("MAJOR_VERSION", "0")
+  val minor = sys.env.getOrElse("MINOR_VERSION", "0")
+  val buildNR = sys.env.getOrElse("BUI_COUNTER", "1")
   s"$major.$minor.$buildNR"
 }
 organization := "de.knockoutwhist"
