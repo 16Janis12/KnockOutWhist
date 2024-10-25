@@ -76,6 +76,20 @@ class DeckTests extends AnyWordSpec with Matchers{
         "│        A│",
         "└─────────┘"
       )
+      card.renderAsString() shouldBe expectedResult
+    }
+    "can be rendered for CardValue Ten" in {
+      val card = Card(CardValue.Ten, Suit.Spades)
+      val expectedResult = Array[String](
+        "┌─────────┐",
+        "│10       │",
+        "│         │",
+        "│    ♠    │",
+        "│         │",
+        "│       10│",
+        "└─────────┘"
+      )
+      card.renderAsString() shouldBe expectedResult
     }
   }
   "A player" should {
@@ -232,13 +246,4 @@ class DeckTests extends AnyWordSpec with Matchers{
 
     }
   }
-//  "Knock-out Whist" should {
-//    "give me a hand" in {
-//      val hand1 = CardManager.createHand()
-//      val handtoString = hand1.renderAsString()
-//      val card1 = (CardValue.Two, Suit.Spades)
-//      val list = List(card1, )
-//      //handtoString.foreach(println) shouldBe 
-//    }
-//  }
 }
