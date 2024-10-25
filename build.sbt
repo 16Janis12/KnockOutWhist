@@ -17,7 +17,12 @@ lazy val root = (project in file("."))
     name := "Projekt-zu-SE"
   )
 
+
+
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.18"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % "test"
 
 coverageEnabled := true
+coverageFailOnMinimum := true
+coverageMinimumStmtTotal := 85
+coverageMinimumBranchTotal := 100
