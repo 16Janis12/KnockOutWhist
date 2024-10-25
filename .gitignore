@@ -116,3 +116,7 @@ hs_err_pid*
 /project/project/target/
 /target/
 /.bsp/
+/.idea/checkstyle-idea.xml
+/.idea/scala_compiler.xml
+/.idea/scala_settings.xml
+/.idea/vcs.xml
