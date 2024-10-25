@@ -6,7 +6,7 @@ import scala.util.Random
 object CardManager {
 
 
-  val cardContainer: List[Card] = {
+  var cardContainer: List[Card] = {
     val cc = ListBuffer[Card]()
     for (suit <- Suit.values) {
       for (cardValue <- CardValue.values) {
@@ -18,7 +18,7 @@ object CardManager {
   private var currentIdx = 0
 
   def shuffleAndReset(): Unit = {
-    Random.shuffle(cardContainer)
+    cardContainer = Random.shuffle(cardContainer)
     currentIdx = 0
   }
 

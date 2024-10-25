@@ -1,5 +1,7 @@
 package de.knockoutwhist.cards
 
+import de.knockoutwhist.cards.CardValue.Ten
+
 enum Suit(identifier: String):
 
   def cardType(): String = identifier
@@ -32,6 +34,17 @@ end CardValue
 case class Card(cardValue: CardValue, suit: Suit) {
   
   def renderAsString(): Array[String] = {
+    if(cardValue == Ten) {
+      return Array(
+        s"┌─────────┐",
+        s"│${cardValue.cardType()}       │",
+        "│         │",
+        s"│    ${suit.cardType()}    │",
+        "│         │",
+        s"│       ${cardValue.cardType()}│",
+        s"└─────────┘"
+      )
+    }
     Array(
       s"┌─────────┐",
       s"│${cardValue.cardType()}        │",
