@@ -1,16 +1,10 @@
 package de.knockoutwhist.cards
 
-import de.knockoutwhist.KnockOutWhist.KnockOutWhist
+import de.knockoutwhist.rounds.{Round, Trick}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
-import de.knockoutwhist.rounds.Trick
-import de.knockoutwhist.rounds.Round
-import de.knockoutwhist.cards.Player
-import de.knockoutwhist.cards.CardManager
-import de.knockoutwhist.cards.Card
 
-import java.io.{ByteArrayOutputStream, PrintStream}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
@@ -67,7 +61,7 @@ class DeckTests extends AnyWordSpec with Matchers{
     }
     "can be rendered" in {
       val card = Card(CardValue.Ace, Suit.Spades)
-      val expectedResult = Array[String](
+      val expectedResult = Vector[String](
         "┌─────────┐",
         "│A        │",
         "│         │",
@@ -80,7 +74,7 @@ class DeckTests extends AnyWordSpec with Matchers{
     }
     "can be rendered for CardValue Ten" in {
       val card = Card(CardValue.Ten, Suit.Spades)
-      val expectedResult = Array[String](
+      val expectedResult = Vector[String](
         "┌─────────┐",
         "│10       │",
         "│         │",
