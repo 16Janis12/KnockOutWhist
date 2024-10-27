@@ -1,8 +1,5 @@
 package de.knockoutwhist.rounds
-import de.knockoutwhist.rounds.Trick
-import de.knockoutwhist.cards.Suit
-import de.knockoutwhist.cards.Player
-import de.knockoutwhist.cards.Card
+import de.knockoutwhist.cards.{Player, Suit}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

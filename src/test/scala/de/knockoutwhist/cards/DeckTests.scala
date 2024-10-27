@@ -133,8 +133,7 @@ class DeckTests extends AnyWordSpec with Matchers{
     "be true for the first card played in a trick" in {
       val playerlist = List(Player("Gunter"))
       val player = Player("Gunter")
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Spades, 7, playerlist)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
       trick.playCard(card, player) shouldBe true
@@ -143,8 +142,7 @@ class DeckTests extends AnyWordSpec with Matchers{
       val player = Player("Gunter")
       val player2 = Player("Peter")
       val playerlist = List(player, player2)
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Diamonds, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Diamonds, 7, playerlist)
       val card = Card(CardValue.Two, Suit.Spades)
       val card2 = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
@@ -155,8 +153,7 @@ class DeckTests extends AnyWordSpec with Matchers{
       val player = Player("Gunter")
       val player2 = Player("Peter")
       val playerlist = List(player, player2)
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Diamonds, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Diamonds, 7, playerlist)
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Diamonds)
       val trick = new Trick(round)
@@ -167,8 +164,7 @@ class DeckTests extends AnyWordSpec with Matchers{
       val player = Player("Gunter")
       val player2 = Player("Peter")
       val playerlist = List(player, player2)
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Diamonds, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Diamonds, 7, playerlist)
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
@@ -180,8 +176,7 @@ class DeckTests extends AnyWordSpec with Matchers{
     "be able to tell who won the trick" in {
       val playerlist = List(Player("Gunter"))
       val player = Player("Gunter")
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Spades, 7, playerlist)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
 
@@ -197,8 +192,7 @@ class DeckTests extends AnyWordSpec with Matchers{
     "throw a IllegalStateException if it is already finished" in {
       val playerlist = List(Player("Gunter"))
       val player = Player("Gunter")
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Spades, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Spades, 7, playerlist)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
       trick.playCard(card, player)
@@ -212,8 +206,7 @@ class DeckTests extends AnyWordSpec with Matchers{
       val player = Player("Gunter")
       val player2 = Player("Peter")
       val playerlist = List(player, player2)
-      val tricks_played: ListBuffer[Trick] = ListBuffer.empty[Trick]
-      val round = Round(Suit.Hearts, 7, tricks_played, playerlist)
+      val round = new Round(Suit.Hearts, 7, playerlist)
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Ten, Suit.Spades)
       val trick = new Trick(round)
