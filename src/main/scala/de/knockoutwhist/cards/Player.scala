@@ -7,6 +7,9 @@ case class Player(name: String) {
     this.hand = Some(hand)
     true
   }
+  def pickTrumpsuit(): Suit = {
+    Suit.Spades
+  }
   
   
   
