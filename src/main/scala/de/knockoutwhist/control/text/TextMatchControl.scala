@@ -1,8 +1,7 @@
 package de.knockoutwhist.control.text
 
-import de.knockoutwhist.cards.Player
 import de.knockoutwhist.control.{MatchControl, PlayerControl}
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 object TextMatchControl extends MatchControl {
 
@@ -13,21 +12,29 @@ object TextMatchControl extends MatchControl {
   }
 
   override def start(): Unit = {
-    
+    while(true) { //Main Gameplay Loop
+      
+    }
   }
 
   override def playerControl: PlayerControl = {
     TextPlayerControl
   }
 
-  override def nextRound(): Round = {
-    println("Starting the next round.")
-    null
+  override def nextRound(matchImpl: Match): Round = {
+    if(matchImpl.isOver) {
+      println(s"The match is over. The winner is ${matchImpl.finalizeMatch().name}.")
+      return null
+    }
+    matchImpl.create_round()
   }
 
-  override def nextTrick(): Trick = {
-    println("Starting the next trick.")
-    null
+  override def nextTrick(roundImpl: Round): Trick = {
+    if(roundImpl.isOver) {
+      println("The round is over.")
+      return null
+    }
+    roundImpl.create_trick()
   }
 
 

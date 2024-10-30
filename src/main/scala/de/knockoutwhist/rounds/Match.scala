@@ -1,5 +1,6 @@
 package de.knockoutwhist.rounds
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{CardManager, Player}
 
 case class Match(totalplayers: List[Player], private var number_of_cards: Int = 7) {
@@ -8,7 +9,7 @@ case class Match(totalplayers: List[Player], private var number_of_cards: Int = 
   private var current_round: Option[Round] = None
   private[rounds] var dogLife = false
 
-  def createRound(): Round = {
+  def create_round(): Round = {
     provideCards
     if (number_of_cards == 7) {
       val random_trumpsuit = CardManager.nextCard().suit
@@ -32,7 +33,7 @@ case class Match(totalplayers: List[Player], private var number_of_cards: Int = 
   }
 
   private def provideCards: Int = {
-    CardManager.shuffleAndReset()
+    if(!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
     var hands = 0
     for (player <- current_round.get.players_in) {
       player.provideHand(CardManager.createHand(number_of_cards))
@@ -40,5 +41,13 @@ case class Match(totalplayers: List[Player], private var number_of_cards: Int = 
     }
     hands
   }
+  
+  def finalizeMatch(): Player = {
+    if(!isOver) {
+      throw new IllegalStateException("Match is not over yet.")
+    }
+    roundlist.last.remainingPlayers().head
+  }
+  
 }
 

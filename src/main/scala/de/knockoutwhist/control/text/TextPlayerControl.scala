@@ -1,5 +1,6 @@
 package de.knockoutwhist.control.text
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Player, Suit}
 import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.rounds.Round
@@ -32,12 +33,11 @@ object TextPlayerControl extends PlayerControl {
         println("Please enter a valid number.")
         playCard(player)
     }
-
   }
 
   @tailrec
   override def determineWinnerTie(players: List[Player], tieMessage: Boolean = true): Player = {
-    //CardManager.shuffleAndReset()
+    if(!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
     if(tieMessage) println("It's a tie! Let's cut to determine the winner.")
     var currentStep = 0
     var remaining = CardManager.cardContainer.size-(players.length-1)

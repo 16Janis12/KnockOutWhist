@@ -9,13 +9,11 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffe
   def this(trumpSuit: Suit, matchImpl: Match, players_in: List[Player]) = {
     this(trumpSuit, matchImpl, ListBuffer[Trick](), players_in)
   }
-    
-    
   
   def create_trick(): Trick = {
     new Trick(this)
   }
-  
+
   def isOver: Boolean = {
     players_in.map(p => p.currentHand()).count(h => h.isEmpty) == 0
   }
@@ -32,17 +30,17 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffe
     val winners = tricksMapped
       .filter((p, i) => i == tricksMapped.values.max)
       .keys
-    
+
     var playersOut = tricksMapped
       .filter((p, i) => i == 0)
       .keys.toList
-    
+
     if(playersOut.nonEmpty && !matchImpl.dogLife) {
       matchImpl.dogLife = true
       playersOut.foreach(p => p.doglife = true)
       playersOut = List()
     }
-    
+
     if(winners.size == 1) {
       (winners.head, Round(trumpSuit, matchImpl, tricklist, players_in, players_out, winners.head))
     } else {

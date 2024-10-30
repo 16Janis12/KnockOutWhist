@@ -1,7 +1,6 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.cards.Player
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 trait MatchControl {
   
@@ -11,15 +10,15 @@ trait MatchControl {
   
   /**
    * Start the next round
-   * @return the last round or null if it is the first
+   * @return the next round or null if the match is over
    */
-  def nextRound(): Round
+  def nextRound(matchImpl: Match): Round
 
   /**
    * Start the next trick
-   * @return the last trick or null if it is the first
+   * @return the last trick or null if the round is over
    */
-  def nextTrick(): Trick
+  def nextTrick(roundImpl: Round): Trick
   
 
 }

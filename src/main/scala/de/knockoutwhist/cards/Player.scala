@@ -1,5 +1,7 @@
 package de.knockoutwhist.cards
 
+import de.knockoutwhist.KnockOutWhist
+
 case class Player(name: String) {
   private var hand: Option[Hand] = None
 
@@ -10,7 +12,7 @@ case class Player(name: String) {
     true
   }
   def pickTrumpsuit(): Suit = {
-    Suit.Spades
+    KnockOutWhist.matchControl.playerControl.pickNextTrumpsuit(this)
   }
   
   
