@@ -227,10 +227,11 @@ class DeckTests extends AnyWordSpec with Matchers{
       val testhand = Hand(listCard)
       val player = Player("Gunter")
       player.provideHand(testhand) shouldBe true
-
-
-
-
+    }
+  }
+  "The Match" should {
+    "be able to create a round" in {
+      
     }
   }
 }
