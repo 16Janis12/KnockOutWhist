@@ -1,6 +1,6 @@
 package de.knockoutwhist.control.text
 
-import de.knockoutwhist.cards.{Card, CardManager, Player}
+import de.knockoutwhist.cards.{Card, CardManager, Player, Suit}
 import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.rounds.Round
 
@@ -35,6 +35,7 @@ object TextPlayerControl extends PlayerControl {
 
   }
 
+  @tailrec
   override def determineWinnerTie(players: List[Player], tieMessage: Boolean = true): Player = {
     //CardManager.shuffleAndReset()
     if(tieMessage) println("It's a tie! Let's cut to determine the winner.")
@@ -101,6 +102,30 @@ object TextPlayerControl extends PlayerControl {
     }
     println("It's a tie again! Let's cut again.")
     determineWinnerTie(winner.toList, false)
+  }
+
+  override def pickNextTrumpsuit(player: Player): Suit = {
+    println("Which suit do you want to pick as the next trump suit?")
+    println("1: Hearts")
+    println("2: Diamonds")
+    println("3: Clubs")
+    println("4: Spades")
+    try {
+      val suit = readLine().toInt
+      suit match {
+        case 1 => Suit.Hearts
+        case 2 => Suit.Diamonds
+        case 3 => Suit.Clubs
+        case 4 => Suit.Spades
+        case _ =>
+          println("Please enter a valid number.")
+          pickNextTrumpsuit(player)
+      }
+    } catch {
+      case e: NumberFormatException =>
+        println("Please enter a valid number.")
+        pickNextTrumpsuit(player)
+    }
   }
 
   override def showCards(player: Player): Boolean = ???

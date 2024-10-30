@@ -1,14 +1,14 @@
 package de.knockoutwhist
 
 import de.knockoutwhist.cards.{CardManager, Player}
+import de.knockoutwhist.control.MatchControl
 import de.knockoutwhist.control.text.TextPlayerControl
 
 
 object KnockOutWhist {
 
-  class KnockOutWhist {
+  val matchControl: MatchControl = null;
 
-  }
   def main(args: Array[String]): Unit = {
     /*CardManager.shuffleAndReset()
     val hand1 = CardManager.createHand()
@@ -17,10 +17,6 @@ object KnockOutWhist {
     val p1 = Player("Player 1")
     val p2 = Player("Player 2")
     val p3 = Player("Player 3")
-
     TextPlayerControl.determineWinnerTie(List(p1, p2, p3))
-    
-
-
   }
 }
