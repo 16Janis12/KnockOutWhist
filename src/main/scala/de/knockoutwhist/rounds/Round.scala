@@ -31,9 +31,8 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffe
       .filter((p, i) => i == tricksMapped.values.max)
       .keys
 
-    var playersOut = tricksMapped
-      .filter((p, i) => i == 0)
-      .keys.toList
+    var playersOut = players_in
+      .filter(!tricksMapped.contains(_))
 
     if(playersOut.nonEmpty && !matchImpl.dogLife) {
       matchImpl.dogLife = true
