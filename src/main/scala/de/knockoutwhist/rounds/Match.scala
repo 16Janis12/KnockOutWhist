@@ -17,12 +17,12 @@ case class Match(totalplayers: List[Player], private[rounds] var number_of_cards
     provideCards(remainingPlayer)
     if (roundlist.isEmpty) {
       val random_trumpsuit = CardManager.nextCard().suit
-      current_round = Some(new Round(random_trumpsuit, this, totalplayers))
+      current_round = Some(new Round(random_trumpsuit, this, remainingPlayer))
     } else {
       val winner = roundlist.last.winner
       val trumpsuit = winner.pickTrumpsuit()
       
-      current_round = Some(new Round(trumpsuit, this, roundlist.last.remainingPlayers()))
+      current_round = Some(new Round(trumpsuit, this, remainingPlayer))
     }
     number_of_cards = number_of_cards - 1
     current_round.get
