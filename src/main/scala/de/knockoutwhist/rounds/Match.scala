@@ -8,7 +8,7 @@ import de.knockoutwhist.utils.Implicits._
 
 case class Match(totalplayers: List[Player], private[rounds] var number_of_cards: Int = 7) {
 
-  private val roundlist: ListBuffer[Round] = ListBuffer[Round]()
+  private[rounds] val roundlist: ListBuffer[Round] = ListBuffer[Round]()
   private var current_round: Option[Round] = None
   private[rounds] var dogLife = false
 

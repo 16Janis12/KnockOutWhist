@@ -45,8 +45,10 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
       }
     } 
     val winningPlayer = cards(winningCard)
-    (winningPlayer, Trick(round, cards, winningPlayer, true))
-    }
+    val finalTrick = Trick(round, cards, winningPlayer, true)
+    round.tricklist += finalTrick
+    (winningPlayer, finalTrick)
   }
+}
 
 
