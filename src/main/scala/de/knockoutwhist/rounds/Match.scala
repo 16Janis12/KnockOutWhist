@@ -13,7 +13,7 @@ case class Match(totalplayers: List[Player], private[rounds] var number_of_cards
   private[rounds] var dogLife = false
 
   def create_round(): Round = {
-    val remainingPlayer = (roundlist.isEmpty ? totalplayers |: roundlist.last.remainingPlayers()).toOption.get
+    val remainingPlayer = roundlist.isEmpty ? totalplayers |: roundlist.last.remainingPlayers()
     provideCards(remainingPlayer)
     if (roundlist.isEmpty) {
       val random_trumpsuit = CardManager.nextCard().suit
