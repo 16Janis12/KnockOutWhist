@@ -3,15 +3,19 @@ package de.knockoutwhist.rounds
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{CardManager, Player}
 
-case class Match(totalplayers: List[Player], private var number_of_cards: Int = 7) {
+import scala.collection.mutable.ListBuffer
+import de.knockoutwhist.utils.Implicits._
 
-  private val roundlist: List[Round] = List[Round]()
+case class Match(totalplayers: List[Player], private[rounds] var number_of_cards: Int = 7) {
+
+  private val roundlist: ListBuffer[Round] = ListBuffer[Round]()
   private var current_round: Option[Round] = None
   private[rounds] var dogLife = false
 
   def create_round(): Round = {
-    provideCards
-    if (number_of_cards == 7) {
+    val remainingPlayer = (roundlist.isEmpty ? totalplayers |: roundlist.last.remainingPlayers()).toOption.get
+    provideCards(remainingPlayer)
+    if (roundlist.isEmpty) {
       val random_trumpsuit = CardManager.nextCard().suit
       current_round = Some(new Round(random_trumpsuit, this, totalplayers))
     } else {
@@ -32,10 +36,10 @@ case class Match(totalplayers: List[Player], private var number_of_cards: Int = 
     }
   }
 
-  private def provideCards: Int = {
+  private def provideCards(players: List[Player]): Int = {
     if(!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
     var hands = 0
-    for (player <- current_round.get.players_in) {
+    for (player <- players) {
       player.provideHand(CardManager.createHand(number_of_cards))
       hands = hands + 1
     }
