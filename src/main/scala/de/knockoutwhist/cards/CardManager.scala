@@ -26,8 +26,12 @@ object CardManager {
 
   def nextCard(): Card = {
     val card = cardContainer(currentIdx)
-    currentIdx += 1
-    card
+    if (currentIdx + 1 > 51) {
+      throw new IndexOutOfBoundsException("Trying to access card 53(out of bounds)")
+    } else {
+      currentIdx += 1
+      card
+    }
   }
   
   def createHand(amount: Int = 7): Hand = {
