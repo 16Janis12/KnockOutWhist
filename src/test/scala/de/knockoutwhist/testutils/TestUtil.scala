@@ -1,4 +1,4 @@
-package de.knockoutwhist.cards
+package de.knockoutwhist.testutils
 
 import java.io.{ByteArrayInputStream, InputStream}
 

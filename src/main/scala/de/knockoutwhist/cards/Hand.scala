@@ -1,6 +1,8 @@
 package de.knockoutwhist.cards
 
-case class Hand(cards: List[Card]) {
+import scala.collection.mutable.ListBuffer
+
+case class Hand(cards: ListBuffer[Card]) {
 
   def removeCard(card: Card): Hand = {
     Hand(cards.filter(_ != card))
@@ -19,7 +21,7 @@ case class Hand(cards: List[Card]) {
     cards.exists(_.suit == trumpSuit)
   }
   
-  def renderAsString() : List[String] = {
+  def renderAsString() : ListBuffer[String] = {
     val cardStrings = cards.map(_.renderAsString())
     val zipped = cardStrings.transpose
     zipped.map(_.mkString(" "))
