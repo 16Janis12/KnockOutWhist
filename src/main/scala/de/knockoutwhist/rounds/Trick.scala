@@ -8,8 +8,17 @@ import scala.collection.mutable
 
 case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], winner: Player = null, finished: Boolean = false) {
   
-  def this(round: Round) = this(round, mutable.HashMap[Card, Player]())
-  var first_card: Option[Suit] = None // statt als Parameter im Konstruktor
+  def this(round: Round) = {
+    this(round, mutable.HashMap[Card, Player]())
+  }
+  private var first_card: Option[Card] = None // statt als Parameter im Konstruktor
+
+  private[rounds] def setFirstCard(card: Card): Unit = {
+    first_card = Some(card)
+  }
+
+  def get_first_card(): Option[Card] = first_card
+
   /**
    * Play a card in the trick
    * @param card The card to play
@@ -19,8 +28,8 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
     if (finished) {
       throw new IllegalStateException("This trick is already finished")
     } else {
-      if (cards.isEmpty) {
-        first_card = Some(card.suit)
+      if (first_card.isEmpty) {
+        first_card = Some(card)
         cards += (card -> player)
         true
       } else if (card.suit == first_card.getOrElse(card.suit)) { // Wert aus Option extrahieren
@@ -41,7 +50,7 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
       if (cards.keys.exists(_.suit == round.trumpSuit)) {
         cards.keys.filter(_.suit == round.trumpSuit).maxBy(_.cardValue.ordinal) //stream
       } else {
-        cards.keys.filter(_.suit == first_card.getOrElse(Suit.Spades)).maxBy(_.cardValue.ordinal) //stream
+        cards.keys.filter(_.suit == first_card.get.suit).maxBy(_.cardValue.ordinal) //stream
       }
     } 
     val winningPlayer = cards(winningCard)

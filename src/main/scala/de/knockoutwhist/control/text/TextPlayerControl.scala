@@ -13,10 +13,12 @@ import util.control.Breaks.*
 object TextPlayerControl extends PlayerControl {
 
   override def playCard(player: Player): Card = {
-    println("It's your turn, " + player.name + ". \nWhich card do you want to play?")
+    println("It's your turn, " + player.name + ".")
+    Thread.sleep(3000L)
+    println("Which card do you want to play?")
     showCards(player)
     try {
-      val card = readLine().toInt
+      val card = readLine().toInt-1
       val handCard = player.currentHand()
       if (handCard.isEmpty) {
         println("You don't have any cards.")
@@ -51,8 +53,8 @@ object TextPlayerControl extends PlayerControl {
           if(selected >= 0 && selected < remaining) {
             selCard = CardManager.cardContainer(currentStep + selected)
             cut.put(player, selCard)
-            currentStep = currentStep + selected + 1
-            remaining = remaining - selected
+            currentStep += selected + 1
+            remaining -= selected
           } else {
             println("Please enter a valid number.")
           }
@@ -65,15 +67,15 @@ object TextPlayerControl extends PlayerControl {
     println("The cards are:")
     val a:Array[String] = Array("", "", "", "", "", "", "", "")
     for((player, card) <- cut) {
-      a(0) = a(0) + s" ${player.name}:"
+      a(0) += s" ${player.name}:"
       val rendered = card.renderAsString()
-      a(1) = a(1) + " " + rendered(0)
-      a(2) = a(2) + " " + rendered(1)
-      a(3) = a(3) + " " + rendered(2)
-      a(4) = a(4) + " " + rendered(3)
-      a(5) = a(5) + " " + rendered(4)
-      a(6) = a(6) + " " + rendered(5)
-      a(7) = a(7) + " " + rendered(6)
+      a(1) += " " + rendered(0)
+      a(2) += " " + rendered(1)
+      a(3) += " " + rendered(2)
+      a(4) += " " + rendered(3)
+      a(5) += " " + rendered(4)
+      a(6) += " " + rendered(5)
+      a(7) += " " + rendered(6)
     }
     a.foreach(println)
 
@@ -110,6 +112,10 @@ object TextPlayerControl extends PlayerControl {
     println("2: Diamonds")
     println("3: Clubs")
     println("4: Spades")
+    println()
+
+    player.currentHand().get.renderAsString().foreach(println)
+
     try {
       val suit = readLine().toInt
       suit match {
@@ -128,7 +134,24 @@ object TextPlayerControl extends PlayerControl {
     }
   }
 
-  override def showCards(player: Player): Boolean = ???
+  override def showCards(player: Player): Boolean = {
+    val hand = player.currentHand()
+    if (hand.isEmpty) {
+      println("You don't have any cards.")
+      return false
+    }
+    println("Your cards:")
+    var rendered = hand.get.renderAsString()
+    rendered ::= {
+      var s = ""
+      for (i <- hand.get.cards.indices) {
+        s += s"     ${i+1}     " + " "
+      }
+      s
+    }
+    rendered.foreach(println)
+    true
+  }
 
   override def showWon(player: Player, round: Round): Int = ???
 

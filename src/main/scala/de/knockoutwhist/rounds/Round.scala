@@ -1,22 +1,33 @@
 package de.knockoutwhist.rounds
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{Player, Suit}
+import de.knockoutwhist.cards.{CardManager, Player, Suit}
+import de.knockoutwhist.utils.Implicits._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import de.knockoutwhist.utils.Implicits._
 
-case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null) {
-  def this(trumpSuit: Suit, matchImpl: Match, players_in: List[Player]) = {
-    this(trumpSuit, matchImpl, ListBuffer[Trick](), players_in)
+case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null, var firstRound: Boolean = false) {
+  def this(trumpSuit: Suit, matchImpl: Match, players_in: List[Player], firstRound: Boolean) = {
+    this(trumpSuit, matchImpl, ListBuffer[Trick](), players_in, firstRound = firstRound)
   }
+
+  private var current_trick: Option[Trick] = None
+
+  def get_current_trick(): Trick = {
+    current_trick.getOrElse(create_trick())
+  }
+
+  def get_tricks(): List[Trick] = tricklist.toList
   
   def create_trick(): Trick = {
-    new Trick(this)
+    val trick = new Trick(this)
+    if(firstRound && tricklist.isEmpty) trick.setFirstCard(CardManager.nextCard())
+    current_trick = Some(trick)
+    trick
   }
 
   def isOver: Boolean = {
-    players_in.map(p => p.currentHand()).count(h => h.isEmpty) == 0
+    players_in.map(p => p.currentHand()).count(h => h.get.cards.isEmpty) == players_in.size
   }
 
   def finalizeRound(force: Boolean = false): (Player, Round) = {
@@ -34,8 +45,9 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
       .filter((p, i) => i == tricksMapped.values.max)
       .keys
 
-    var playersOut = players_in
-      .filter(!tricksMapped.contains(_))
+    var playersOut = firstRound
+      ? List()
+      |: players_in.filter(!tricksMapped.contains(_))
 
     if(playersOut.nonEmpty && !matchImpl.dogLife) {
       matchImpl.dogLife = true
@@ -46,8 +58,8 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
     val winner = (winners.size == 1)
       ? winners.head
       |: KnockOutWhist.matchControl.playerControl.determineWinnerTie(winners.toList)
-    
-    val finalRound = Round(trumpSuit, matchImpl, tricklist, players_in, players_out, winner)
+
+    val finalRound = Round(trumpSuit, matchImpl, tricklist, players_in, players_out, winner, firstRound)
     matchImpl.roundlist += finalRound
     (winner, finalRound)
   }

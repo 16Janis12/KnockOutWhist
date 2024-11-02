@@ -16,19 +16,9 @@ case class Player(name: String) {
   def pickTrumpsuit(): Suit = {
     KnockOutWhist.matchControl.playerControl.pickNextTrumpsuit(this)
   }
-  def removeCard(card: Card): Boolean = {
-    val hand_new = ListBuffer[Card]()
-    for(cardl <- hand.get.cards) {
-      if (!(cardl == card)) {
-        hand_new.addOne(cardl)
-      }
-    }
-    val hand1 = Hand(hand_new)
-    if(hand.get == hand1) {
-      false
-    } else {
-      true
-    }
+  def removeCard(card: Card): Int = {
+    hand = Some(hand.get.removeCard(card))
+    hand.get.cards.size
   }
   
   
