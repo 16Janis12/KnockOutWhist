@@ -2,14 +2,15 @@ package de.knockoutwhist.testutils
 
 import de.knockoutwhist.KnockOutWhist
 
-import java.io.{ByteArrayInputStream, InputStream}
+import java.io.ByteArrayInputStream
 
 
 object TestUtil {
-
-  def simulateInput(input: String): Unit = {
-    val in = new java.io.ByteArrayInputStream(input.getBytes)
-    System.setIn(in)
+  
+  def simulateInput[T](input: String)(block: => T): T = {
+    Console.withIn(new ByteArrayInputStream(input.getBytes())) {
+      block
+    }
   }
   
   def enableDebugMode(): Unit = {
