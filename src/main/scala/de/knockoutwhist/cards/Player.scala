@@ -20,6 +20,10 @@ case class Player(name: String) {
     hand = Some(hand.get.removeCard(card))
     hand.get.cards.size
   }
+
+  override def toString: String = {
+    name
+  }
   
   
   
