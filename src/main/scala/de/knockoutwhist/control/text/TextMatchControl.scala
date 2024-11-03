@@ -1,5 +1,6 @@
 package de.knockoutwhist.control.text
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Player
 import de.knockoutwhist.control.{MatchControl, PlayerControl}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
@@ -24,44 +25,7 @@ object TextMatchControl extends MatchControl {
       val input = printMenu()
       input match {
         case "1" =>
-          clearConsole()
-          println("Starting a new match.")
-          println("Please enter the names of the players, separated by a comma.")
-          val names = StdIn.readLine().split(",")
-          if(names.length < 2) {
-            println("Please enter at least two names.")
-            return
-          }
-          playerQueue = CustomPlayerQueue[Player](names.map(s => Player(s)), Random.nextInt(names.length))
-          clearConsole()
-          val matchImpl = Match(playerQueue.toList)
-          while(!matchImpl.isOver) {
-            val roundImpl = nextRound(matchImpl)
-            clearConsole(10)
-            println(s"Starting a new round. The trump suit is ${roundImpl.trumpSuit}.")
-            clearConsole(2)
-            while(!roundImpl.isOver) {
-              val trickImpl = nextTrick(roundImpl)
-              for(player <- playerQueue) {
-                clearConsole()
-                println(printTrick(roundImpl))
-                val card = playerControl.playCard(player)
-                player.removeCard(card)
-                trickImpl.playCard(card, player)
-              }
-              val (winner, finalTrick) = trickImpl.wonTrick()
-              clearConsole()
-              println(printTrick(roundImpl))
-              println(s"${winner.name} won the trick.")
-              clearConsole(2)
-              playerQueue.resetAndSetStart(winner)
-              Thread.sleep(3000L)
-            }
-            val (roundWinner, finalRound) = roundImpl.finalizeRound()
-            println(s"${roundWinner.name} won the round.")
-            Thread.sleep(5000L)
-            playerQueue.resetAndSetStart(roundWinner)
-          }
+          startMatch()
         case "2" =>
           println("Exiting the game.")
           return
@@ -69,6 +33,69 @@ object TextMatchControl extends MatchControl {
           println("Invalid input. Please try again.")
       }
     }
+  }
+
+  private[control] def startMatch(): Player = {
+    clearConsole()
+    println("Starting a new match.")
+    val players = enterPlayers()
+    playerQueue = CustomPlayerQueue[Player](players, Random.nextInt(players.length))
+    clearConsole()
+    controlMatch()
+  }
+
+  private[control] def enterPlayers(): Array[Player] = {
+    println("Please enter the names of the players, separated by a comma.")
+    val names = StdIn.readLine().split(",")
+    if(names.length < 2) {
+      println("Please enter at least two names.")
+      return enterPlayers()
+    }
+    names.map(s => Player(s))
+  }
+
+  private[control] def controlMatch(): Player = {
+    val matchImpl = Match(playerQueue.toList)
+    while (!matchImpl.isOver) {
+      val roundImpl = controlRound(matchImpl)
+    }
+    clearConsole()
+    println(s"The match is over. The winner is ${matchImpl.finalizeMatch().name}.")
+    matchImpl.finalizeMatch()
+  }
+
+  private[control] def controlRound(matchImpl: Match): Round = {
+    val roundImpl = nextRound(matchImpl)
+    clearConsole(10)
+    println(s"Starting a new round. The trump suit is ${roundImpl.trumpSuit}.")
+    clearConsole(2)
+    while (!roundImpl.isOver) {
+      controlTrick(roundImpl)
+    }
+    val (roundWinner, finalRound) = roundImpl.finalizeRound()
+    println(s"${roundWinner.name} won the round.")
+    if(!KnockOutWhist.DEBUG_MODE) Thread.sleep(5000L)
+    playerQueue.resetAndSetStart(roundWinner)
+    finalRound
+  }
+  
+  private[control] def controlTrick(round: Round): Trick = {
+    val trick = nextTrick(round)
+    for (player <- playerQueue) {
+      clearConsole()
+      println(printTrick(round))
+      val card = playerControl.playCard(player)
+      player.removeCard(card)
+      trick.playCard(card, player)
+    }
+    val (winner, finalTrick) = trick.wonTrick()
+    clearConsole()
+    println(printTrick(round))
+    println(s"${winner.name} won the trick.")
+    clearConsole(2)
+    playerQueue.resetAndSetStart(winner)
+    if(!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
+    finalTrick
   }
 
   private[control] def printMenu(): String = {
@@ -82,19 +109,19 @@ object TextMatchControl extends MatchControl {
     val sb = new StringBuilder()
     sb.append("Current Trick:\n")
     sb.append("Trump-Suit: " + round.trumpSuit + "\n")
-    if(round.firstRound && round.get_tricks().isEmpty) {
-      sb.append(s"First card: ${round.get_current_trick().get_first_card().get.toString}\n")
-    }
     for((card, player) <- round.get_current_trick().cards) {
       sb.append(s"${player.name} played ${card.toString}\n")
     }
     sb.toString()
   }
 
-  private def clearConsole(lines: Int = 32): Unit = {
+  private def clearConsole(lines: Int = 32): Int = {
+    var l = 0
     for(_ <- 0 until lines) {
       println()
+      l += 1
     }
+    l
   }
 
   override def playerControl: PlayerControl = {

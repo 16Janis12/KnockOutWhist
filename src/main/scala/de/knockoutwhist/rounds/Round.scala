@@ -21,7 +21,6 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
   
   def create_trick(): Trick = {
     val trick = new Trick(this)
-    if(firstRound && tricklist.isEmpty) trick.setFirstCard(CardManager.nextCard())
     current_trick = Some(trick)
     trick
   }
@@ -45,9 +44,10 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
       .filter((p, i) => i == tricksMapped.values.max)
       .keys
 
-    var playersOut = firstRound
+    /*var playersOut = firstRound
       ? List()
-      |: players_in.filter(!tricksMapped.contains(_))
+      |: players_in.filter(!tricksMapped.contains(_))*/
+    var playersOut = players_in.filter(!tricksMapped.contains(_))
 
     if(playersOut.nonEmpty && !matchImpl.dogLife) {
       matchImpl.dogLife = true
@@ -59,7 +59,7 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
       ? winners.head
       |: KnockOutWhist.matchControl.playerControl.determineWinnerTie(winners.toList)
 
-    val finalRound = Round(trumpSuit, matchImpl, tricklist, players_in, players_out, winner, firstRound)
+    val finalRound = Round(trumpSuit, matchImpl, tricklist, players_in, playersOut, winner, firstRound)
     matchImpl.roundlist += finalRound
     (winner, finalRound)
   }

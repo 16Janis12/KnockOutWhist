@@ -1,5 +1,6 @@
 package de.knockoutwhist.control.text
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Player, Suit}
 import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.rounds.Round
@@ -14,7 +15,7 @@ object TextPlayerControl extends PlayerControl {
 
   override def playCard(player: Player): Card = {
     println("It's your turn, " + player.name + ".")
-    Thread.sleep(3000L)
+    if(!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
     println("Which card do you want to play?")
     showCards(player)
     try {
@@ -153,6 +154,6 @@ object TextPlayerControl extends PlayerControl {
     true
   }
 
-  override def showWon(player: Player, round: Round): Int = ???
+  override def showWon(player: Player, round: Round): Boolean = ???
 
 }

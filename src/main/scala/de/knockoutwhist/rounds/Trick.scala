@@ -13,10 +13,6 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
   }
   private var first_card: Option[Card] = None // statt als Parameter im Konstruktor
 
-  private[rounds] def setFirstCard(card: Card): Unit = {
-    first_card = Some(card)
-  }
-
   def get_first_card(): Option[Card] = first_card
 
   /**

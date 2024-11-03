@@ -12,7 +12,7 @@ object KnockOutWhist {
 
   - Disables the random shuffle of the cards
    */
-  val DEBUG_MODE: Boolean = false
+  val DEBUG_MODE: Boolean = true
 
   def main(args: Array[String]): Unit = {
     if(!matchControl.initial()) throw new IllegalStateException("Game could not be started.")
