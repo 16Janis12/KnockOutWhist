@@ -44,10 +44,9 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
       .filter((p, i) => i == tricksMapped.values.max)
       .keys
 
-    /*var playersOut = firstRound
+    var playersOut = firstRound
       ? List()
-      |: players_in.filter(!tricksMapped.contains(_))*/
-    var playersOut = players_in.filter(!tricksMapped.contains(_))
+      |: players_in.filter(!tricksMapped.contains(_))
 
     if(playersOut.nonEmpty && !matchImpl.dogLife) {
       matchImpl.dogLife = true

@@ -10,7 +10,7 @@ case class Match(totalplayers: List[Player], private[rounds] var number_of_cards
 
   private[rounds] val roundlist: ListBuffer[Round] = ListBuffer[Round]()
   private var current_round: Option[Round] = None
-  private[rounds] var dogLife = true
+  private[rounds] var dogLife = false
 
   def create_round(): Round = {
     val remainingPlayer = roundlist.isEmpty ? totalplayers |: roundlist.last.remainingPlayers()
