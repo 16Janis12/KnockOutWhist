@@ -52,6 +52,9 @@ case class Match(totalplayers: List[Player], private[rounds] var number_of_cards
     }
     roundlist.last.remainingPlayers().head
   }
-  
+
+  override def toString: String = {
+    s"${totalplayers}, ${number_of_cards}"
+  }
 }
 

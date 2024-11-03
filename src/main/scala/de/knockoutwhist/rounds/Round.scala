@@ -69,7 +69,9 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
     }
     players_in.filter(!players_out.contains(_))
   }
-
+  override def toString: String = {
+    s"${trumpSuit}, ${matchImpl}, ${tricklist}, ${players_in}, ${players_out}, ${winner}, ${firstRound}"
+  }
   
   
 }

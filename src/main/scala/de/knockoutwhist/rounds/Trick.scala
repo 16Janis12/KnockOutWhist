@@ -28,7 +28,7 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
         first_card = Some(card)
         cards += (card -> player)
         true
-      } else if (card.suit == first_card.getOrElse(card.suit)) { // Wert aus Option extrahieren
+      } else if (card.suit == first_card.getOrElse(card).suit) { // Wert aus Option extrahieren
         cards += (card -> player)
         true
       } else if (card.suit == round.trumpSuit) {
@@ -53,6 +53,10 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
     val finalTrick = Trick(round, cards, winningPlayer, true)
     round.tricklist += finalTrick
     (winningPlayer, finalTrick)
+  }
+
+  override def toString: String = {
+    s"${round}, ${cards}, ${winner}, ${finished}"
   }
 }
 
