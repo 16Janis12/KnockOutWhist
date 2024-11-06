@@ -34,6 +34,7 @@ class RoundTests extends AnyWordSpec with Matchers{
     val round2 = TestUtil.simulateInput("1\n") {
       match1.create_round()
     }
+    TestUtil.enableDebugMode()
     val trick2 = round2.create_trick()
     val playedcard3 = TestUtil.simulateInput("1\n") {
       KnockOutWhist.matchControl.playerControl.playCard(player1)

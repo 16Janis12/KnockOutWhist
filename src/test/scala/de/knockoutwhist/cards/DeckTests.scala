@@ -1,6 +1,7 @@
 package de.knockoutwhist.cards
 
 import de.knockoutwhist.rounds.{Match, Round, Trick}
+import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
