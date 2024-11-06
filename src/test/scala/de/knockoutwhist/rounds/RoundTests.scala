@@ -6,7 +6,8 @@ import de.knockoutwhist.rounds.{Match, Round, Trick}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
-import de.knockoutwhist.cards.{Player, Suit}
+import de.knockoutwhist.cards.Suit
+import de.knockoutwhist.player.Player
 import de.knockoutwhist.testutils.TestUtil
 
 import scala.collection.mutable

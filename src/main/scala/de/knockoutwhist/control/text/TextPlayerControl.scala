@@ -1,8 +1,9 @@
 package de.knockoutwhist.control.text
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{Card, CardManager, Player, Suit}
+import de.knockoutwhist.cards.{Card, CardManager, Suit}
 import de.knockoutwhist.control.PlayerControl
+import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
 
 import scala.annotation.tailrec

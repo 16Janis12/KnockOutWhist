@@ -1,8 +1,9 @@
 package de.knockoutwhist.control.text
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{Card, Player}
+import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.{MatchControl, PlayerControl}
+import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.CustomPlayerQueue
 
