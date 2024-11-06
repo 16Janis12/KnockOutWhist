@@ -117,15 +117,16 @@ object TextMatchControl extends MatchControl {
     if (trick.get_first_card().isDefined) {
       while (!(trick.get_first_card().get.suit == card.suit)) {
         var hasSuit = false
-        for (cardofhand <- player.currentHand().get.cards) {
-          if (cardofhand.suit == trick.get_first_card().get.suit) {
-            println(f"You have to play a card of suit: ${trick.get_first_card().get.suit}\n")
+        for (cardInHand <- player.currentHand().get.cards) {
+          if (cardInHand.suit == trick.get_first_card().get.suit) {
             hasSuit = true
-            card = playerControl.playCard(player)
           }
         }
         if(!hasSuit) {
           return card
+        }else {
+          println(f"You have to play a card of suit: ${trick.get_first_card().get.suit}\n")
+          card = playerControl.playCard(player)
         }
       }
     }
