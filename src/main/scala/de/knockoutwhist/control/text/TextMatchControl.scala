@@ -143,6 +143,9 @@ object TextMatchControl extends MatchControl {
     val sb = new StringBuilder()
     sb.append("Current Trick:\n")
     sb.append("Trump-Suit: " + round.trumpSuit + "\n")
+    if(round.get_current_trick().get_first_card().isDefined) {
+      sb.append(s"Suit to play: ${round.get_current_trick().get_first_card().get.suit}\n")
+    }
     for((card, player) <- round.get_current_trick().cards) {
       sb.append(s"${player.name} played ${card.toString}\n")
     }
