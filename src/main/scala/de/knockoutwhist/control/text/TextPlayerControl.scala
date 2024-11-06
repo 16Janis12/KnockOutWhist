@@ -37,21 +37,25 @@ object TextPlayerControl extends PlayerControl {
     }
 
   }
+  
+  override def determineWinnerTie(players: List[Player]): Player = {
+    determineWinnerTieText(players, true)
+  }
 
   @tailrec
-  override def determineWinnerTie(players: List[Player], tieMessage: Boolean = true): Player = {
-    if(!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
-    if(tieMessage) println("It's a tie! Let's cut to determine the winner.")
+  def determineWinnerTieText(players: List[Player], tieMessage: Boolean): Player = {
+    if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
+    if (tieMessage) println("It's a tie! Let's cut to determine the winner.")
     var currentStep = 0
-    var remaining = CardManager.cardContainer.size-(players.length-1)
+    var remaining = CardManager.cardContainer.size - (players.length - 1)
     val cut: mutable.HashMap[Player, Card] = mutable.HashMap()
-    for(player <- players) {
+    for (player <- players) {
       var selCard: Card = null
-      while(selCard == null) {
+      while (selCard == null) {
         println(s"${player.name} enter a number between 1 and $remaining.")
         try {
           val selected = readLine().toInt - 1
-          if(selected >= 0 && selected < remaining) {
+          if (selected >= 0 && selected < remaining) {
             selCard = CardManager.cardContainer(currentStep + selected)
             cut.put(player, selCard)
             currentStep += selected + 1
@@ -66,8 +70,8 @@ object TextPlayerControl extends PlayerControl {
       }
     }
     println("The cards are:")
-    val a:Array[String] = Array("", "", "", "", "", "", "", "")
-    for((player, card) <- cut) {
+    val a: Array[String] = Array("", "", "", "", "", "", "", "")
+    for ((player, card) <- cut) {
       a(0) += s" ${player.name}:"
       val rendered = card.renderAsString()
       a(1) += " " + rendered(0)
@@ -80,9 +84,9 @@ object TextPlayerControl extends PlayerControl {
     }
     a.foreach(println)
 
-    var currentHighest:Card = null
+    var currentHighest: Card = null
     val winner: ListBuffer[Player] = ListBuffer()
-    for((player, card) <- cut) {
+    for ((player, card) <- cut) {
       breakable {
         if (currentHighest == null) {
           currentHighest = card
@@ -90,21 +94,21 @@ object TextPlayerControl extends PlayerControl {
           break
         }
         val compared = card.cardValue.ordinal.compareTo(currentHighest.cardValue.ordinal)
-        if(compared > 0) {
+        if (compared > 0) {
           currentHighest = card
           winner.clear()
           winner += player
-        } else if(compared == 0) {
+        } else if (compared == 0) {
           winner += player
         }
       }
     }
-    if(winner.size == 1) {
+    if (winner.size == 1) {
       println(s"${winner.head.name} wins the cut!")
       return winner.head
     }
     println("It's a tie again! Let's cut again.")
-    determineWinnerTie(winner.toList, false)
+    determineWinnerTieText(winner.toList, false)
   }
 
   override def pickNextTrumpsuit(player: Player): Suit = {
