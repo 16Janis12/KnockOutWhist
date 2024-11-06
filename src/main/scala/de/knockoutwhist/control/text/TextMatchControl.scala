@@ -13,8 +13,14 @@ import scala.util.Random
 object TextMatchControl extends MatchControl {
 
   private var playerQueue: CustomPlayerQueue[Player] = uninitialized
+  private var init = false
 
   override def initial(): Boolean = {
+    if(init) {
+      println("The game is already running.")
+      return false
+    }
+    init = true
     println("Welcome to Knockout Whist!")
     start()
     true

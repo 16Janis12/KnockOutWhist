@@ -43,7 +43,7 @@ object TextPlayerControl extends PlayerControl {
   }
 
   @tailrec
-  def determineWinnerTieText(players: List[Player], tieMessage: Boolean): Player = {
+  private def determineWinnerTieText(players: List[Player], tieMessage: Boolean): Player = {
     if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
     if (tieMessage) println("It's a tie! Let's cut to determine the winner.")
     var currentStep = 0
