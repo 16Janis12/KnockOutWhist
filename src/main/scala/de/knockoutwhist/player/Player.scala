@@ -1,6 +1,7 @@
-package de.knockoutwhist.cards
+package de.knockoutwhist.player
 
 import de.knockoutwhist.KnockOutWhist
+import de.knockoutwhist.cards.{Card, Hand, Suit}
 
 import scala.collection.mutable.ListBuffer
 

@@ -1,6 +1,7 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.cards.{Card, Player, Suit}
+import de.knockoutwhist.cards.{Card, Suit}
+import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
 
 trait PlayerControl {

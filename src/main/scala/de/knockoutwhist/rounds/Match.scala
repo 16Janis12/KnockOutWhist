@@ -1,7 +1,8 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{CardManager, Player}
+import de.knockoutwhist.cards.CardManager
+import de.knockoutwhist.player.Player
 
 import scala.collection.mutable.ListBuffer
 import de.knockoutwhist.utils.Implicits._
