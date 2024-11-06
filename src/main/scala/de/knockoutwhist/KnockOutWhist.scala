@@ -12,7 +12,7 @@ object KnockOutWhist {
 
   - Disables the random shuffle of the cards
    */
-  private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = true
+  private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = false
 
   def DEBUG_MODE = DEBUG_MODE_VAR
 

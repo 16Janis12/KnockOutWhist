@@ -16,5 +16,9 @@ object TestUtil {
   def enableDebugMode(): Unit = {
     KnockOutWhist.DEBUG_MODE_VAR = true
   }
+  
+  def disableDebugMode(): Unit = {
+    KnockOutWhist.DEBUG_MODE_VAR = false
+  }
 
 }
