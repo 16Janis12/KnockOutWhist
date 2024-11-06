@@ -1,7 +1,7 @@
 package de.knockoutwhist.control.text
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.Player
+import de.knockoutwhist.cards.{Card, Player}
 import de.knockoutwhist.control.{MatchControl, PlayerControl}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.CustomPlayerQueue
@@ -97,9 +97,10 @@ object TextMatchControl extends MatchControl {
     for (player <- playerQueue) {
       clearConsole()
       println(printTrick(round))
-      val card = playerControl.playCard(player)
-      player.removeCard(card)
-      trick.playCard(card, player)
+      val rightCard = controlSuitplayed(trick, player)
+      player.removeCard(rightCard)
+      trick.playCard(rightCard, player)
+
     }
     val (winner, finalTrick) = trick.wonTrick()
     clearConsole()
@@ -110,7 +111,25 @@ object TextMatchControl extends MatchControl {
     if(!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
     finalTrick
   }
-
+  private[control] def controlSuitplayed(trick: Trick, player: Player): Card = {
+    var card = playerControl.playCard(player)
+    if (trick.get_first_card().isDefined) {
+      while (!(trick.get_first_card().get.suit == card.suit)) {
+        var hasSuit = false
+        for (cardofhand <- player.currentHand().get.cards) {
+          if (cardofhand.suit == trick.get_first_card().get.suit) {
+            println(f"You have to play a card of suit: ${trick.get_first_card().get.suit}\n")
+            hasSuit = true
+            card = playerControl.playCard(player)
+          }
+        }
+        if(!hasSuit) {
+          return card
+        }
+      }
+    }
+    card
+  }
   private[control] def printMenu(): String = {
     println("Please select an option:")
     println("1. Start a new match")
