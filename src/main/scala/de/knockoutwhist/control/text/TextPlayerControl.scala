@@ -194,6 +194,8 @@ object TextPlayerControl extends PlayerControl {
     true
   }
 
-  override def showWon(player: Player, round: Round): Boolean = ???
+  override def showWon(player: Player, round: Round): String = {
+    s"${player} won this round. ${round.players_in} played in this round, ${round.players_out} got knocked out.\n${round.trumpSuit} was trumpsuit."
+  }
 
 }
