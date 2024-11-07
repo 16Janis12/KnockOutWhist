@@ -58,6 +58,10 @@ object TextMatchControl extends MatchControl {
       println("Please enter at least two names.")
       return enterPlayers()
     }
+    if(names.count(_.trim.isBlank) > 0 || names.count(_.trim.length <= 2) > 0 || names.count(_.trim.length > 10) > 0) {
+      println("Please enter valid names. Those can not be empty, shorter than 2 or longer then 10 characters.")
+      return enterPlayers()
+    }
     names.map(s => Player(s))
   }
 

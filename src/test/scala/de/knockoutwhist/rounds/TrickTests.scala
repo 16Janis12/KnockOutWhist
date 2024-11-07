@@ -5,8 +5,6 @@ import de.knockoutwhist.player.Player
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.collection.immutable.HashMap
-
 class TrickTests extends AnyWordSpec with Matchers {
 
   "A trick" should {
@@ -124,7 +122,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val trick = new Trick(round)
       trick.playCard(card, player)
       trick.playCard(card2, player2)
-      trick.toString() shouldBe s"${round}, ${HashMap[Card, Player](card2 -> player2, card -> player)}, ${null}, ${false}"
+      trick.toString() shouldBe s"${trick.cards}, ${null}, ${false}"
     }
   }
 

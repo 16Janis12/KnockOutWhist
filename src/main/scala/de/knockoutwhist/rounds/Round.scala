@@ -7,7 +7,7 @@ import de.knockoutwhist.utils.Implicits._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null, var firstRound: Boolean = false) {
+case class Round private[rounds](trumpSuit: Suit, matchImpl: Match, private[rounds] val tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null, firstRound: Boolean = false) {
   def this(trumpSuit: Suit, matchImpl: Match, players_in: List[Player], firstRound: Boolean) = {
     this(trumpSuit, matchImpl, ListBuffer[Trick](), players_in, firstRound = firstRound)
   }
@@ -31,13 +31,10 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
   }
 
   def finalizeRound(force: Boolean = false): (Player, Round) = {
-    if(!force) {
-      if(tricklist.isEmpty) {
-        throw new IllegalStateException("No tricks played in this round")
-      }else if(!isOver) {
-        throw new IllegalStateException("Not all tricks were played in this round")
-      }
-    }
+    if(!force && tricklist.isEmpty)
+      throw new IllegalStateException("No tricks played in this round")
+    if(!force && !isOver)
+      throw new IllegalStateException("Not all tricks were played in this round")
     val tricksMapped = tricklist
       .map(t => t.winner)
       .groupBy(identity).map((p, l) => (p, l.size)) //l.size = Anzahl gewonnener Tricks
@@ -71,7 +68,7 @@ case class Round private(trumpSuit: Suit, matchImpl: Match, private[rounds] val 
     players_in.filter(!players_out.contains(_))
   }
   override def toString: String = {
-    s"${trumpSuit}, ${matchImpl}, ${tricklist}, ${players_in}, ${players_out}, ${winner}, ${firstRound}"
+    s"$trumpSuit, $tricklist, $players_in, $players_out, $winner, $firstRound"
   }
   
   

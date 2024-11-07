@@ -73,7 +73,8 @@ object TextPlayerControl extends PlayerControl {
     println("The cards are:")
     val a: Array[String] = Array("", "", "", "", "", "", "", "")
     for ((player, card) <- cut) {
-      a(0) += s" ${player.name}:"
+      val playerNameLength = player.name.length
+      a(0) += " " + player.name + ":" + (" " * (playerNameLength - 1))
       val rendered = card.renderAsString()
       a(1) += " " + rendered(0)
       a(2) += " " + rendered(1)

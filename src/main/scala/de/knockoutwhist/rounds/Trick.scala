@@ -57,7 +57,7 @@ case class Trick private(round: Round, cards: mutable.HashMap[Card, Player], win
   }
 
   override def toString: String = {
-    s"${round}, ${cards}, ${winner}, ${finished}"
+    s"$cards, $winner, $finished"
   }
 }
 
