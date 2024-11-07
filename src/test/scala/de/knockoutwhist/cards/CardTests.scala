@@ -15,11 +15,11 @@ class CardTests extends AnyWordSpec with Matchers{
       val card = Card(CardValue.Ace, Suit.Spades)
       val expectedResult = Vector[String](
         "┌─────────┐",
-        "│A        │",
+        s"│${Console.BLACK}${Console.BOLD}A${Console.RESET}        │",
         "│         │",
-        "│    ♠    │",
+        s"│    ${Console.BLACK}${Console.BOLD}♠${Console.RESET}    │",
         "│         │",
-        "│        A│",
+        s"│        ${Console.BLACK}${Console.BOLD}A${Console.RESET}│",
         "└─────────┘"
       )
       card.renderAsString() shouldBe expectedResult
@@ -28,11 +28,11 @@ class CardTests extends AnyWordSpec with Matchers{
       val card = Card(CardValue.Ten, Suit.Spades)
       val expectedResult = Vector[String](
         "┌─────────┐",
-        "│10       │",
+        s"│${Console.BLACK}${Console.BOLD}10${Console.RESET}       │",
         "│         │",
-        "│    ♠    │",
+        s"│    ${Console.BLACK}${Console.BOLD}♠${Console.RESET}    │",
         "│         │",
-        "│       10│",
+        s"│       ${Console.BLACK}${Console.BOLD}10${Console.RESET}│",
         "└─────────┘"
       )
       card.renderAsString() shouldBe expectedResult

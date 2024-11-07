@@ -40,11 +40,17 @@ object TextPlayerControl extends PlayerControl {
 
   }
 
-  override def dogplayCard(player: Player): Option[Card] = {
+  override def dogplayCard(player: Player, round: Round): Option[Card] = {
     println("It's your turn, " + player.name + ".")
     if (!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
     println("You are using your dog life. Do you want to play your final card now?")
-    println("Please enter y/n to play your final card.")
+    if(round.dogNeedsToPlay) {
+      println("You have to play your final card this round!")
+      println("Please enter y to play your final card.")
+    }else {
+      println("Please enter y/n to play your final card.")
+    }
+
     showCards(player)
     try {
       val card = readLine()
@@ -52,13 +58,13 @@ object TextPlayerControl extends PlayerControl {
       if (handCard.isEmpty) {
         println("You don't have any cards.")
         throw new IllegalStateException("Trying to play a card without any cards.")
-      } else if(!card.equals("y") | !card.equals("n")) {
-        println("Please enter yes or no to play your final card.")
-        dogplayCard(player)
-      } else if (card.equals("y")) {
+      } else if(card.equalsIgnoreCase("y")) {
         Some(handCard.get.cards.head)
-      } else {
+      } else if (card.equalsIgnoreCase("n") && !round.dogNeedsToPlay) {
         None
+      } else {
+        println("Please enter y or n to play your final card.")
+        dogplayCard(player, round)
       }
 
     } catch {
@@ -66,6 +72,7 @@ object TextPlayerControl extends PlayerControl {
         None
     }
   }
+
   override def determineWinnerTie(players: List[Player]): Player = {
     determineWinnerTieText(players, true)
   }

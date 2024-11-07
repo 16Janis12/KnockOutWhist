@@ -27,7 +27,11 @@ case class Round private[rounds](trumpSuit: Suit, matchImpl: Match, private[roun
   }
 
   def isOver: Boolean = {
-    players_in.map(p => p.currentHand()).count(h => h.get.cards.isEmpty) == players_in.size
+    players_in.map(_.currentHand()).count(_.get.cards.isEmpty) == players_in.size
+  }
+
+  def dogNeedsToPlay: Boolean = {
+    players_in.filter(!_.doglife).map(_.currentHand()).exists(_.get.cards.isEmpty)
   }
 
   def finalizeRound(force: Boolean = false): (Player, Round) = {
@@ -51,6 +55,8 @@ case class Round private[rounds](trumpSuit: Suit, matchImpl: Match, private[roun
       playersOut.foreach(p => p.doglife = true)
       playersOut = List()
     }
+
+    tricksMapped.keys.foreach(p => {p.doglife = false})
 
     val winner = (winners.size == 1)
       ? winners.head

@@ -7,8 +7,8 @@ import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.CustomPlayerQueue
 
-import scala.io.StdIn
 import scala.compiletime.uninitialized
+import scala.io.StdIn
 import scala.util.Random
 
 object TextMatchControl extends MatchControl {
@@ -106,16 +106,15 @@ object TextMatchControl extends MatchControl {
         val rightCard = controlSuitplayed(trick, player)
         player.removeCard(rightCard)
         trick.playCard(rightCard, player)
-      } else {
-        val dogplaycard = controlDogLife(player)
-        if(dogplaycard.isEmpty) {
-          println(f"Player ${player} decided to not play his card")
+      } else if (player.currentHand().exists(_.cards.nonEmpty)) {
+        val card = playerControl.dogplayCard(player, round)
+        if (card.isEmpty) {
+          println(f"Player $player decided to not play his card")
         } else {
-          player.removeCard(dogplaycard.get)
-          trick.playCard(dogplaycard.get, player)
+          player.removeCard(card.get)
+          trick.playCard(card.get, player)
         }
       }
-
     }
     val (winner, finalTrick) = trick.wonTrick()
     clearConsole()
@@ -146,14 +145,7 @@ object TextMatchControl extends MatchControl {
     }
     card
   }
-  private[control] def controlDogLife(player: Player): Option[Card] = {
-    val posplayedcard = playerControl.dogplayCard(player)
-    if (posplayedcard.isEmpty) {
-      None
-    } else {
-      posplayedcard
-    }
-  }
+
   private[control] def printMenu(): String = {
     println("Please select an option:")
     println("1. Start a new match")

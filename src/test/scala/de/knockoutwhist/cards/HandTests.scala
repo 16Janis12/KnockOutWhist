@@ -41,11 +41,11 @@ class HandTests extends AnyWordSpec with Matchers {
       val hand = Hand(handholder.toList)
       val expectedResult = List(
         "┌─────────┐ ┌─────────┐",
-        "│A        │ │Q        │",
+        s"│${Console.BLACK}${Console.BOLD}A${Console.RESET}        │ │${Console.RED}${Console.BOLD}Q${Console.RESET}        │",
         "│         │ │         │",
-        "│    ♠    │ │    ♦    │",
+        s"│    ${Console.BLACK}${Console.BOLD}♠${Console.RESET}    │ │    ${Console.RED}${Console.BOLD}♦${Console.RESET}    │",
         "│         │ │         │",
-        "│        A│ │        Q│",
+        s"│        ${Console.BLACK}${Console.BOLD}A${Console.RESET}│ │        ${Console.RED}${Console.BOLD}Q${Console.RESET}│",
         "└─────────┘ └─────────┘"
       )
       hand.renderAsString() shouldBe expectedResult

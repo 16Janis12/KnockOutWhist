@@ -13,7 +13,9 @@ import scala.collection.mutable.ListBuffer
 
 
 class GameplayTests extends AnyWordSpec with Matchers{
+
   "A Match" should {
+    TestUtil.disableDebugMode()
     val player1 = Player("Gunter")
     val player2 = Player("Peter")
     val player_list = List(player1, player2)
@@ -114,7 +116,7 @@ class GameplayTests extends AnyWordSpec with Matchers{
     trick5.playCard(playedcard8, player1)
     trick5.playCard(playedcard7, player2)
     trick5.wonTrick()
-
+    CardManager.shuffleAndReset()
     val roundResult = TestUtil.simulateInput("1\n13\n") {
       round4.finalizeRound(true)
     }
