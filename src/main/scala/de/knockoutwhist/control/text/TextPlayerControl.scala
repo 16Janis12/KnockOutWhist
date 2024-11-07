@@ -10,8 +10,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
-import util.control.Breaks.*
-import java.io.IOException
+import scala.util.control.Breaks.*
 
 object TextPlayerControl extends PlayerControl {
 
@@ -52,24 +51,18 @@ object TextPlayerControl extends PlayerControl {
     }
 
     showCards(player)
-    try {
-      val card = readLine()
-      val handCard = player.currentHand()
-      if (handCard.isEmpty) {
-        println("You don't have any cards.")
-        throw new IllegalStateException("Trying to play a card without any cards.")
-      } else if(card.equalsIgnoreCase("y")) {
-        Some(handCard.get.cards.head)
-      } else if (card.equalsIgnoreCase("n") && !round.dogNeedsToPlay) {
-        None
-      } else {
-        println("Please enter y or n to play your final card.")
-        dogplayCard(player, round)
-      }
-
-    } catch {
-      case e: IOException => println(s"An I/O error occurred: ${e.getMessage}")
-        None
+    val card = readLine()
+    val handCard = player.currentHand()
+    if (handCard.isEmpty) {
+      println("You don't have any cards.")
+      throw new IllegalStateException("Trying to play a card without any cards.")
+    } else if(card.equalsIgnoreCase("y")) {
+      Some(handCard.get.cards.head)
+    } else if (card.equalsIgnoreCase("n") && !round.dogNeedsToPlay) {
+      None
+    } else {
+      println("Please enter y or n to play your final card.")
+      dogplayCard(player, round)
     }
   }
 
@@ -195,7 +188,7 @@ object TextPlayerControl extends PlayerControl {
   }
 
   override def showWon(player: Player, round: Round): String = {
-    s"${player} won this round. ${round.players_in} played in this round, ${round.players_out} got knocked out.\n${round.trumpSuit} was trumpsuit."
+    s"$player won this round."
   }
 
 }

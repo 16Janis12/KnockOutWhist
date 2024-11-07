@@ -12,6 +12,12 @@ object TestUtil {
       block
     }
   }
+
+  def cancelOut[T]()(block: => T): T = {
+    Console.withOut(new java.io.ByteArrayOutputStream()) {
+      block
+    }
+  }
   
   def enableDebugMode(): Unit = {
     KnockOutWhist.DEBUG_MODE_VAR = true

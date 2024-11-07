@@ -37,6 +37,13 @@ class CardTests extends AnyWordSpec with Matchers{
       )
       card.renderAsString() shouldBe expectedResult
     }
+    "be able to reset the order" in {
+      CardManager.shuffleAndReset()
+      CardManager.resetOrder()
+      val card = CardManager.nextCard()
+      card.suit shouldBe Suit.Spades
+      card.cardValue shouldBe CardValue.Two
+    }
   }
 
 }

@@ -23,6 +23,11 @@ object CardManager {
     cardContainer = Random.shuffle(cardContainer)
     currentIdx = 0
   }
+  
+  def resetOrder(): Unit = {
+    cardContainer = cardContainer.sortBy(c => (c.suit.ordinal, c.cardValue.ordinal))
+    currentIdx = 0
+  }
 
   def nextCard(): Card = {
     val card = cardContainer(currentIdx)
