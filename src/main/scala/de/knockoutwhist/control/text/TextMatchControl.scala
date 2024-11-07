@@ -102,9 +102,19 @@ object TextMatchControl extends MatchControl {
     for (player <- playerQueue) {
       clearConsole()
       println(printTrick(round))
-      val rightCard = controlSuitplayed(trick, player)
-      player.removeCard(rightCard)
-      trick.playCard(rightCard, player)
+      if (!player.doglife) {
+        val rightCard = controlSuitplayed(trick, player)
+        player.removeCard(rightCard)
+        trick.playCard(rightCard, player)
+      } else {
+        val dogplaycard = controlDogLife(player)
+        if(dogplaycard.isEmpty) {
+          println(f"Player ${player} decided to not play his card")
+        } else {
+          player.removeCard(dogplaycard.get)
+          trick.playCard(dogplaycard.get, player)
+        }
+      }
 
     }
     val (winner, finalTrick) = trick.wonTrick()
@@ -135,6 +145,14 @@ object TextMatchControl extends MatchControl {
       }
     }
     card
+  }
+  private[control] def controlDogLife(player: Player): Option[Card] = {
+    val posplayedcard = playerControl.dogplayCard(player)
+    if (posplayedcard.isEmpty) {
+      None
+    } else {
+      posplayedcard
+    }
   }
   private[control] def printMenu(): String = {
     println("Please select an option:")

@@ -1,5 +1,6 @@
 package de.knockoutwhist
 
+
 import de.knockoutwhist.control.MatchControl
 import de.knockoutwhist.control.text.TextMatchControl
 
@@ -12,7 +13,7 @@ object KnockOutWhist {
 
   - Disables the random shuffle of the cards
    */
-  private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = false
+  private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = true
 
   def DEBUG_MODE = DEBUG_MODE_VAR
 

@@ -11,6 +11,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
 import util.control.Breaks.*
+import java.io.IOException
 
 object TextPlayerControl extends PlayerControl {
 
@@ -38,7 +39,33 @@ object TextPlayerControl extends PlayerControl {
     }
 
   }
-  
+
+  override def dogplayCard(player: Player): Option[Card] = {
+    println("It's your turn, " + player.name + ".")
+    if (!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
+    println("You are using your dog life. Do you want to play your final card now?")
+    println("Please enter y/n to play your final card.")
+    showCards(player)
+    try {
+      val card = readLine()
+      val handCard = player.currentHand()
+      if (handCard.isEmpty) {
+        println("You don't have any cards.")
+        throw new IllegalStateException("Trying to play a card without any cards.")
+      } else if(!card.equals("y") | !card.equals("n")) {
+        println("Please enter yes or no to play your final card.")
+        dogplayCard(player)
+      } else if (card.equals("y")) {
+        Some(handCard.get.cards.head)
+      } else {
+        None
+      }
+
+    } catch {
+      case e: IOException => println(s"An I/O error occurred: ${e.getMessage}")
+        None
+    }
+  }
   override def determineWinnerTie(players: List[Player]): Player = {
     determineWinnerTieText(players, true)
   }

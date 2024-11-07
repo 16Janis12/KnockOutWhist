@@ -41,7 +41,11 @@ case class Match(totalplayers: List[Player], private[rounds] var number_of_cards
     if(!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
     var hands = 0
     for (player <- players) {
-      player.provideHand(CardManager.createHand(number_of_cards))
+      if(!player.doglife) {
+        player.provideHand(CardManager.createHand(number_of_cards))
+      } else {
+        player.provideHand(CardManager.createHand(1))
+      }
       hands += 1
     }
     hands
