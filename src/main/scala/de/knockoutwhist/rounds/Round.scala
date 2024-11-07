@@ -7,7 +7,7 @@ import de.knockoutwhist.utils.Implicits._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-case class Round private[rounds](trumpSuit: Suit, matchImpl: Match, private[rounds] val tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null, firstRound: Boolean = false) {
+case class Round private[rounds](trumpSuit: Suit, matchImpl: Match, private[rounds] val tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null, firstRound: Boolean) {
   def this(trumpSuit: Suit, matchImpl: Match, players_in: List[Player], firstRound: Boolean) = {
     this(trumpSuit, matchImpl, ListBuffer[Trick](), players_in, firstRound = firstRound)
   }
