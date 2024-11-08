@@ -131,6 +131,17 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         }
         winner should be(player2)
       }
+      "return the player with the highest card after a tie (winner first)" in {
+        TestUtil.enableDebugMode()
+        CardManager.resetOrder()
+        val player1 = Player("Foo")
+        val player2 = Player("Bar")
+        val players = List(player1, player2)
+        val winner = TestUtil.simulateInput("13\n1\n") {
+          TextPlayerControl.determineWinnerTie(players)
+        }
+        winner should be(player1)
+      }
       "ask again on an invalid input" in {
         TestUtil.enableDebugMode()
         CardManager.resetOrder()

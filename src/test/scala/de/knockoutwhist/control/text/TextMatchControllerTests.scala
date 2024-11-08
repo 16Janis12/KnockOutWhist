@@ -66,9 +66,21 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
         }
       }
     }
+    "throw no exception and return a winner if both players stay in" in {
+      val players = List(Player("foo"), Player("bar"))
+      val matchImpl = Match(players)
+      TestUtil.enableDebugMode()
+      CardManager.shuffleAndReset()
+      CardManager.resetOrder()
+
+      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      TestUtil.cancelOut() {
+        TestUtil.simulateInput("1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n") {
+          TextMatchControl.controlRound(matchImpl).winner should be(players.head).or(be(players(1)))
+        }
+      }
+    }
   }
-
-
 
   "The next round function" should {
     "return null if the match is over" in {

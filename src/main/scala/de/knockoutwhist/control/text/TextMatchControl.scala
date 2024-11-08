@@ -90,7 +90,7 @@ object TextMatchControl extends MatchControl {
     val (roundWinner, finalRound) = roundImpl.finalizeRound()
     println(s"${roundWinner.name} won the round.")
     if(!KnockOutWhist.DEBUG_MODE) Thread.sleep(5000L)
-    if(finalRound.players_out != null) {
+    if(finalRound.players_out.nonEmpty) {
       println("The following players are out of the game:")
       finalRound.players_out.foreach(p => {
         println(p.name)
