@@ -2,7 +2,7 @@ package de.knockoutwhist.testutils
 
 import de.knockoutwhist.KnockOutWhist
 
-import java.io.ByteArrayInputStream
+import java.io.{ByteArrayInputStream, OutputStream}
 
 
 object TestUtil {
@@ -14,7 +14,7 @@ object TestUtil {
   }
 
   def cancelOut[T]()(block: => T): T = {
-    Console.withOut(new java.io.ByteArrayOutputStream()) {
+    Console.withOut((b: Int) => {}) {
       block
     }
   }

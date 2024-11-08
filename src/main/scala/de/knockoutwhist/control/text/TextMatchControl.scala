@@ -13,7 +13,7 @@ import scala.util.Random
 
 object TextMatchControl extends MatchControl {
 
-  private var playerQueue: CustomPlayerQueue[Player] = uninitialized
+  private[control] var playerQueue: CustomPlayerQueue[Player] = uninitialized
   private var init = false
 
   override def initial(): Boolean = {
@@ -56,6 +56,10 @@ object TextMatchControl extends MatchControl {
     val names = StdIn.readLine().split(",")
     if(names.length < 2) {
       println("Please enter at least two names.")
+      return enterPlayers()
+    }
+    if(names.distinct.length != names.length) {
+      println("Please enter unique names.")
       return enterPlayers()
     }
     if(names.count(_.trim.isBlank) > 0 || names.count(_.trim.length <= 2) > 0 || names.count(_.trim.length > 10) > 0) {
