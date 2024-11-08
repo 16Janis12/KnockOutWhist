@@ -22,6 +22,8 @@ lazy val root = (project in file("."))
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.18"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % "test"
 
+Test / testOptions += Tests.Filter(_.equals("de.knockoutwhist.TestSequence"))
+
 coverageEnabled := true
 coverageFailOnMinimum := true
 coverageMinimumStmtTotal := 85

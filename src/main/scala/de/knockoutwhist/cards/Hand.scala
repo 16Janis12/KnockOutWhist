@@ -1,10 +1,11 @@
 package de.knockoutwhist.cards
 
+import scala.collection.mutable.ListBuffer
+
 case class Hand(cards: List[Card]) {
 
   def removeCard(card: Card): Hand = {
     Hand(cards.filter(_ != card))
-    //Hand(cards.filterNot(_ == card)) isch wurscht welches wir nehmen
   }
 
   def hasSuit(suit: Suit): Boolean = {
