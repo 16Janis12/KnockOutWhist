@@ -1,5 +1,7 @@
 package de.knockoutwhist.cards
 
+import de.knockoutwhist.KnockOutWhist
+
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
@@ -21,11 +23,20 @@ object CardManager {
     cardContainer = Random.shuffle(cardContainer)
     currentIdx = 0
   }
+  
+  def resetOrder(): Unit = {
+    cardContainer = cardContainer.sortBy(c => (c.suit.ordinal, c.cardValue.ordinal))
+    currentIdx = 0
+  }
 
   def nextCard(): Card = {
     val card = cardContainer(currentIdx)
-    currentIdx += 1
-    card
+    if (currentIdx + 1 > 51) {
+      throw new IndexOutOfBoundsException("Trying to access card 53(out of bounds)")
+    } else {
+      currentIdx += 1
+      card
+    }
   }
   
   def createHand(amount: Int = 7): Hand = {
