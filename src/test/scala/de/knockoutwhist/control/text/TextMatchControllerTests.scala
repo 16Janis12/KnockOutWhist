@@ -1,7 +1,9 @@
 package de.knockoutwhist.control.text
 
+import de.knockoutwhist.cards.CardManager
+import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.player.Player
-import de.knockoutwhist.rounds.Match
+import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.utils.CustomPlayerQueue
 import org.scalatest.matchers.must.Matchers
@@ -91,6 +93,49 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
         TestUtil.simulateInput("1\n1\n1\n") {
           val round = TextMatchControl.controlRound(matchImpl)
           TextMatchControl.nextTrick(round) should be (null)
+        }
+      }
+    }
+  }
+
+  "The control Trick function" should {
+    "return the other player if the dog decides not to play" in {
+      val foo = Player("foo")
+      foo.doglife = true
+      foo.provideHand(CardManager.createHand(1))
+      val bar = Player("bar")
+      bar.provideHand(CardManager.createHand(3))
+      val players = List(foo, bar)
+      val matchImpl = Match(players, 2)
+      TestUtil.enableDebugMode()
+      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      val round = new Round(Hearts,matchImpl,players,false)
+      TestUtil.cancelOut() {
+        TestUtil.simulateInput("n\n1\n") {
+          val finalTrick = TextMatchControl.controlTrick(round)
+          finalTrick.winner should be(bar)
+        }
+      }
+    }
+    "return the dog if he wins" in {
+      TestUtil.enableDebugMode()
+      CardManager.resetOrder()
+      for (i <- 0 to 12) {
+        CardManager.nextCard()
+      }
+      val foo = Player("foo")
+      foo.doglife = true
+      foo.provideHand(CardManager.createHand(1))
+      val bar = Player("bar")
+      bar.provideHand(CardManager.createHand(3))
+      val players = List(foo, bar)
+      val matchImpl = Match(players, 2)
+      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      val round = new Round(foo.currentHand().get.cards.head.suit, matchImpl, players, false)
+      TestUtil.cancelOut() {
+        TestUtil.simulateInput("y\n1\n") {
+          val finalTrick = TextMatchControl.controlTrick(round)
+          finalTrick.winner should be(bar)
         }
       }
     }
