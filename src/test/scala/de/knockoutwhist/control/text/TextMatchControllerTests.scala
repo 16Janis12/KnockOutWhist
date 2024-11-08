@@ -1,7 +1,9 @@
 package de.knockoutwhist.control.text
 
+import de.knockoutwhist.cards.CardValue.Ace
+import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
 import de.knockoutwhist.player.Player
-import de.knockoutwhist.rounds.Match
+import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.utils.CustomPlayerQueue
 import org.scalatest.matchers.must.Matchers
@@ -91,6 +93,26 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
         TestUtil.simulateInput("1\n1\n1\n") {
           val round = TextMatchControl.controlRound(matchImpl)
           TextMatchControl.nextTrick(round) should be (null)
+        }
+      }
+    }
+  }
+  "The controlSuit function" should {
+    "check if a player can play from the correct suit but doesnt" in {
+      val player1 = Player("Gunter")
+      val player2 = Player("Peter")
+      val players = List(player1, player2)
+      val hand =  Hand(List(Card(CardValue.Ten, Suit.Spades),Card(CardValue.Two, Suit.Hearts)))
+      player1.provideHand(hand)
+      val matchImpl = Match(players, 2)
+      val round = new Round(Suit.Clubs, matchImpl, players, false)
+      val trick = new Trick(round)
+      trick.playCard(Card(Ace, Suit.Hearts), player2)
+      TestUtil.enableDebugMode()
+      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      TestUtil.cancelOut() {
+        TestUtil.simulateInput("1\n2\n") {
+          val card = TextMatchControl.controlSuitplayed(trick, player1)
         }
       }
     }
