@@ -2,7 +2,7 @@ package de.knockoutwhist.rounds
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{CardManager, Suit}
 import de.knockoutwhist.player.Player
-import de.knockoutwhist.utils.Implicits._
+import de.knockoutwhist.utils.Implicits.*
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -29,7 +29,7 @@ case class Round private[rounds](trumpSuit: Suit, matchImpl: Match, private[roun
   def isOver: Boolean = {
     players_in.map(_.currentHand()).count(_.get.cards.isEmpty) == players_in.size
   }
-
+  
   def dogNeedsToPlay: Boolean = {
     players_in.filter(!_.doglife).map(_.currentHand()).exists(_.get.cards.isEmpty)
   }
