@@ -3,11 +3,11 @@ package de.knockoutwhist.control.generic
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Suit}
 import de.knockoutwhist.control.PlayerControl
-import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
-import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE_TIE, SHOW_TIE_WINNER}
-import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS
+import de.knockoutwhist.events.ERROR_STATUS.{INVALID_INPUT, INVALID_NUMBER, NOT_A_NUMBER}
+import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
+import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_DOG_PLAY_CARD, SHOW_PLAY_CARD, SHOW_TIE_NUMBERS, SHOW_TRUMPSUIT_OPTIONS, SHOW_TURN}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.RequestNumberEvent
+import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
@@ -26,54 +26,34 @@ object GenericPlayerControl extends EventHandler {
   addListener(TUIMain)
 
   override def playCard(player: Player): Card = {
-    println("It's your turn, " + player.name + ".")
+    invoke(ShowPlayerStatus(SHOW_TURN, player))
     if (!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
-    println("Which card do you want to play?")
+    invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
     invoke(RenderHandEvent(player.currentHand().get, true))
-    try {
-      val card = readLine().toInt - 1
-      val handCard = player.currentHand()
-      if (handCard.isEmpty) {
-        println("You don't have any cards.")
-        throw new IllegalStateException("Trying to play a card without any cards.")
-      } else if (card < 0 || card >= handCard.get.cards.length) {
-        println("Please enter a valid number.")
-        playCard(player)
-      } else {
-        handCard.get.cards(card)
+    invoke(RequestCardEvent(player.currentHand().get)) match {
+      case Success(value) => {
+        value
       }
-    } catch {
-      case e: NumberFormatException =>
-        println("Please enter a valid number.")
+      case Failure(exception) => {
+        invoke(ShowErrorStatus(INVALID_NUMBER))
         playCard(player)
+      }
     }
-
   }
 
   override def dogplayCard(player: Player, round: Round): Option[Card] = {
-    println("It's your turn, " + player.name + ".")
+    invoke(ShowPlayerStatus(SHOW_TURN, player))
     if (!KnockOutWhist.DEBUG_MODE) Thread.sleep(3000L)
-    println("You are using your dog life. Do you want to play your final card now?")
-    if (round.dogNeedsToPlay) {
-      println("You have to play your final card this round!")
-      println("Please enter y to play your final card.")
-    } else {
-      println("Please enter y/n to play your final card.")
-    }
-
+    invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, round.dogNeedsToPlay))
     invoke(RenderHandEvent(player.currentHand().get, false))
-    val card = readLine()
-    val handCard = player.currentHand()
-    if (handCard.isEmpty) {
-      println("You don't have any cards.")
-      throw new IllegalStateException("Trying to play a card without any cards.")
-    } else if (card.equalsIgnoreCase("y")) {
-      Some(handCard.get.cards.head)
-    } else if (card.equalsIgnoreCase("n") && !round.dogNeedsToPlay) {
-      None
-    } else {
-      println("Please enter y or n to play your final card.")
-      dogplayCard(player, round)
+    invoke(RequestDogPlayCardEvent(player.currentHand().get, round.dogNeedsToPlay)) match {
+      case Success(value) => {
+        value
+      }
+      case Failure(exception) => {
+        invoke(ShowErrorStatus(INVALID_INPUT))
+        dogplayCard(player, round)
+      }
     }
   }
 
@@ -84,7 +64,7 @@ object GenericPlayerControl extends EventHandler {
   @tailrec
   private def determineWinnerTieText(players: List[Player], tieMessage: Boolean): Player = {
     if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
-    if (tieMessage) println("It's a tie! Let's cut to determine the winner.")
+    if (tieMessage) invoke(ShowGlobalStatus(SHOW_TIE))
     var currentStep = 0
     var remaining = CardManager.cardContainer.size - (players.length - 1)
     val cut: mutable.HashMap[Player, Card] = mutable.HashMap()
@@ -131,35 +111,16 @@ object GenericPlayerControl extends EventHandler {
   }
 
   override def pickNextTrumpsuit(player: Player): Suit = {
-    println("Which suit do you want to pick as the next trump suit?")
-    println("1: Hearts")
-    println("2: Diamonds")
-    println("3: Clubs")
-    println("4: Spades")
-    println()
-
+    invoke(ShowPlayerStatus(SHOW_TRUMPSUIT_OPTIONS, player))
     invoke(RenderHandEvent(player.currentHand().get, false))
-
-    try {
-      val suit = readLine().toInt
-      suit match {
-        case 1 => Suit.Hearts
-        case 2 => Suit.Diamonds
-        case 3 => Suit.Clubs
-        case 4 => Suit.Spades
-        case _ =>
-          println("Please enter a valid number.")
-          pickNextTrumpsuit(player)
+    invoke(RequestPickTrumpsuitEvent()) match {
+      case Success(value) => {
+        value
       }
-    } catch {
-      case e: NumberFormatException =>
-        println("Please enter a valid number.")
+      case Failure(exception) => {
+        invoke(ShowErrorStatus(INVALID_NUMBER))
         pickNextTrumpsuit(player)
+      }
     }
   }
-
-  override def showWon(player: Player, round: Round): String = {
-    s"$player won this round."
-  }
-
 }
