@@ -6,7 +6,6 @@ trait MatchControl {
   
   def initial(): Boolean
   def start(): Unit
-  def playerControl: PlayerControl
   
   /**
    * Start the next round

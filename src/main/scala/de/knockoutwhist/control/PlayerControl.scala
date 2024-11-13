@@ -11,6 +11,5 @@ trait PlayerControl {
   def determineWinnerTie(players: List[Player]): Player
   def pickNextTrumpsuit(player: Player): Suit
   def showCards(player: Player): Boolean
-  def showWon(player: Player, round: Round): String
   
 }

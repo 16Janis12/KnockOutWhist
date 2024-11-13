@@ -2,6 +2,7 @@ package de.knockoutwhist.control.generic
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
+import de.knockoutwhist.control.generic.GenericPlayerControl.addListener
 import de.knockoutwhist.control.{MatchControl, PlayerControl}
 import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER, INVALID_NUMBER_OF_PLAYERS}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_EXIT_GAME, SHOW_GAME_RUNNING, SHOW_MENU, SHOW_START_MATCH, SHOW_TYPE_PLAYERS, SHOW_WELCOME}
@@ -12,7 +13,7 @@ import de.knockoutwhist.events.{GLOBAL_STATUS, ShowErrorStatus, ShowGlobalStatus
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.tui.TUIMain
-import de.knockoutwhist.utils.CustomPlayerQueue
+import de.knockoutwhist.utils.{CustomPlayerQueue, DelayHandler}
 import de.knockoutwhist.utils.events.EventHandler
 
 import scala.compiletime.uninitialized
@@ -20,8 +21,9 @@ import scala.io.StdIn
 import scala.util.Random
 
 object GenericMatchControl extends EventHandler {
-  
+
   addListener(TUIMain)
+  addListener(DelayHandler)
 
   private[control] var playerQueue: CustomPlayerQueue[Player] = uninitialized
   private var init = false
@@ -121,7 +123,7 @@ object GenericMatchControl extends EventHandler {
         player.removeCard(rightCard)
         trick.playCard(rightCard, player)
       } else if (player.currentHand().exists(_.cards.nonEmpty)) {
-        val card = playerControl.dogplayCard(player, round)
+        val card = GenericPlayerControl.dogplayCard(player, round)
         if (card.isEmpty) {
           invoke(ShowPlayerStatus(SHOW_NOT_PLAYED, player))
         } else {
@@ -141,7 +143,7 @@ object GenericMatchControl extends EventHandler {
   }
 
   private[control] def controlSuitplayed(trick: Trick, player: Player): Card = {
-    var card = playerControl.playCard(player)
+    var card = GenericPlayerControl.playCard(player)
     if (trick.get_first_card().isDefined) {
       while (!(trick.get_first_card().get.suit == card.suit)) {
         var hasSuit = false
@@ -154,7 +156,7 @@ object GenericMatchControl extends EventHandler {
           return card
         } else {
           println(f"You have to play a card of suit: ${trick.get_first_card().get.suit}\n")
-          card = playerControl.playCard(player)
+          card = GenericPlayerControl.playCard(player)
         }
       }
     }
@@ -186,10 +188,6 @@ object GenericMatchControl extends EventHandler {
       l += 1
     }
     l
-  }
-
-  override def playerControl: GenericPlayerControl = {
-    GenericPlayerControl
   }
 
   override def nextRound(matchImpl: Match): Round = {

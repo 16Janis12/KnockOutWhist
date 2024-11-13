@@ -12,6 +12,7 @@ import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerSta
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
 import de.knockoutwhist.tui.TUIMain
+import de.knockoutwhist.utils.DelayHandler
 import de.knockoutwhist.utils.events.EventHandler
 
 import scala.annotation.tailrec
@@ -24,6 +25,7 @@ import scala.util.control.Breaks.*
 object GenericPlayerControl extends EventHandler {
 
   addListener(TUIMain)
+  addListener(DelayHandler)
 
   override def playCard(player: Player): Card = {
     invoke(ShowPlayerStatus(SHOW_TURN, player))
