@@ -3,7 +3,12 @@ package de.knockoutwhist.control.generic
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Suit}
 import de.knockoutwhist.control.PlayerControl
-import de.knockoutwhist.events.RenderHandEvent
+import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
+import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE_TIE, SHOW_TIE_WINNER}
+import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS
+import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
+import de.knockoutwhist.events.directional.RequestNumberEvent
+import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
 import de.knockoutwhist.tui.TUIMain
@@ -13,6 +18,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
+import scala.util.{Failure, Success}
 import scala.util.control.Breaks.*
 
 object GenericPlayerControl extends EventHandler {
@@ -85,48 +91,27 @@ object GenericPlayerControl extends EventHandler {
     for (player <- players) {
       var selCard: Card = null
       while (selCard == null) {
-        println(s"${player.name} enter a number between 1 and $remaining.")
-        try {
-          val selected = readLine().toInt - 1
-          if (selected >= 0 && selected < remaining) {
-            selCard = CardManager.cardContainer(currentStep + selected)
+        invoke(ShowPlayerStatus(SHOW_TIE_NUMBERS, player, remaining))
+        invoke(RequestNumberEvent(1, remaining)) match {
+          case Success(value) =>
+            selCard = CardManager.cardContainer(currentStep + (value-1))
             cut.put(player, selCard)
-            currentStep += selected + 1
-            remaining -= selected
-          } else {
-            println("Please enter a valid number.")
-          }
-        } catch {
-          case e: NumberFormatException =>
-            println("Please enter a valid number.")
+            currentStep += value
+            remaining -= (value-1)
+          case Failure(exception) =>
+            invoke(ShowErrorStatus(NOT_A_NUMBER))
         }
       }
     }
-    println("The cards are:")
-    val a: Array[String] = Array("", "", "", "", "", "", "", "")
-    for ((player, card) <- cut) {
-      val playerNameLength = player.name.length
-      a(0) += " " + player.name + ":" + (" " * (playerNameLength - 1))
-      val rendered = card.renderAsString()
-      a(1) += " " + rendered(0)
-      a(2) += " " + rendered(1)
-      a(3) += " " + rendered(2)
-      a(4) += " " + rendered(3)
-      a(5) += " " + rendered(4)
-      a(6) += " " + rendered(5)
-      a(7) += " " + rendered(6)
-    }
-    a.foreach(println)
+    invoke(ShowTieCardsEvent(cut.toList))
 
     var currentHighest: Card = null
     val winner: ListBuffer[Player] = ListBuffer()
     for ((player, card) <- cut) {
-      breakable {
-        if (currentHighest == null) {
-          currentHighest = card
-          winner += player
-          break
-        }
+      if (currentHighest == null) {
+        currentHighest = card
+        winner += player
+      }else {
         val compared = card.cardValue.ordinal.compareTo(currentHighest.cardValue.ordinal)
         if (compared > 0) {
           currentHighest = card
@@ -138,10 +123,10 @@ object GenericPlayerControl extends EventHandler {
       }
     }
     if (winner.size == 1) {
-      println(s"${winner.head.name} wins the cut!")
+      invoke(ShowGlobalStatus(SHOW_TIE_WINNER, winner.head))
       return winner.head
     }
-    println("It's a tie again! Let's cut again.")
+    invoke(ShowGlobalStatus(SHOW_TIE_TIE))
     determineWinnerTieText(winner.toList, false)
   }
 

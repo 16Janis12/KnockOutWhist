@@ -1,6 +1,6 @@
 package de.knockoutwhist.utils.events
 
-trait Event {
+trait ReturnableEvent[R] {
 
   def id: String
 
