@@ -66,6 +66,7 @@ case class ShowErrorStatus(status: ERROR_STATUS, objects: Any*) extends ShowStat
 case class ShowMatchStatus(status: MATCH_STATUS, currentMatch: Match, objects: Any*) extends ShowStatusEvent {
   override def id: String = "ShowMatchStatus"
 }
+
 case class ShowRoundStatus(status: ROUND_STATUS, currentRound: Round, objects: Any*) extends ShowStatusEvent {
   override def id: String = "ShowRoundStatus"
 }

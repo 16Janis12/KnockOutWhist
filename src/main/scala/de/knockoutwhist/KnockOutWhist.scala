@@ -2,6 +2,7 @@ package de.knockoutwhist
 
 
 import de.knockoutwhist.control.MatchControl
+import de.knockoutwhist.ui.tui.TUIMain
 
 
 object KnockOutWhist {
@@ -11,12 +12,12 @@ object KnockOutWhist {
 
   - Disables the random shuffle of the cards
    */
-  private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = true
+  private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = false
 
   def DEBUG_MODE = DEBUG_MODE_VAR
 
   def main(args: Array[String]): Unit = {
-    if(!matchControl.initial()) throw new IllegalStateException("Game could not be started.")
+    if(!TUIMain.initial) throw new IllegalStateException("Game could not be started.")
   }
   
 }

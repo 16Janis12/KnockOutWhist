@@ -4,5 +4,5 @@ import de.knockoutwhist.player.Player
 import de.knockoutwhist.utils.events.SimpleEvent
 
 case class PickNextTrumpsuitEvent(player: Player) extends SimpleEvent {
-  
+  override def id: String = "PickNextTrumpsuitEvent"
 }

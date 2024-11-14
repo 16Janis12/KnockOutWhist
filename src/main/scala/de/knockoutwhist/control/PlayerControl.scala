@@ -25,7 +25,7 @@ import scala.util.control.Breaks.*
 
 object PlayerControl {
 
-  override def playCard(player: Player): Card = {
+  def playCard(player: Player): Card = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
@@ -41,12 +41,12 @@ object PlayerControl {
     }
   }
 
-  override def dogplayCard(player: Player, round: Round): Option[Card] = {
+  def dogplayCard(player: Player, round: Round): Option[Card] = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(3000L))
-    ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, round.dogNeedsToPlay))
+    ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundControl.dogNeedsToPlay(round)))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
-    ControlHandler.invoke(RequestDogPlayCardEvent(player.currentHand().get, round.dogNeedsToPlay)) match {
+    ControlHandler.invoke(RequestDogPlayCardEvent(player.currentHand().get, RoundControl.dogNeedsToPlay(round))) match {
       case Success(value) => {
         value
       }
@@ -57,7 +57,7 @@ object PlayerControl {
     }
   }
 
-  override def determineWinnerTie(players: List[Player]): Player = {
+  def determineWinnerTie(players: List[Player]): Player = {
     determineWinnerTieText(players, true)
   }
 
@@ -110,7 +110,7 @@ object PlayerControl {
     determineWinnerTieText(winner.toList, false)
   }
 
-  override def pickNextTrumpsuit(player: Player): Suit = {
+  def pickNextTrumpsuit(player: Player): Suit = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TRUMPSUIT_OPTIONS, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
     ControlHandler.invoke(RequestPickTrumpsuitEvent()) match {
