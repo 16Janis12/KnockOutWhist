@@ -1,16 +1,18 @@
 package de.knockoutwhist.control
 
+import de.knockoutwhist.KnockOutWhist
+import de.knockoutwhist.cards.CardManager
+import de.knockoutwhist.control.MatchControl.playerQueue
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.Implicits.*
+import de.knockoutwhist.control.RoundControl
+import de.knockoutwhist.control.TrickControl.controlTrick
+import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
+import de.knockoutwhist.events.ShowRoundStatus
+import de.knockoutwhist.events.util.DelayEvent
 
 object RoundControl {
-
-  def create_trick(round: Round): Trick = {
-    val trick = new Trick(round)
-    round.set_current_trick(trick)
-    trick
-  }
 
   def isOver(round: Round): Boolean = {
     round.players_in.map(_.currentHand()).count(_.get.cards.isEmpty) == round.players_in.size
@@ -62,4 +64,61 @@ object RoundControl {
     round.players_in.filter(!round.players_out.contains(_))
   }
 
+  def create_round(matchImpl: Match): Round = {
+    val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: RoundControl.remainingPlayers(matchImpl.roundlist.last)
+    provideCards(matchImpl, remainingPlayer)
+    if (matchImpl.roundlist.isEmpty) {
+      val random_trumpsuit = CardManager.nextCard().suit
+      matchImpl.current_round = Some(new Round(random_trumpsuit, matchImpl, remainingPlayer, true))
+    } else {
+      val winner = matchImpl.roundlist.last.winner
+      val trumpsuit = PlayerControl.pickNextTrumpsuit(winner)
+
+      matchImpl.current_round = Some(new Round(trumpsuit, matchImpl, remainingPlayer, false))
+    }
+    matchImpl.number_of_cards -= 1
+    matchImpl.current_round.get
+  }
+
+  def nextRound(matchImpl: Match): Round = {
+    if (MatchControl.isOver(matchImpl)) {
+      return null
+    }
+    create_round(matchImpl)
+  }
+
+
+  def controlRound(matchImpl: Match): Round = {
+    val roundImpl = nextRound(matchImpl)
+    ControlHandler.invoke(ShowRoundStatus(SHOW_START_ROUND, roundImpl))
+    while (!RoundControl.isOver(roundImpl)) {
+      TrickControl.controlTrick(roundImpl)
+    }
+    val (roundWinner, finalRound) = RoundControl.finalizeRound(roundImpl, matchImpl)
+    ControlHandler.invoke(ShowRoundStatus(WON_ROUND, finalRound, roundWinner))
+    if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(5000L))
+    if (finalRound.players_out.nonEmpty) {
+      ControlHandler.invoke(ShowRoundStatus(PLAYERS_OUT, finalRound))
+      finalRound.players_out.foreach(p => {
+        playerQueue.remove(p)
+      })
+    }
+    playerQueue.resetAndSetStart(roundWinner)
+    finalRound
+  }
+
+
+  private def provideCards(matchImpl: Match, players: List[Player]): Int = {
+    if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
+    var hands = 0
+    for (player <- players) {
+      if (!player.doglife) {
+        player.provideHand(CardManager.createHand(matchImpl.number_of_cards))
+      } else {
+        player.provideHand(CardManager.createHand(1))
+      }
+      hands += 1
+    }
+    hands
+  }
 }
