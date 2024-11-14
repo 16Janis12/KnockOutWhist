@@ -20,5 +20,5 @@ class TestSequence extends Sequential(
   new CardTests(),
   new DeckTests(),
   new HandTests(),
-  
+
 ) {}

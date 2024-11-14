@@ -13,7 +13,7 @@ import de.knockoutwhist.player.Player
 
 object TrickControl {
 
-  private[control]def playCard(trick: Trick, round: Round, card: Card, player: Player): Boolean = {
+  def playCard(trick: Trick, round: Round, card: Card, player: Player): Boolean = {
     if (trick.finished) {
       throw new IllegalStateException("This trick is already finished")
     } else {

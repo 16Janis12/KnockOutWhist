@@ -235,8 +235,8 @@ object TUIMain extends EventListener with UI {
   }
   
   
-  private object TUICards {
-    private[ui] def renderCardAsString(card: Card): Vector[String] = {
+  object TUICards {
+    def renderCardAsString(card: Card): Vector[String] = {
       if (card.cardValue == CardValue.Ten) {
         return Vector(
           s"┌─────────┐",
@@ -264,7 +264,7 @@ object TUIMain extends EventListener with UI {
       case Suit.Clubs | Suit.Spades => Console.BLACK
     }
     
-    private[ui] def renderHandEvent(hand: Hand, showNumbers: Boolean): Vector[String] = {
+    def renderHandEvent(hand: Hand, showNumbers: Boolean): Vector[String] = {
       val cardStrings = hand.cards.map(TUICards.renderCardAsString)
       var zipped = cardStrings.transpose
       if (showNumbers) zipped = {

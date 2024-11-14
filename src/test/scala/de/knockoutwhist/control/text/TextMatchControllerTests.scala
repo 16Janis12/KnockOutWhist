@@ -4,20 +4,22 @@ import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.cards.CardValue.Ace
 import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
+import de.knockoutwhist.control.{MatchControl, RoundControl, TrickControl}
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
+import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils.CustomPlayerQueue
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 
 class TextMatchControllerTests extends AnyWordSpec with Matchers {
-  "The start function" should {
+  "The initial function" should {
     "throw no exception" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("a\n2\n") {
-          TextMatchControl.start()
+          TUIMain.initial
         }
       }
     }
@@ -27,28 +29,28 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
     "throw no exception" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,bar\n") {
-          TextMatchControl.enterPlayers() should be (List(Player("foo"), Player("bar")))
+          MatchControl.enterPlayers() should be (List(Player("foo"), Player("bar")))
         }
       }
     }
     "not accept less than 2 players" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo\nbar,foo2\n") {
-          TextMatchControl.enterPlayers() should be (List(Player("bar"), Player("foo2")))
+          MatchControl.enterPlayers() should be (List(Player("bar"), Player("foo2")))
         }
       }
     }
     "not accept players with the same name" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,foo\nbar,foo\n") {
-          TextMatchControl.enterPlayers() should be (List(Player("bar"), Player("foo")))
+          MatchControl.enterPlayers() should be (List(Player("bar"), Player("foo")))
         }
       }
     }
     "not accept player names less than 2 or greater than 10 characters" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("f,b\nbarrrrrrrrrrrrrrrrr,foooooooooooooooooooo\nbar,foo\n") {
-          TextMatchControl.enterPlayers() should be (List(Player("bar"), Player("foo")))
+          MatchControl.enterPlayers() should be (List(Player("bar"), Player("foo")))
         }
       }
     }
@@ -59,10 +61,10 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       val players = List(Player("foo"), Player("bar"))
       val matchImpl = Match(players, 1)
       TestUtil.disableDebugMode()
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n") {
-          TextMatchControl.controlRound(matchImpl).winner should be (players.head).or(be (players(1)))
+          RoundControl.controlRound(matchImpl).winner should be (players.head).or(be (players(1)))
         }
       }
     }
@@ -73,10 +75,10 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       CardManager.shuffleAndReset()
       CardManager.resetOrder()
 
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n") {
-          TextMatchControl.controlRound(matchImpl).winner should be(players.head).or(be(players(1)))
+          RoundControl.controlRound(matchImpl).winner should be(players.head).or(be(players(1)))
         }
       }
     }
@@ -87,11 +89,11 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       val players = List(Player("foo"))
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n") {
-          TextMatchControl.controlRound(matchImpl)
-          TextMatchControl.nextRound(matchImpl) should be (null)
+          RoundControl.controlRound(matchImpl)
+          RoundControl.nextRound(matchImpl) should be (null)
         }
       }
     }
@@ -102,11 +104,11 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       val players = List(Player("foo"))
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n") {
-          val round = TextMatchControl.controlRound(matchImpl)
-          TextMatchControl.nextTrick(round) should be (null)
+          val round = RoundControl.controlRound(matchImpl)
+          TrickControl.nextTrick(round) should be (null)
         }
       }
     }
@@ -121,12 +123,12 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       val matchImpl = Match(players, 2)
       val round = new Round(Suit.Clubs, matchImpl, players, false)
       val trick = new Trick(round)
-      trick.playCard(Card(Ace, Suit.Hearts), player2)
+      TrickControl.playCard(trick, round, Card(Ace, Suit.Hearts), player2)
       TestUtil.enableDebugMode()
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n2\n") {
-          val card = TextMatchControl.controlSuitplayed(trick, player1)
+          val card = TrickControl.controlSuitplayed(trick, player1)
         }
       }
     }
@@ -142,11 +144,11 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       val players = List(foo, bar)
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       val round = new Round(Hearts,matchImpl,players,false)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("n\n1\n") {
-          val finalTrick = TextMatchControl.controlTrick(round)
+          val finalTrick = TrickControl.controlTrick(round)
           finalTrick.winner should be(bar)
         }
       }
@@ -164,11 +166,11 @@ class TextMatchControllerTests extends AnyWordSpec with Matchers {
       bar.provideHand(CardManager.createHand(3))
       val players = List(foo, bar)
       val matchImpl = Match(players, 2)
-      TextMatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
       val round = new Round(foo.currentHand().get.cards.head.suit, matchImpl, players, false)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("y\n1\n") {
-          val finalTrick = TextMatchControl.controlTrick(round)
+          val finalTrick = TrickControl.controlTrick(round)
           finalTrick.winner should be(bar)
         }
       }
