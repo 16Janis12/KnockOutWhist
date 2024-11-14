@@ -1,7 +1,7 @@
 package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.MatchControl
+import de.knockoutwhist.control.{ControlHandler, MatchControl}
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.MATCH_STATUS.*
@@ -10,12 +10,14 @@ import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.*
+import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent, SimpleEvent}
 
+import scala.annotation.tailrec
 import scala.io.StdIn.readLine
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object TUIMain extends EventListener with UI {
 
@@ -56,25 +58,13 @@ object TUIMain extends EventListener with UI {
           case SHOW_TIE_TIE =>
             println("It's a tie again! Let's cut again.")
             Some(true)
-          case SHOW_GAME_RUNNING =>
-            println("The game is already running.")
-            Some(true)
-          case SHOW_WELCOME =>
-            println("Welcome to Knockout Whist!")
-            Some(true)
-          case SHOW_EXIT_GAME =>
-            println("Exiting the game.")
-            Some(true)
           case SHOW_START_MATCH =>
-            println("Starting a new match.")
+            TUIUtil.clearConsole()
+            println("Starting a new match...")
+            TUIUtil.clearConsole(2)
             Some(true)
           case SHOW_TYPE_PLAYERS =>
             println("Please enter the names of the players, separated by a comma.")
-            Some(true)
-          case SHOW_MENU =>
-            println("Please select an option:")
-            println("1. Start a new match")
-            println("2. Exit")
             Some(true)
           case _ => None
         }
@@ -121,6 +111,7 @@ object TUIMain extends EventListener with UI {
             Some(true)
           case SHOW_WON_PLAYER_TRICK =>
             println(s"${event.player.name} won the trick.")
+            TUIUtil.clearConsole(2)
             Some(true)
           case _ => None
         }
@@ -130,6 +121,7 @@ object TUIMain extends EventListener with UI {
             if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
               None
             } else {
+              TUIUtil.clearConsole()
               println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[Player]}")
               Some(true)
             }
@@ -137,7 +129,9 @@ object TUIMain extends EventListener with UI {
       case event: ShowRoundStatus =>
         event.status match {
           case SHOW_START_ROUND =>
+            TUIUtil.clearConsole()
             println(s"Starting a new round. The trump suit is ${event.currentRound.trumpSuit}.")
+            TUIUtil.clearConsole(2)
             Some(true)
           case WON_ROUND =>
             if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
@@ -173,6 +167,13 @@ object TUIMain extends EventListener with UI {
           case INVALID_NAME_FORMAT =>
             println("Please enter valid names. Those can not be empty, shorter than 2 or longer then 10 characters.")
             Some(true)
+          case WRONG_CARD =>
+            if(event.objects.length != 1 || !event.objects.head.isInstanceOf[Card]) {
+              None
+            } else {
+              println(f"You have to play a card of suit: ${event.objects.head.asInstanceOf[Card].suit}\n")
+              Some(true)
+            }
           case _ => None
         }
       case event: RequestNumberEvent =>
@@ -216,6 +217,19 @@ object TUIMain extends EventListener with UI {
             case _ => throw IllegalArgumentException("Didn't enter a number between 1 and 4")
           }
         })
+      case event: ShowCurrentTrickEvent =>
+        TUIUtil.clearConsole()
+        val sb = new StringBuilder()
+        sb.append("Current Trick:\n")
+        sb.append("Trump-Suit: " + event.round.trumpSuit + "\n")
+        if (event.trick.get_first_card().isDefined) {
+          sb.append(s"Suit to play: ${event.trick.get_first_card().get.suit}\n")
+        }
+        for ((card, player) <- event.trick.cards) {
+          sb.append(s"${player.name} played ${card.toString}\n")
+        }
+        println(sb.toString())
+        Some(true)
       case _ => None
     }
   }
@@ -261,8 +275,42 @@ object TUIMain extends EventListener with UI {
       zipped.map(_.mkString(" ")).toVector
     }
   }
+  private object TUIUtil {
+    def clearConsole(lines: Int = 32): Int = {
+      var l = 0
+      for (_ <- 0 until lines) {
+        println()
+        l += 1
+      }
+      l
+    }
+  }
 
+  @tailrec
   override def initial: Boolean = {
-    MatchControl.initial()
+    println("Welcome to Knockout Whist!")
+    println()
+    println("Please select an option:")
+    println("1. Start a new match")
+    println("2. Exit")
+    Try{
+      readLine().toInt
+    } match {
+      case Success(value) =>
+        value match {
+          case 1 =>
+            MatchControl.startMatch()
+            initial
+          case 2 =>
+            println("Exiting the game.")
+            true
+          case _ =>
+            ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
+            initial
+        }
+      case Failure(_) =>
+        ControlHandler.invoke(ShowErrorStatus(NOT_A_NUMBER))
+        initial
+    }
   }
 }

@@ -2,69 +2,31 @@ package de.knockoutwhist.control
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager}
-import de.knockoutwhist.control.{MatchControl, PlayerControl}
-import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER, INVALID_NUMBER_OF_PLAYERS}
-import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_EXIT_GAME, SHOW_GAME_RUNNING, SHOW_MENU, SHOW_START_MATCH, SHOW_TYPE_PLAYERS, SHOW_WELCOME}
+import de.knockoutwhist.events.*
+import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER_OF_PLAYERS, WRONG_CARD}
+import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.MATCH_STATUS.SHOW_FINISHED
 import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_TRICK}
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
-import de.knockoutwhist.events.directional.RequestNumberEvent
+import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.util.DelayEvent
-import de.knockoutwhist.events.{GLOBAL_STATUS, ShowErrorStatus, ShowGlobalStatus, ShowMatchStatus, ShowPlayerStatus, ShowRoundStatus, ShowStatusEvent}
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
-import de.knockoutwhist.ui.tui.TUIMain
-import de.knockoutwhist.utils.{CustomPlayerQueue, DelayHandler}
-import de.knockoutwhist.utils.events.EventHandler
+import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
 
 import scala.compiletime.uninitialized
 import scala.io.StdIn
-import scala.util.{Failure, Random, Success, Try}
+import scala.util.Random
 
 object MatchControl {
 
   private[control] var playerQueue: CustomPlayerQueue[Player] = uninitialized
-  private var init = false
-
-  def initial(): Boolean = {
-    if (init) {
-      ControlHandler.invoke(ShowGlobalStatus(SHOW_GAME_RUNNING))
-      return false
-    }
-    init = true
-    ControlHandler.invoke(ShowGlobalStatus(SHOW_WELCOME))
-    start()
-    true
-  }
-
-  def start(): Unit = {
-    while (true) { //Main Gameplay Loop
-      val input = printMenu()
-      input match {
-        case Success(value) => {
-          if (value == 1) {
-            startMatch()
-          } else if (value == 2) {
-            ControlHandler.invoke(ShowGlobalStatus(SHOW_EXIT_GAME))
-            return
-          } else {
-            ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-          }
-        }
-        case Failure(exception) => {
-          ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-        }
-      }
-    }
-  }
 
   def startMatch(): Player = {
-    clearConsole()
     ControlHandler.invoke(ShowGlobalStatus(SHOW_START_MATCH))
     val players = enterPlayers()
     playerQueue = CustomPlayerQueue[Player](players, Random.nextInt(players.length))
-    clearConsole()
     controlMatch()
   }
 
@@ -91,7 +53,6 @@ object MatchControl {
     while (!isOver(matchImpl)) {
       val roundImpl = controlRound(matchImpl)
     }
-    clearConsole()
     val winner = finalizeMatch(matchImpl)
     val playerwinner = winner.name
     ControlHandler.invoke(ShowMatchStatus(SHOW_FINISHED, matchImpl, playerwinner))
@@ -100,9 +61,7 @@ object MatchControl {
 
   def controlRound(matchImpl: Match): Round = {
     val roundImpl = nextRound(matchImpl)
-    clearConsole(10)
     ControlHandler.invoke(ShowRoundStatus(SHOW_START_ROUND, roundImpl))
-    clearConsole(2)
     while (!RoundControl.isOver(roundImpl)) {
       controlTrick(roundImpl)
     }
@@ -122,8 +81,7 @@ object MatchControl {
   def controlTrick(round: Round): Trick = {
     val trick = nextTrick(round)
     for (player <- playerQueue) {
-      clearConsole()
-      println(printTrick(round))
+      ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
       if (!player.doglife) {
         val rightCard = controlSuitplayed(trick, player)
         player.removeCard(rightCard)
@@ -139,10 +97,8 @@ object MatchControl {
       }
     }
     val (winner, finalTrick) = TrickControl.wonTrick(trick, round)
-    clearConsole()
-    println(printTrick(round))
+    ControlHandler.invoke(ShowCurrentTrickEvent(round, finalTrick))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, winner))
-    clearConsole(2)
     playerQueue.resetAndSetStart(winner)
     if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(3000L))
     finalTrick
@@ -151,17 +107,18 @@ object MatchControl {
   private[control] def controlSuitplayed(trick: Trick, player: Player): Card = {
     var card = PlayerControl.playCard(player)
     if (trick.get_first_card().isDefined) {
-      while (!(trick.get_first_card().get.suit == card.suit)) {
+      val firstCard = trick.get_first_card().get
+      while (!(firstCard.suit == card.suit)) {
         var hasSuit = false
         for (cardInHand <- player.currentHand().get.cards) {
-          if (cardInHand.suit == trick.get_first_card().get.suit) {
+          if (cardInHand.suit == firstCard.suit) {
             hasSuit = true
           }
         }
         if (!hasSuit) {
           return card
         } else {
-          println(f"You have to play a card of suit: ${trick.get_first_card().get.suit}\n")
+          ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
           card = PlayerControl.playCard(player)
         }
       }
@@ -169,36 +126,8 @@ object MatchControl {
     card
   }
 
-  def printMenu(): Try[Int] = {
-    ControlHandler.invoke(ShowGlobalStatus(SHOW_MENU))
-    ControlHandler.invoke(RequestNumberEvent(1, 2))
-  }
-
-  def printTrick(round: Round): String = {
-    val sb = new StringBuilder()
-    sb.append("Current Trick:\n")
-    sb.append("Trump-Suit: " + round.trumpSuit + "\n")
-    if (round.get_current_trick().isDefined && round.get_current_trick().get.get_first_card().isDefined) {
-      sb.append(s"Suit to play: ${round.get_current_trick().get.get_first_card().get.suit}\n")
-    }
-    for ((card, player) <- round.get_current_trick().get.cards) {
-      sb.append(s"${player.name} played ${card.toString}\n")
-    }
-    sb.toString()
-  }
-
-  private def clearConsole(lines: Int = 32): Int = {
-    var l = 0
-    for (_ <- 0 until lines) {
-      println()
-      l += 1
-    }
-    l
-  }
-
   def nextRound(matchImpl: Match): Round = {
     if (MatchControl.isOver(matchImpl)) {
-      println(s"The match is over. The winner is ${finalizeMatch(matchImpl).name}.")
       return null
     }
     create_round(matchImpl)
@@ -206,7 +135,6 @@ object MatchControl {
 
   def nextTrick(roundImpl: Round): Trick = {
     if (RoundControl.isOver(roundImpl)) {
-      println("The round is over.")
       return null
     }
     RoundControl.create_trick(roundImpl)

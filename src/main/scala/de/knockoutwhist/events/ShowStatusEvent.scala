@@ -12,12 +12,11 @@ enum GLOBAL_STATUS {
   case SHOW_TIE
   case SHOW_TIE_WINNER
   case SHOW_TIE_TIE
+  
   case SHOW_GAME_RUNNING
-  case SHOW_WELCOME
   case SHOW_EXIT_GAME
   case SHOW_START_MATCH
   case SHOW_TYPE_PLAYERS
-  case SHOW_MENU
 }
 
 enum PLAYER_STATUS {
@@ -46,6 +45,7 @@ enum ERROR_STATUS {
   case INVALID_NUMBER_OF_PLAYERS
   case IDENTICAL_NAMES
   case INVALID_NAME_FORMAT
+  case WRONG_CARD
 }
 
 abstract class ShowStatusEvent extends SimpleEvent {
