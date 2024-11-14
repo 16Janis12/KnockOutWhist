@@ -1,7 +1,7 @@
 package de.knockoutwhist.utils
 
 import de.knockoutwhist.events.util.DelayEvent
-import de.knockoutwhist.utils.events.{EventHandler, EventListener, ReturnableEvent}
+import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
 
 object DelayHandler extends EventListener {
 
@@ -10,6 +10,7 @@ object DelayHandler extends EventListener {
       case event: DelayEvent =>
         Thread.sleep(event.delay)
         Some(true)
+      case _ => None
     }
   }
 }
