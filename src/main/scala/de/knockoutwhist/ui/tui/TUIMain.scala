@@ -1,11 +1,11 @@
-package de.knockoutwhist.tui
+package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
+import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.events.PLAYER_STATUS.*
-import de.knockoutwhist.events.*
 import de.knockoutwhist.events.MATCH_STATUS.SHOW_FINISHED
+import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
@@ -257,7 +257,7 @@ object TUIMain extends EventListener {
   
   
   private object TUICards {
-    private[tui] def renderCardAsString(card: Card): Vector[String] = {
+    private[ui] def renderCardAsString(card: Card): Vector[String] = {
       if (card.cardValue == CardValue.Ten) {
         return Vector(
           s"┌─────────┐",
@@ -280,12 +280,12 @@ object TUIMain extends EventListener {
       )
     }
     
-    private[tui] def cardColour(suit: Suit): String = suit match {
+    private[ui] def cardColour(suit: Suit): String = suit match {
       case Suit.Hearts | Suit.Diamonds => Console.RED
       case Suit.Clubs | Suit.Spades => Console.BLACK
     }
     
-    private[tui] def renderHandEvent(hand: Hand, showNumbers: Boolean): Vector[String] = {
+    private[ui] def renderHandEvent(hand: Hand, showNumbers: Boolean): Vector[String] = {
       val cardStrings = hand.cards.map(TUICards.renderCardAsString)
       var zipped = cardStrings.transpose
       if (showNumbers) zipped = {

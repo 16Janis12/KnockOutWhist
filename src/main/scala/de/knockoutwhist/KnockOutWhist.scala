@@ -2,12 +2,10 @@ package de.knockoutwhist
 
 
 import de.knockoutwhist.control.MatchControl
-import de.knockoutwhist.control.text.TextMatchControl
 
 
 object KnockOutWhist {
-
-  val matchControl: MatchControl = TextMatchControl
+  
   /*
   Debug mode:
 
