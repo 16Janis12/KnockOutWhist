@@ -288,6 +288,7 @@ object TUIMain extends EventListener with UI {
 
   @tailrec
   override def initial: Boolean = {
+    TUIUtil.clearConsole()
     println("Welcome to Knockout Whist!")
     println()
     println("Please select an option:")
