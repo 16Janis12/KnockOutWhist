@@ -1,4 +1,4 @@
-package de.knockoutwhist.control.text
+package de.knockoutwhist.control
 
 import de.knockoutwhist.cards.{CardManager, Hand}
 import de.knockoutwhist.cards.Suit.*
@@ -9,7 +9,7 @@ import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TextPlayerControllerTests extends AnyWordSpec with Matchers {
+class PlayerControllerTests extends AnyWordSpec with Matchers {
 
   "The text player controller play function" should {
     CardManager.shuffleAndReset()

@@ -4,11 +4,11 @@ enum Priority extends Ordered[Priority] :
   case High, Normal, Low
 
   override def compare(that: Priority): Int = {
-    that match {
-      case High => 1
-      case Normal => 0
-      case Low => -1
-    }
+    if this == that then 0
+    else if this == High then 1
+    else if that == High then -1
+    else if this == Low then -1
+    else 1
   }
 end Priority
 

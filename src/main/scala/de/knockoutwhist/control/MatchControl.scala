@@ -6,7 +6,6 @@ import de.knockoutwhist.control.RoundControl.controlRound
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER_OF_PLAYERS, WRONG_CARD}
 import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.events.MATCH_STATUS.SHOW_FINISHED
 import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_TRICK}
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
@@ -56,7 +55,7 @@ object MatchControl {
     }
     val winner = finalizeMatch(matchImpl)
     val playerwinner = winner.name
-    ControlHandler.invoke(ShowMatchStatus(SHOW_FINISHED, matchImpl, playerwinner))
+    ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, winner))
     winner
   }
   

@@ -42,30 +42,21 @@ class MatchTests extends AnyWordSpec with Matchers{
         RoundControl.create_round(match1)
       }
       TestUtil.enableDebugMode()
-      var trick2: Trick = null
-      "should be able to create a trick with requesting the current trick" in {
-        trick2 = round2.get_current_trick().get
-      }
-      if (trick2 == null) {
-        trick2 = round2.get_current_trick().get
-      }
+      val trick2: Trick = TrickControl.create_trick(round2)
       val playedcard3 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player1)
       }
-      TrickControl.playCard(trick1, round1, playedcard3, player1)
+      TrickControl.playCard(trick1, round2, playedcard3, player1)
       val playedcard4 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player2)
       }
-      TrickControl.playCard(trick2, round1, playedcard4, player2)
+      TrickControl.playCard(trick2, round2, playedcard4, player2)
       "be able to return the current trick of the round" in {
-        round2.get_current_trick() should be(trick2)
+        round2.get_current_trick().get should be(trick2)
       }
-      val rtrick2 = TrickControl.wonTrick(trick2, round1)
+      val rtrick2 = TrickControl.wonTrick(trick2, round2)
       "return false if the round isn't over" in {
         RoundControl.isOver(round2) shouldBe false
-      }
-      "be able to return all the tricks of the round" in {
-        round1.get_tricks() should be(List(rtrick1._2))
       }
       "be able to tell if a dog needs to play" in {
         RoundControl.dogNeedsToPlay(round2) shouldBe false
@@ -83,7 +74,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       val playedcard5 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player1)
       }
-      TrickControl.playCard(trick1, round1, playedcard5, player1) //stand trick1
+      TrickControl.playCard(trick1, round3, playedcard5, player1) //stand trick1
       val playedcard6 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player2)
       }

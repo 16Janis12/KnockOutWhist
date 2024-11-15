@@ -1,8 +1,5 @@
 package de.knockoutwhist.cards
 
-import de.knockoutwhist.cards.CardValue.Ten
-import de.knockoutwhist.cards.Suit
-
 enum Suit(identifier: String):
 
   def cardType(): String = identifier

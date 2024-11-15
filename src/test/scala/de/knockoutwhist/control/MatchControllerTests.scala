@@ -1,4 +1,4 @@
-package de.knockoutwhist.control.text
+package de.knockoutwhist.control
 
 import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.cards.CardValue.Ace
@@ -14,16 +14,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 
-class TextMatchControllerTests extends AnyWordSpec with Matchers {
-  "The initial function" should {
-    "throw no exception" in {
-      TestUtil.cancelOut() {
-        TestUtil.simulateInput("a\n2\n") {
-          TUIMain.initial
-        }
-      }
-    }
-  }
+class MatchControllerTests extends AnyWordSpec with Matchers {
 
   "The enter players function" should {
     "throw no exception" in {

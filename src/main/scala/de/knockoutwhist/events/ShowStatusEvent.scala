@@ -5,7 +5,6 @@ import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.events.SimpleEvent
 
 enum GLOBAL_STATUS {
-  case SHOW_TRICK
   case SHOW_ROUND
   case SHOW_PLAYERS_OUT
   case SHOW_PLAYERS_SAVED_BY_DOG
@@ -17,6 +16,7 @@ enum GLOBAL_STATUS {
   case SHOW_EXIT_GAME
   case SHOW_START_MATCH
   case SHOW_TYPE_PLAYERS
+  case SHOW_FINISHED_MATCH
 }
 
 enum PLAYER_STATUS {
@@ -28,14 +28,10 @@ enum PLAYER_STATUS {
   case SHOW_NOT_PLAYED
   case SHOW_WON_PLAYER_TRICK
 }
-enum MATCH_STATUS {
-  case SHOW_FINISHED
-}
 enum ROUND_STATUS {
   case SHOW_START_ROUND
   case WON_ROUND
   case PLAYERS_OUT
-  case SHOW_TRICK
 }
 
 enum ERROR_STATUS {
@@ -62,9 +58,6 @@ case class ShowPlayerStatus(status: PLAYER_STATUS, player: Player, objects: Any*
 
 case class ShowErrorStatus(status: ERROR_STATUS, objects: Any*) extends ShowStatusEvent {
   override def id: String = "ShowErrorStatus"
-}
-case class ShowMatchStatus(status: MATCH_STATUS, currentMatch: Match, objects: Any*) extends ShowStatusEvent {
-  override def id: String = "ShowMatchStatus"
 }
 
 case class ShowRoundStatus(status: ROUND_STATUS, currentRound: Round, objects: Any*) extends ShowStatusEvent {

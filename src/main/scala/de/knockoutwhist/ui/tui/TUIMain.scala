@@ -2,18 +2,17 @@ package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
 import de.knockoutwhist.control.{ControlHandler, MatchControl}
+import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.events.MATCH_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
-import de.knockoutwhist.events.*
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.ui.UI
-import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent, SimpleEvent}
+import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
 
 import scala.annotation.tailrec
 import scala.io.StdIn.readLine
@@ -21,6 +20,7 @@ import scala.util.{Failure, Success, Try}
 
 object TUIMain extends EventListener with UI {
 
+  var init = false
 
   override def listen[R](event: ReturnableEvent[R]): Option[R] = {
     event match {
@@ -66,6 +66,14 @@ object TUIMain extends EventListener with UI {
           case SHOW_TYPE_PLAYERS =>
             println("Please enter the names of the players, separated by a comma.")
             Some(true)
+          case SHOW_FINISHED_MATCH =>
+            if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
+              None
+            } else {
+              TUIUtil.clearConsole()
+              println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[Player]}")
+              Some(true)
+            }
           case _ => None
         }
       case event: ShowPlayerStatus =>
@@ -113,18 +121,6 @@ object TUIMain extends EventListener with UI {
             println(s"${event.player.name} won the trick.")
             TUIUtil.clearConsole(2)
             Some(true)
-          case _ => None
-        }
-      case event: ShowMatchStatus =>
-        event.status match {
-          case SHOW_FINISHED =>
-            if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
-              None
-            } else {
-              TUIUtil.clearConsole()
-              println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[Player]}")
-              Some(true)
-            }
         }
       case event: ShowRoundStatus =>
         event.status match {
@@ -174,7 +170,6 @@ object TUIMain extends EventListener with UI {
               println(f"You have to play a card of suit: ${event.objects.head.asInstanceOf[Card].suit}\n")
               Some(true)
             }
-          case _ => None
         }
       case event: RequestNumberEvent =>
         Some(Try {
@@ -268,7 +263,7 @@ object TUIMain extends EventListener with UI {
       val cardStrings = hand.cards.map(TUICards.renderCardAsString)
       var zipped = cardStrings.transpose
       if (showNumbers) zipped = {
-        List.tabulate(zipped.length) { i =>
+        List.tabulate(hand.cards.length) { i =>
           s"     ${i + 1}     "
         }
       } :: zipped
@@ -288,6 +283,10 @@ object TUIMain extends EventListener with UI {
 
   @tailrec
   override def initial: Boolean = {
+    if (init) {
+      return false
+    }
+    init = true
     TUIUtil.clearConsole()
     println("Welcome to Knockout Whist!")
     println()
@@ -301,17 +300,21 @@ object TUIMain extends EventListener with UI {
         value match {
           case 1 =>
             MatchControl.startMatch()
+            init = false
             initial
           case 2 =>
             println("Exiting the game.")
             true
           case _ =>
             ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
+            init = false
             initial
         }
       case Failure(_) =>
         ControlHandler.invoke(ShowErrorStatus(NOT_A_NUMBER))
+        init = false
         initial
     }
   }
+
 }

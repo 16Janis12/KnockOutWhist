@@ -125,6 +125,19 @@ class TrickTests extends AnyWordSpec with Matchers {
       TrickControl.playCard(trick, round, card2, player2)
       trick.toString() shouldBe s"${trick.cards}, ${null}, ${false}"
     }
+    "can't set a first card twice" in {
+      val player = Player("Gunter")
+      val player2 = Player("Peter")
+      val playerlist = List(player, player2)
+      val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val card2 = Card(CardValue.Two, Suit.Clubs)
+      val trick = new Trick(round)
+      trick.set_first_card(card)
+      assertThrows[IllegalStateException] {
+        trick.set_first_card(card2)
+      }
+    }
   }
 
 }

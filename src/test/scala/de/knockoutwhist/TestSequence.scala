@@ -1,9 +1,11 @@
 package de.knockoutwhist
 
 import de.knockoutwhist.cards.{CardTests, DeckTests, HandTests}
-import de.knockoutwhist.control.text.{TextMatchControllerTests, TextPlayerControllerTests}
+import de.knockoutwhist.control.{MatchControllerTests, PlayerControllerTests}
+import de.knockoutwhist.events.TestAllEvent
 import de.knockoutwhist.player.PlayerTests
 import de.knockoutwhist.rounds.{GameplayTests, MatchTests, TrickTests}
+import de.knockoutwhist.utils.events.EventTests
 import de.knockoutwhist.utils.{ImplicitTests, QueueTests}
 import org.scalatest.Sequential
 
@@ -15,10 +17,11 @@ class TestSequence extends Sequential(
   new QueueTests(),
   new ImplicitTests(),
   new PlayerTests(),
-  new TextPlayerControllerTests(),
-  new TextMatchControllerTests(),
+  new PlayerControllerTests(),
+  new MatchControllerTests(),
   new CardTests(),
   new DeckTests(),
   new HandTests(),
-
+  new EventTests(),
+  new TestAllEvent()
 ) {}
