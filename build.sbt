@@ -1,5 +1,5 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / scalaVersion := "3.5.1"
+
+
 
 Compile/mainClass := Some("de.knockoutwhist.KnockOutWhist")
 
@@ -10,11 +10,16 @@ version := {
   val buildNR = sys.env.getOrElse("BUI_COUNTER", "1")
   s"$major.$minor.$buildNR"
 }
-organization := "de.knockoutwhist"
+
+ThisBuild / organization := "de.knockoutwhist"
+ThisBuild / version := version.value
+ThisBuild / scalaVersion := "3.5.1"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "Projekt-zu-SE"
+    name := "Projekt-zu-SE",
+    assembly / mainClass := Some("de.knockoutwhist.KnockOutWhist"),
+    assembly / assemblyJarName := s"KnockOutWhist-${version.value}.jar",
   )
 
 
