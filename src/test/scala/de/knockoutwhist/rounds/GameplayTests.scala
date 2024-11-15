@@ -17,7 +17,7 @@ class GameplayTests extends AnyWordSpec with Matchers {
       CardManager.shuffleAndReset()
       CardManager.resetOrder()
       TestUtil.cancelOut() {
-        TestUtil.simulateInput("1\nLeon,Janis\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\ny\n1\n1\n1\n2\n") {
+        TestUtil.simulateInput("a\n5\n1\nLeon,Janis\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\ny\n1\n1\n1\n2\n") {
           TUIMain.initial
         }
       }
