@@ -1,14 +1,17 @@
 package de.knockoutwhist.events
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.CardValue.Two
-import de.knockoutwhist.cards.{Card, CardManager, Suit}
+import de.knockoutwhist.cards.CardValue.{Queen, Two}
+import de.knockoutwhist.cards.{Card, CardManager, CardValue, Hand, Suit}
+import de.knockoutwhist.control.{RoundControl, TrickControl}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestNumberEvent}
+import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
+import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Player
+import de.knockoutwhist.rounds.Match
 import de.knockoutwhist.testutils.{TestUtil, TestUtil as shouldBe}
 import de.knockoutwhist.ui.tui.TUIMain
-import de.knockoutwhist.utils.events.EventHandler
+import de.knockoutwhist.utils.events.{EventHandler, SimpleEvent}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -120,7 +123,88 @@ class TestAllEvent extends AnyWordSpec with Matchers {
     }
   }
 
-  ""
+  "The RequestDogPlayCardEvent" should {
+    val hand = Hand(List(Card(CardValue.Ten, Suit.Spades)))
+    val event = RequestDogPlayCardEvent(hand, true)
+    "be able to get created" in {
+      event should not be null
+    }
+    "have the correct ID" in {
+      event.id  should be("RequestDogPlayCardEvent")
+    }
+    "return the card played if it was played" in {
+      TestUtil.simulateInput("y\n") {
+        eventHandler.invoke(event)
+      } shouldBe a[Success[?]]
+    }
+    "return an exception if player doesn't want to play but has to" in {
+        TestUtil.simulateInput("n\n") {
+          eventHandler.invoke(event)
+      } shouldBe a [Failure[?]]
+    }
+    "return None when a player doesn't play a card and is able to do so" in {
+      val hand2 = Hand(List(Card(CardValue.Ten, Suit.Spades), Card(CardValue.Nine, Suit.Spades)))
+      val event2 = RequestDogPlayCardEvent(hand2, false)
+      TestUtil.simulateInput("n\n") {
+        eventHandler.invoke(event2)
+      } shouldBe a [Success[?]]
+    }
+  }
+  "The RequestPickTrumpsuitEvent" should {
+    val event = RequestPickTrumpsuitEvent()
+    "be able to get created" in {
+      event should not be null
+    }
+    "have an ID" in {
+      event.id should be("RequestPickTrumpsuitEvent")
+    }
+    "be a Success if the player picks a trumpsuit" in {
+      TestUtil.simulateInput("1\n") {
+        eventHandler.invoke(event)
+      } shouldBe a [Success[?]]
+      TestUtil.simulateInput("2\n") {
+        eventHandler.invoke(event)
+      } shouldBe a[Success[?]]
+      TestUtil.simulateInput("3\n") {
+        eventHandler.invoke(event)
+      } shouldBe a[Success[?]]
+      TestUtil.simulateInput("4\n") {
+        eventHandler.invoke(event)
+      } shouldBe a[Success[?]]
+    }
+    "fail if the player doesn't pick a trumpsuit" in {
+      TestUtil.simulateInput("5\n") {
+        eventHandler.invoke(event)
+      } shouldBe a [Failure[?]]
+    }
+  }
+  "The ShowCurrentTrickEvent" should {
+    val player1 = Player("Gunter")
+    val player2 = Player("Peter")
+    val listplayers = List(player1, player2)
+    val match1 = Match(listplayers)
+    val round = RoundControl.create_round(match1)
+    val trick = TrickControl.create_trick(round)
+    TrickControl.playCard(trick, round, Card(CardValue.Ten, Suit.Spades), player1)
+    val event = ShowCurrentTrickEvent(round, trick)
+    "be able to get created" in {
+      event should not be null
+    }
+    "have an ID" in {
+      event.id should be("ShowCurrentTrickEvent")
+    }
+    "should be true if a trick can be displayed" in {
+      eventHandler.invoke(event) shouldBe true
+    }
+  }
+  "An Event" should {
+    "return None if it doesn't exist" in {
+      val event = new SimpleEvent {
+        override def id: String = "ShowEnte"
+      }
+      eventHandler.invoke(event) shouldBe false
+    }
+  }
   /*"The pick next trumpsuit event" should {
     val event = PickNextTrumpsuitEvent(Player("Foo"))
     "be able to be created" in {
