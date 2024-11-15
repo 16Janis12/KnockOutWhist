@@ -21,8 +21,6 @@ case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick
   def set_current_trick(trick: Trick): Unit = {
     current_trick = Some(trick)
   }
-
-  def get_tricks(): List[Trick] = tricklist.toList
   
   override def toString: String = {
     s"$trumpSuit, $tricklist, $players_in, $players_out, $winner, $firstRound"
