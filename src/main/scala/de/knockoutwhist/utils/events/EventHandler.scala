@@ -18,7 +18,9 @@ abstract class EventHandler {
   def invoke[R](event: ReturnableEvent[R]): R = {
     event match {
       case simpleEvent: SimpleEvent =>
-        listeners.map(_.listen(simpleEvent)).filter(_.isDefined).map(_.get).reduce((a, b) => a && b)
+        val result = listeners.map(_.listen(simpleEvent)).filter(_.isDefined).map(_.get).toList
+        if(result.isEmpty) return false
+        result.reduce((a,b) => a && b)
       case returnableEvent: ReturnableEvent[R] =>
         val result = listeners.view.map(_.listen(returnableEvent)).find(_.isDefined).flatten
         result.getOrElse(throw new IllegalStateException("No listener returned a result"))
