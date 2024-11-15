@@ -5,15 +5,10 @@ import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.events.SimpleEvent
 
 enum GLOBAL_STATUS {
-  case SHOW_ROUND
-  case SHOW_PLAYERS_OUT
-  case SHOW_PLAYERS_SAVED_BY_DOG
   case SHOW_TIE
   case SHOW_TIE_WINNER
   case SHOW_TIE_TIE
   
-  case SHOW_GAME_RUNNING
-  case SHOW_EXIT_GAME
   case SHOW_START_MATCH
   case SHOW_TYPE_PLAYERS
   case SHOW_FINISHED_MATCH
@@ -44,9 +39,7 @@ enum ERROR_STATUS {
   case WRONG_CARD
 }
 
-abstract class ShowStatusEvent extends SimpleEvent {
-  override def id: String = "ShowStatusEvent"
-}
+abstract class ShowStatusEvent extends SimpleEvent
 
 case class ShowGlobalStatus(status: GLOBAL_STATUS, objects: Any*) extends ShowStatusEvent {
   override def id: String = "ShowGlobalStatus"

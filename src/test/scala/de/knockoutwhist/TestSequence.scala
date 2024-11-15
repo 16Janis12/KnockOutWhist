@@ -23,5 +23,6 @@ class TestSequence extends Sequential(
   new DeckTests(),
   new HandTests(),
   new EventTests(),
-  new TestAllEvent()
+  new TestAllEvent(),
+  new DelayHandlerTests()
 ) {}

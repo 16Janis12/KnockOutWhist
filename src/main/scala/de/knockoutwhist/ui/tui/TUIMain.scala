@@ -74,7 +74,6 @@ object TUIMain extends EventListener with UI {
               println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[Player]}")
               Some(true)
             }
-          case _ => None
         }
       case event: ShowPlayerStatus =>
         val player = event.player

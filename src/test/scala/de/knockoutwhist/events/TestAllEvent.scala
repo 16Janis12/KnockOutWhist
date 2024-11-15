@@ -2,19 +2,26 @@ package de.knockoutwhist.events
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardValue.{Queen, Two}
+import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.cards.{Card, CardManager, CardValue, Hand, Suit}
 import de.knockoutwhist.control.{RoundControl, TrickControl}
+import de.knockoutwhist.events.GLOBAL_STATUS.*
+import de.knockoutwhist.events.PLAYER_STATUS.*
+import de.knockoutwhist.events.ERROR_STATUS.*
+import de.knockoutwhist.events.ROUND_STATUS.*
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Player
-import de.knockoutwhist.rounds.Match
+import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.testutils.{TestUtil, TestUtil as shouldBe}
 import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils.events.{EventHandler, SimpleEvent}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.collection.mutable.ListBuffer
+import scala.compiletime.uninitialized
 import scala.util.{Failure, Success}
 
 class TestAllEvent extends AnyWordSpec with Matchers {
@@ -197,6 +204,255 @@ class TestAllEvent extends AnyWordSpec with Matchers {
       eventHandler.invoke(event) shouldBe true
     }
   }
+
+  "The show global status event" should {
+    var event: ShowGlobalStatus = null
+    "be able to be created" in {
+      event = ShowGlobalStatus(SHOW_TIE)
+      event should not be null
+    }
+    "have the correct id" in {
+      event = ShowGlobalStatus(SHOW_TIE)
+      event.id should be ("ShowGlobalStatus")
+    }
+    "have the correct status" in {
+      event = ShowGlobalStatus(SHOW_TIE)
+      event.status should be (SHOW_TIE)
+    }
+    "be able to be handled with status SHOW_TIE" in {
+      event = ShowGlobalStatus(SHOW_TIE)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to return false with status SHOW_TIE_WINNER if arguments mismatch" in {
+      event = ShowGlobalStatus(SHOW_TIE_WINNER)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(false)
+      }
+    }
+    "be able to return true with status SHOW_TIE_WINNER if arguments match" in {
+      event = ShowGlobalStatus(SHOW_TIE_WINNER, Player("Foo"))
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_TIE_TIE" in {
+      event = ShowGlobalStatus(SHOW_TIE_TIE)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_START_MATCH" in {
+      event = ShowGlobalStatus(SHOW_START_MATCH)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_TYPE_PLAYERS" in {
+      event = ShowGlobalStatus(SHOW_TYPE_PLAYERS)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to return false with status SHOW_FINISHED_MATCH if arguments mismatch" in {
+      event = ShowGlobalStatus(SHOW_FINISHED_MATCH)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(false)
+      }
+    }
+    "be able to return true with status SHOW_FINISHED_MATCH if arguments match" in {
+      event = ShowGlobalStatus(SHOW_FINISHED_MATCH, Player("Foo"))
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+  }
+
+  "The show player status event" should {
+    val player = Player("Foo")
+    var event: ShowPlayerStatus = null
+    "be able to be created" in {
+      event = ShowPlayerStatus(SHOW_TURN, player)
+      event should not be null
+    }
+    "have the correct id" in {
+      event = ShowPlayerStatus(SHOW_TURN, player)
+      event.id should be ("ShowPlayerStatus")
+    }
+    "have the correct status" in {
+      event = ShowPlayerStatus(SHOW_TURN, player)
+      event.status should be (SHOW_TURN)
+    }
+    "have the correct player" in {
+      event = ShowPlayerStatus(SHOW_TURN, player)
+      event.player should be (player)
+    }
+    "be able to be handled with status SHOW_TURN" in {
+      event = ShowPlayerStatus(SHOW_TURN, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_PLAY_CARD" in {
+      event = ShowPlayerStatus(SHOW_PLAY_CARD, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to return false with status SHOW_DOG_PLAY_CARD if arguments mismatch" in {
+      event = ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(false)
+      }
+    }
+    "be able to return true with status SHOW_DOG_PLAY_CARD if arguments match" in {
+      event = ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, true)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to return false with status SHOW_TIE_NUMBERS if arguments mismatch" in {
+      event = ShowPlayerStatus(SHOW_TIE_NUMBERS, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(false)
+      }
+    }
+    "be able to return true with status SHOW_TIE_NUMBERS if arguments match" in {
+      event = ShowPlayerStatus(SHOW_TIE_NUMBERS, player, 5)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_TRUMPSUIT_OPTIONS" in {
+      event = ShowPlayerStatus(SHOW_TRUMPSUIT_OPTIONS, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_NOT_PLAYED" in {
+      event = ShowPlayerStatus(SHOW_NOT_PLAYED, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status SHOW_WON_PLAYER_TRICK" in {
+      event = ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, player)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+  }
+
+  "The show round status event" should {
+    val round = Round(trumpSuit = Hearts, matchImpl = null, tricklist = ListBuffer(), players_in = null, firstRound = false, players_out = List(Player("Foo")))
+    var event: ShowRoundStatus = null
+    "be able to be created" in {
+      event = ShowRoundStatus(SHOW_START_ROUND, round)
+      event should not be null
+    }
+    "have the correct id" in {
+      event = ShowRoundStatus(SHOW_START_ROUND, round)
+      event.id should be ("ShowRoundStatus")
+    }
+    "have the correct status" in {
+      event = ShowRoundStatus(SHOW_START_ROUND, round)
+      event.status should be (SHOW_START_ROUND)
+    }
+    "have the correct round" in {
+      event = ShowRoundStatus(SHOW_START_ROUND, round)
+      event.currentRound should be (round)
+    }
+    "be able to be handled with status SHOW_START_ROUND" in {
+      event = ShowRoundStatus(SHOW_START_ROUND, round)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to return false with status WON_ROUND if arguments mismatch" in {
+      event = ShowRoundStatus(WON_ROUND, round)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(false)
+      }
+    }
+    "be able to return true with status WON_ROUND if arguments match" in {
+      event = ShowRoundStatus(WON_ROUND, round, Player("Foo"))
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status PLAYERS_OUT" in {
+      event = ShowRoundStatus(PLAYERS_OUT, round)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+  }
+
+  "The error status event" should {
+    var event: ShowErrorStatus = null
+    "be able to be created" in {
+      event = ShowErrorStatus(INVALID_NUMBER)
+      event should not be null
+    }
+    "have the correct id" in {
+      event = ShowErrorStatus(INVALID_NUMBER)
+      event.id should be ("ShowErrorStatus")
+    }
+    "have the correct status" in {
+      event = ShowErrorStatus(INVALID_NUMBER)
+      event.status should be (INVALID_NUMBER)
+    }
+    "be able to be handled with status INVALID_NUMBER" in {
+      event = ShowErrorStatus(INVALID_NUMBER)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status NOT_A_NUMBER" in {
+      event = ShowErrorStatus(NOT_A_NUMBER)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status INVALID_INPUT" in {
+      event = ShowErrorStatus(INVALID_INPUT)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status INVALID_NUMBER_OF_PLAYERS" in {
+      event = ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status IDENTICAL_NAMES" in {
+      event = ShowErrorStatus(IDENTICAL_NAMES)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to be handled with status INVALID_NAME_FORMAT" in {
+      event = ShowErrorStatus(INVALID_NAME_FORMAT)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+    "be able to return false with status WRONG_CARD if arguments mismatch" in {
+      event = ShowErrorStatus(WRONG_CARD)
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(false)
+      }
+    }
+    "be able to return true with status WRONG_CARD if arguments match" in {
+      event = ShowErrorStatus(WRONG_CARD, Card(CardValue.Queen, Suit.Hearts))
+      TestUtil.cancelOut() {
+        eventHandler.invoke(event) should be(true)
+      }
+    }
+  }
+
   "An Event" should {
     "return None if it doesn't exist" in {
       val event = new SimpleEvent {
