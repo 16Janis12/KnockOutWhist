@@ -19,11 +19,5 @@ case class Hand(cards: List[Card]) {
   def hasTrumpSuit(trumpSuit: Suit): Boolean = {
     cards.exists(_.suit == trumpSuit)
   }
-  
-  def renderAsString() : List[String] = {
-    val cardStrings = cards.map(_.renderAsString())
-    val zipped = cardStrings.transpose
-    zipped.map(_.mkString(" "))
-  }
 
 }

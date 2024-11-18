@@ -1,6 +1,7 @@
 package de.knockoutwhist.cards
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
+import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderHandEvent
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -48,7 +49,7 @@ class HandTests extends AnyWordSpec with Matchers {
         s"│        ${Console.BLACK}${Console.BOLD}A${Console.RESET}│ │        ${Console.RED}${Console.BOLD}Q${Console.RESET}│",
         "└─────────┘ └─────────┘"
       )
-      hand.renderAsString() shouldBe expectedResult
+      renderHandEvent(Hand(List(Card(CardValue.Ace, Suit.Spades), Card(CardValue.Queen, Suit.Diamonds))), false) shouldBe expectedResult
     }
   }
 

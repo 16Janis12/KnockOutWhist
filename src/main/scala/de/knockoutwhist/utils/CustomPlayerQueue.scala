@@ -1,9 +1,10 @@
 package de.knockoutwhist.utils
 
+
 class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0) extends Iterable[A] {
 
   private var current = start
-
+  
   def nextPlayer(): A = {
     val player = players(current)
     current = (current + 1) % players.length

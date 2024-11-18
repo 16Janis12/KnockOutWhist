@@ -1,11 +1,13 @@
 package de.knockoutwhist
 
 import de.knockoutwhist.testutils.TestUtil
+import de.knockoutwhist.ui.tui.TUIMain
 import org.scalatest.funsuite.AnyFunSuite
 
 class MainTests extends AnyFunSuite {
 
   test("Main should be able to go to the main menu") {
+    TUIMain.init = false
     TestUtil.simulateInput("2\n") {
       KnockOutWhist.main(Array())
     }
