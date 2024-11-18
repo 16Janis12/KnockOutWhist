@@ -1,5 +1,8 @@
 package de.knockoutwhist.cards
-
+import de.knockoutwhist.utils.events.EventHandler
+import de.knockoutwhist.cards.CardValue.{Ace, Ten}
+import de.knockoutwhist.events.cards.RenderHandEvent
+import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderCardAsString
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -22,7 +25,7 @@ class CardTests extends AnyWordSpec with Matchers{
         s"│        ${Console.BLACK}${Console.BOLD}A${Console.RESET}│",
         "└─────────┘"
       )
-      card.renderAsString() shouldBe expectedResult
+      renderCardAsString(Card(CardValue.Ace, Suit.Spades)) shouldBe expectedResult
     }
     "can be rendered for CardValue Ten" in {
       val card = Card(CardValue.Ten, Suit.Spades)
@@ -35,7 +38,7 @@ class CardTests extends AnyWordSpec with Matchers{
         s"│       ${Console.BLACK}${Console.BOLD}10${Console.RESET}│",
         "└─────────┘"
       )
-      card.renderAsString() shouldBe expectedResult
+      renderCardAsString(Card(CardValue.Ten, Suit.Spades)) shouldBe expectedResult
     }
     "be able to reset the order" in {
       CardManager.shuffleAndReset()

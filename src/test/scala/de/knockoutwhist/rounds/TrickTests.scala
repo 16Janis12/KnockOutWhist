@@ -1,6 +1,7 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.{Card, CardValue, Suit}
+import de.knockoutwhist.control.TrickControl
 import de.knockoutwhist.player.Player
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -16,7 +17,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
-      trick.playCard(card, player)
+      TrickControl.playCard(trick, round, card, player)
       trick.get_first_card().isEmpty shouldBe false
       trick.get_first_card().get shouldBe card
     }
@@ -35,9 +36,9 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
 
-      trick.playCard(card, player)
+      TrickControl.playCard(trick, round, card, player)
 
-      val won = trick.wonTrick()
+      val won = TrickControl.wonTrick(trick, round)
 
       won(0) shouldBe player
       won(1).cards should equal(trick.cards)
@@ -50,11 +51,11 @@ class TrickTests extends AnyWordSpec with Matchers {
       val round = new Round(Suit.Spades, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
-      trick.playCard(card, player)
+      TrickControl.playCard(trick, round, card, player)
 
-      val won = trick.wonTrick()
+      val won = TrickControl.wonTrick(trick, round)
       assertThrows[IllegalStateException] { //If exception is thrown, assertThrows returns succeeded
-        won(1).playCard(card, player)
+        TrickControl.playCard(won(1), round, card, player)
       }
     }
     "filter the cards by suit correctly if no trump was played" in {
@@ -65,9 +66,9 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Ten, Suit.Spades)
       val trick = new Trick(round)
-      trick.playCard(card, player)
-      trick.playCard(card2, player2)
-      val won = trick.wonTrick()
+      TrickControl.playCard(trick, round, card, player)
+      TrickControl.playCard(trick, round, card2, player2)
+      val won = TrickControl.wonTrick(trick, round)
       won(0) shouldBe player
 
     }
@@ -77,7 +78,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val round = new Round(Suit.Spades, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
-      trick.playCard(card, player) shouldBe true
+      TrickControl.playCard(trick, round, card, player) shouldBe true
     }
     "return true if the suit matches the first card played" in {
       val player = Player("Gunter")
@@ -86,9 +87,9 @@ class TrickTests extends AnyWordSpec with Matchers {
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Two, Suit.Spades)
       val card2 = Card(CardValue.Ace, Suit.Spades)
-      val trick = round.create_trick()
-      trick.playCard(card, player)
-      trick.playCard(card2, player2) shouldBe true
+      val trick = TrickControl.create_trick(round)
+      TrickControl.playCard(trick, round, card, player)
+      TrickControl.playCard(trick, round, card2, player2) shouldBe true
     }
     "return true if the card matches the trump-card" in {
       val player = Player("Gunter")
@@ -98,8 +99,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Diamonds)
       val trick = new Trick(round)
-      trick.playCard(card, player)
-      trick.playCard(card2, player2) shouldBe true
+      TrickControl.playCard(trick, round, card, player)
+      TrickControl.playCard(trick, round, card2, player2) shouldBe true
     }
     "return false if the card doesn't match the suit of the trump-card + first-card" in {
       val player = Player("Gunter")
@@ -109,8 +110,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
-      trick.playCard(card, player)
-      trick.playCard(card2, player2) shouldBe false
+      TrickControl.playCard(trick, round, card, player)
+      TrickControl.playCard(trick, round, card2, player2) shouldBe false
     }
     "have a working to string" in {
       val player = Player("Gunter")
@@ -120,9 +121,22 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
-      trick.playCard(card, player)
-      trick.playCard(card2, player2)
+      TrickControl.playCard(trick, round, card, player)
+      TrickControl.playCard(trick, round, card2, player2)
       trick.toString() shouldBe s"${trick.cards}, ${null}, ${false}"
+    }
+    "can't set a first card twice" in {
+      val player = Player("Gunter")
+      val player2 = Player("Peter")
+      val playerlist = List(player, player2)
+      val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
+      val card = Card(CardValue.Ace, Suit.Spades)
+      val card2 = Card(CardValue.Two, Suit.Clubs)
+      val trick = new Trick(round)
+      trick.set_first_card(card)
+      assertThrows[IllegalStateException] {
+        trick.set_first_card(card2)
+      }
     }
   }
 

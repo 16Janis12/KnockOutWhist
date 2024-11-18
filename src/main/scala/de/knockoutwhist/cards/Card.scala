@@ -1,8 +1,5 @@
 package de.knockoutwhist.cards
 
-import de.knockoutwhist.cards.CardValue.Ten
-import de.knockoutwhist.cards.Suit
-
 enum Suit(identifier: String):
 
   def cardType(): String = identifier
@@ -34,34 +31,6 @@ enum CardValue(identifier: String):
 end CardValue
 
 case class Card(cardValue: CardValue, suit: Suit) {
-
-  def cardColour(suit: Suit): String = suit match {
-    case Suit.Hearts | Suit.Diamonds => Console.RED
-    case Suit.Clubs | Suit.Spades => Console.BLACK
-  }
-
-  def renderAsString(): Vector[String] = {
-    if (cardValue == Ten) {
-      return Vector(
-        s"┌─────────┐",
-        s"│${cardColour(suit)}${Console.BOLD}${cardValue.cardType()}${Console.RESET}       │",
-        "│         │",
-        s"│    ${cardColour(suit)}${Console.BOLD}${suit.cardType()}${Console.RESET}    │",
-        "│         │",
-        s"│       ${cardColour(suit)}${Console.BOLD}${cardValue.cardType()}${Console.RESET}│",
-        s"└─────────┘"
-      )
-    }
-    Vector(
-      s"┌─────────┐",
-      s"│${cardColour(suit)}${Console.BOLD}${cardValue.cardType()}${Console.RESET}        │",
-      "│         │",
-      s"│    ${cardColour(suit)}${Console.BOLD}${suit.cardType()}${Console.RESET}    │",
-      "│         │",
-      s"│        ${cardColour(suit)}${Console.BOLD}${cardValue.cardType()}${Console.RESET}│",
-      s"└─────────┘"
-    )
-  }
-      override def toString: String = s"$cardValue of $suit"
-   //Combined String
+  
+  override def toString: String = s"$cardValue of $suit"
 }

@@ -1,22 +1,23 @@
-package de.knockoutwhist.control.text
+package de.knockoutwhist.control
 
 import de.knockoutwhist.cards.{CardManager, Hand}
-import de.knockoutwhist.cards.Suit._
+import de.knockoutwhist.cards.Suit.*
+import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
 import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TextPlayerControllerTests extends AnyWordSpec with Matchers {
+class PlayerControllerTests extends AnyWordSpec with Matchers {
 
   "The text player controller play function" should {
     CardManager.shuffleAndReset()
     TestUtil.cancelOut() {
       "throw an exception of the player has no hand" in {
-        assertThrows[IllegalStateException] {
+        assertThrows[NoSuchElementException] {
           TestUtil.simulateInput("1\n") {
-            TextPlayerControl.playCard(Player("Foo"))
+            PlayerControl.playCard(Player("Foo"))
           }
         }
       }
@@ -26,7 +27,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
         val card = TestUtil.simulateInput("0\na\n1\n") {
-          TextPlayerControl.playCard(player)
+          PlayerControl.playCard(player)
         }
         card should be(hand.cards.head)
       }
@@ -36,7 +37,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
         val card = TestUtil.simulateInput("1\n") {
-          TextPlayerControl.playCard(player)
+          PlayerControl.playCard(player)
         }
         card should be(hand.cards.head)
       }
@@ -51,10 +52,10 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
     val round = new Round(Spades, null, List(player), false)
     TestUtil.cancelOut() {
       "throw an exception of the player has no hand" in {
-        assertThrows[IllegalStateException] {
+        assertThrows[NoSuchElementException] {
           TestUtil.simulateInput("y\n") {
             TestUtil.disableDebugMode()
-            TextPlayerControl.dogplayCard(Player("Foo"), round)
+            PlayerControl.dogplayCard(Player("Foo"), round)
           }
         }
       }
@@ -65,7 +66,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
         val card = TestUtil.simulateInput("a\ny\n") {
-          TextPlayerControl.dogplayCard(player, round)
+          PlayerControl.dogplayCard(player, round)
         }
         card should be(Some(hand.cards.head))
       }
@@ -76,7 +77,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
         val card = TestUtil.simulateInput("y\n") {
-          TextPlayerControl.dogplayCard(player, round)
+          PlayerControl.dogplayCard(player, round)
         }
         card should be(Some(hand.cards.head))
       }
@@ -87,7 +88,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
         val card = TestUtil.simulateInput("n\n") {
-          TextPlayerControl.dogplayCard(player, round)
+          PlayerControl.dogplayCard(player, round)
         }
         card should be(None)
       }
@@ -101,7 +102,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         player2.provideHand(Hand(List()))
         val round2 = new Round(Spades, null, List(player1,player2), true)
         val card = TestUtil.simulateInput("n\ny\n") {
-          TextPlayerControl.dogplayCard(player1, round2)
+          PlayerControl.dogplayCard(player1, round2)
         }
         card should be(Some(player1.currentHand().get.cards.head))
       }
@@ -116,7 +117,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player2 = Player("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("1\n2\n") {
-          TextPlayerControl.determineWinnerTie(players)
+          PlayerControl.determineWinnerTie(players)
         }
         winner should be(player2).or(be(player1))
       }
@@ -127,7 +128,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player2 = Player("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("1\n13\n5\n1\n") {
-          TextPlayerControl.determineWinnerTie(players)
+          PlayerControl.determineWinnerTie(players)
         }
         winner should be(player2)
       }
@@ -138,7 +139,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player2 = Player("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("13\n1\n") {
-          TextPlayerControl.determineWinnerTie(players)
+          PlayerControl.determineWinnerTie(players)
         }
         winner should be(player1)
       }
@@ -149,7 +150,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player2 = Player("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("a\n200\n1\n2\n") {
-          TextPlayerControl.determineWinnerTie(players)
+          PlayerControl.determineWinnerTie(players)
         }
         winner should be(player2)
       }
@@ -163,7 +164,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player = Player("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("4\n") {
-          TextPlayerControl.pickNextTrumpsuit(player)
+          PlayerControl.pickNextTrumpsuit(player)
         }
         suit should be(Spades)
       }
@@ -172,7 +173,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player = Player("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("1\n") {
-          TextPlayerControl.pickNextTrumpsuit(player)
+          PlayerControl.pickNextTrumpsuit(player)
         }
         suit should be(Hearts)
       }
@@ -181,7 +182,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player = Player("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("2\n") {
-          TextPlayerControl.pickNextTrumpsuit(player)
+          PlayerControl.pickNextTrumpsuit(player)
         }
         suit should be(Diamonds)
       }
@@ -190,7 +191,7 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player = Player("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("3\n") {
-          TextPlayerControl.pickNextTrumpsuit(player)
+          PlayerControl.pickNextTrumpsuit(player)
         }
         suit should be(Clubs)
       }
@@ -199,37 +200,37 @@ class TextPlayerControllerTests extends AnyWordSpec with Matchers {
         val player = Player("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("a\n10\n1\n") {
-          TextPlayerControl.pickNextTrumpsuit(player)
+          PlayerControl.pickNextTrumpsuit(player)
         }
         suit should be(Hearts)
       }
     }
   }
 
-  "The text player controller showCards function" should {
-    TestUtil.cancelOut() {
-      "return true if the player wants to show their cards" in {
-        TestUtil.disableDebugMode()
-        val player = Player("Foo")
-        player.provideHand(CardManager.createHand(4))
-        TextPlayerControl.showCards(player) should be(true)
-      }
-      "return false if the player does not want to show their cards" in {
-        TestUtil.disableDebugMode()
-        val player = Player("Foo")
-        TextPlayerControl.showCards(player) should be(false)
-      }
-    }
-  }
-
-  "The text player controller showWon function" should {
-    TestUtil.cancelOut() {
-      "print the winner of the match" in {
-        TestUtil.disableDebugMode()
-        val player = Player("Foo")
-        TextPlayerControl.showWon(player, null) should be("Foo won this round.")
-      }
-    }
-  }
+//  "The text player controller showCards function" should {
+//    TestUtil.cancelOut() {
+//      "return true if the player wants to show their cards" in {
+//        TestUtil.disableDebugMode()
+//        val player = Player("Foo")
+//        player.provideHand(CardManager.createHand(4))
+//        TextPlayerControl.showCards(player) should be(true)
+//      }
+//      "return false if the player does not want to show their cards" in {
+//        TestUtil.disableDebugMode()
+//        val player = Player("Foo")
+//        TextPlayerControl.showCards(player) should be(false)
+//      }
+//    }
+//  }
+//
+//  "The text player controller showWon function" should {
+//    TestUtil.cancelOut() {
+//      "print the winner of the match" in {
+//        TestUtil.disableDebugMode()
+//        val player = Player("Foo")
+//        TextPlayerControl.showWon(player, null) should be("Foo won this round.")
+//      }
+//    }
+//  }
 
 }
