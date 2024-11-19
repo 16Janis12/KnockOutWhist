@@ -29,14 +29,17 @@ If they win a trick, they re-enter the game in the following round. When this ha
 ## About the project
 This project is a Scala implementation of the Knock-out Whist card game. It is maintained by 2 students of the HTWG Konstanz.
 
-Last stable build: [![Build-Status-Master](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:master/statusIcon.png)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=master)
+Last stable build: [![Build-Status-Master](https://teamcity.janis-eccarius.de/app/rest/builds/buildType:id:KnockOutWhist_BuildAndTest/statusIcon.svg)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=master)
 
-Last development build: [![Build-Status-Dev](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:development/statusIcon.png)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=development)
+Last development build: [![Build-Status-Dev](https://teamcity.janis-eccarius.de/app/rest/builds/buildType:id:KnockOutWhist_BuildAndTest,branch:name:development/statusIcon.svg)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=development)
 
 Gitea: [https://git.janis-eccarius.de/KnockOutWhist/KnockOutWhist](https://git.janis-eccarius.de/KnockOutWhist/KnockOutWhist)
 
 GitHub (Mirror): [https://github.com/16Janis12/KnockOutWhist](https://github.com/16Janis12/KnockOutWhist)
 
+SonarQube: [https://sonarcloud.io/project/overview?id=16Janis12_KnockOutWhist](https://sonarcloud.io/project/overview?id=16Janis12_KnockOutWhist)
+
+Coveralls: [https://coveralls.io/github/16Janis12/KnockOutWhist](https://coveralls.io/github/16Janis12/KnockOutWhist)
 
 ## Licence
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
