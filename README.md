@@ -1,4 +1,4 @@
-# Knock-out Whist
+# Knock-out Whist [![Coverage Status](https://coveralls.io/repos/github/16Janis12/KnockOutWhist/badge.svg?branch=master)](https://coveralls.io/github/16Janis12/KnockOutWhist?branch=master) [![Build-Status-Master](https://teamcity.janis-eccarius.de/guestAuth/app/rest/builds/buildType:(id:KnockOutWhist_BuildAndTest),branch:master/statusIcon.png)](https://teamcity.janis-eccarius.de/viewType.html?buildTypeId=KnockOutWhist_BuildAndTest&branch=master)
 ## About the Game
 Knock-out Whist is a trick-taking card game designed for 2 to 7 players. It uses a standard 52-card deck.
 The objective is to win tricks. Players who fail to win at least one trick in a round are eliminated.
