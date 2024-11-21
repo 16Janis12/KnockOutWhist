@@ -1,6 +1,5 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.MatchControl.playerQueue
 import de.knockoutwhist.events.ERROR_STATUS.WRONG_CARD
@@ -21,10 +20,7 @@ object TrickControl {
         trick.setfirstcard(card)
         trick.cards += (card -> player)
         true
-      } else if (card.suit == trick.getfirstcard().getOrElse(card).suit) { // Wert aus Option extrahieren
-        trick.cards += (card -> player)
-        true
-      } else if (card.suit == round.trumpSuit) {
+      } else if ((card.suit == trick.getfirstcard().getOrElse(card).suit) || (card.suit == round.trumpSuit)) { // Wert aus Option extrahieren
         trick.cards += (card -> player)
         true
       } else {
