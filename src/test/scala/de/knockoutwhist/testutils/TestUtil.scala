@@ -1,6 +1,7 @@
 package de.knockoutwhist.testutils
 
 import de.knockoutwhist.KnockOutWhist
+import de.knockoutwhist.utils.DelayHandler
 
 import java.io.{ByteArrayInputStream, OutputStream}
 
@@ -25,6 +26,10 @@ object TestUtil {
   
   def disableDebugMode(): Unit = {
     KnockOutWhist.DEBUG_MODE_VAR = false
+  }
+  
+  def disableDelay(): Unit = {
+    DelayHandler.activateDelay = false
   }
 
 }

@@ -16,6 +16,7 @@ import scala.collection.mutable.ListBuffer
 class MatchTests extends AnyWordSpec with Matchers{
 
   "A Match" should {
+    TestUtil.disableDelay()
     TestUtil.cancelOut() {
       TestUtil.disableDebugMode()
       val player1 = Player("Gunter")
