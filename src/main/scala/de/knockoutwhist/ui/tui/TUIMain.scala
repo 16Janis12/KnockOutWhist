@@ -137,7 +137,7 @@ object TUIMain extends EventListener with UI {
             }
           case PLAYERS_OUT =>
             println("The following players are out of the game:")
-            event.currentRound.players_out.foreach(p => {
+            event.currentRound.playersout.foreach(p => {
               println(p.name)
             })
             Some(true)
@@ -148,7 +148,7 @@ object TUIMain extends EventListener with UI {
             println("Please enter a valid number.")
             Some(true)
           case NOT_A_NUMBER =>
-            println("Please enter a valid number.")
+            println("Please enter a number.")
             Some(true)
           case INVALID_INPUT =>
             println("Please enter a valid input")
@@ -193,7 +193,7 @@ object TUIMain extends EventListener with UI {
           val card = readLine()
           if (card.equalsIgnoreCase("y")) {
             Some(event.hand.cards.head)
-          } else if (card.equalsIgnoreCase("n") && !event.needs_to_play) {
+          } else if (card.equalsIgnoreCase("n") && !event.needstoplay) {
             None
           } else {
             throw new IllegalArgumentException("Didn't want to play card but had to")
@@ -216,8 +216,8 @@ object TUIMain extends EventListener with UI {
         val sb = new StringBuilder()
         sb.append("Current Trick:\n")
         sb.append("Trump-Suit: " + event.round.trumpSuit + "\n")
-        if (event.trick.get_first_card().isDefined) {
-          sb.append(s"Suit to play: ${event.trick.get_first_card().get.suit}\n")
+        if (event.trick.getfirstcard().isDefined) {
+          sb.append(s"Suit to play: ${event.trick.getfirstcard().get.suit}\n")
         }
         for ((card, player) <- event.trick.cards) {
           sb.append(s"${player.name} played ${card.toString}\n")
@@ -231,13 +231,14 @@ object TUIMain extends EventListener with UI {
   
   object TUICards {
     def renderCardAsString(card: Card): Vector[String] = {
+      val lines = "│         │"
       if (card.cardValue == CardValue.Ten) {
         return Vector(
           s"┌─────────┐",
           s"│${cardColour(card.suit)}${Console.BOLD}${card.cardValue.cardType()}${Console.RESET}       │",
-          "│         │",
+          lines,
           s"│    ${cardColour(card.suit)}${Console.BOLD}${card.suit.cardType()}${Console.RESET}    │",
-          "│         │",
+          lines,
           s"│       ${cardColour(card.suit)}${Console.BOLD}${card.cardValue.cardType()}${Console.RESET}│",
           s"└─────────┘"
         )
@@ -245,9 +246,9 @@ object TUIMain extends EventListener with UI {
       Vector(
         s"┌─────────┐",
         s"│${cardColour(card.suit)}${Console.BOLD}${card.cardValue.cardType()}${Console.RESET}        │",
-        "│         │",
+        lines,
         s"│    ${cardColour(card.suit)}${Console.BOLD}${card.suit.cardType()}${Console.RESET}    │",
-        "│         │",
+        lines,
         s"│        ${cardColour(card.suit)}${Console.BOLD}${card.cardValue.cardType()}${Console.RESET}│",
         s"└─────────┘"
       )
