@@ -27,7 +27,7 @@ object PlayerControl {
 
   def playCard(player: Player): Card = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
-    if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(3000L))
+    if (!KnockOutWhist.debugmode) ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, true))
     ControlHandler.invoke(RequestCardEvent(player.currentHand().get)) match {
@@ -43,7 +43,7 @@ object PlayerControl {
 
   def dogplayCard(player: Player, round: Round): Option[Card] = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
-    if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(3000L))
+    if (!KnockOutWhist.debugmode) ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundControl.dogNeedsToPlay(round)))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
     ControlHandler.invoke(RequestDogPlayCardEvent(player.currentHand().get, RoundControl.dogNeedsToPlay(round))) match {
@@ -63,7 +63,7 @@ object PlayerControl {
 
   @tailrec
   private def determineWinnerTieText(players: List[Player], tieMessage: Boolean): Player = {
-    if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     if (tieMessage) ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
     var currentStep = 0
     var remaining = CardManager.cardContainer.size - (players.length - 1)

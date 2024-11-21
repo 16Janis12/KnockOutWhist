@@ -96,7 +96,7 @@ object RoundControl {
     }
     val (roundWinner, finalRound) = RoundControl.finalizeRound(roundImpl, matchImpl)
     ControlHandler.invoke(ShowRoundStatus(WON_ROUND, finalRound, roundWinner))
-    if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(5000L))
+    if (!KnockOutWhist.debugmode) ControlHandler.invoke(DelayEvent(5000L))
     if (finalRound.players_out.nonEmpty) {
       ControlHandler.invoke(ShowRoundStatus(PLAYERS_OUT, finalRound))
       finalRound.players_out.foreach(p => {
@@ -109,7 +109,7 @@ object RoundControl {
 
 
   private def provideCards(matchImpl: Match, players: List[Player]): Int = {
-    if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     var hands = 0
     for (player <- players) {
       if (!player.doglife) {
