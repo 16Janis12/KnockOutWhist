@@ -30,6 +30,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   eventHandler.addListener(TUIMain)
 
   "The render hand event" should {
+    TestUtil.disableDelay()
     CardManager.resetOrder()
     val event1 = RenderHandEvent(CardManager.createHand(1), true)
     val event2 = RenderHandEvent(CardManager.createHand(1), false)
@@ -53,6 +54,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
     }
   }
   "The show tie cards event" should {
+    TestUtil.disableDelay()
     val event = ShowTieCardsEvent(List((Player("Foo"), Card(Two,Suit.Hearts))))
     "be able to be created" in {
       event should not be null
@@ -75,6 +77,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The request card event" should {
+    TestUtil.disableDelay()
     val hand = CardManager.createHand(1)
     val event = RequestCardEvent(hand)
     "be able to be created" in {
@@ -103,6 +106,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The request number event" should {
+    TestUtil.disableDelay()
     val event = RequestNumberEvent(6, 12)
     "be able to be created" in {
       event should not be null
@@ -131,6 +135,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The RequestDogPlayCardEvent" should {
+    TestUtil.disableDelay()
     val hand = Hand(List(Card(CardValue.Ten, Suit.Spades)))
     val event = RequestDogPlayCardEvent(hand, true)
     "be able to get created" in {
@@ -158,6 +163,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
     }
   }
   "The RequestPickTrumpsuitEvent" should {
+    TestUtil.disableDelay()
     val event = RequestPickTrumpsuitEvent()
     "be able to get created" in {
       event should not be null
@@ -186,6 +192,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
     }
   }
   "The ShowCurrentTrickEvent" should {
+    TestUtil.disableDelay()
     val player1 = Player("Gunter")
     val player2 = Player("Peter")
     val listplayers = List(player1, player2)
@@ -206,6 +213,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The show global status event" should {
+    TestUtil.disableDelay()
     var event: ShowGlobalStatus = null
     "be able to be created" in {
       event = ShowGlobalStatus(SHOW_TIE)
@@ -270,6 +278,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The show player status event" should {
+    TestUtil.disableDelay()
     val player = Player("Foo")
     var event: ShowPlayerStatus = null
     "be able to be created" in {
@@ -345,6 +354,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The show round status event" should {
+    TestUtil.disableDelay()
     val round = Round(trumpSuit = Hearts, matchImpl = null, tricklist = ListBuffer(), players_in = null, firstRound = false, players_out = List(Player("Foo")))
     var event: ShowRoundStatus = null
     "be able to be created" in {
@@ -390,6 +400,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "The error status event" should {
+    TestUtil.disableDelay()
     var event: ShowErrorStatus = null
     "be able to be created" in {
       event = ShowErrorStatus(INVALID_NUMBER)
@@ -454,6 +465,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
 
   "An Event" should {
+    TestUtil.disableDelay()
     "return None if it doesn't exist" in {
       val event = new SimpleEvent {
         override def id: String = "ShowEnte"
