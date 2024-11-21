@@ -23,9 +23,9 @@ class MatchTests extends AnyWordSpec with Matchers{
       val player2 = Player("Peter")
       val player_list = List(player1, player2)
       val match1 = Match(player_list)
-      val round1 = RoundControl.create_round(match1)
+      val round1 = RoundControl.createround(match1)
       val trumpsuit = round1.trumpSuit
-      val trick1 = TrickControl.create_trick(round1)
+      val trick1 = TrickControl.createtrick(round1)
       val playedcard1 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player1)
       }
@@ -40,10 +40,10 @@ class MatchTests extends AnyWordSpec with Matchers{
       val rtrick1 = TrickControl.wonTrick(trick1, round1)
       RoundControl.finalizeRound(round1, match1, true)
       val round2 = TestUtil.simulateInput("1\n") {
-        RoundControl.create_round(match1)
+        RoundControl.createround(match1)
       }
       TestUtil.enableDebugMode()
-      val trick2: Trick = TrickControl.create_trick(round2)
+      val trick2: Trick = TrickControl.createtrick(round2)
       val playedcard3 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player1)
       }
@@ -53,7 +53,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
       TrickControl.playCard(trick2, round2, playedcard4, player2)
       "be able to return the current trick of the round" in {
-        round2.get_current_trick().get should be(trick2)
+        round2.getcurrenttrick().get should be(trick2)
       }
       val rtrick2 = TrickControl.wonTrick(trick2, round2)
       "return false if the round isn't over" in {
@@ -69,9 +69,9 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
       RoundControl.finalizeRound(round2, match1, true)
       val round3 = TestUtil.simulateInput("1\n") {
-        RoundControl.create_round(match1)
+        RoundControl.createround(match1)
       }
-      val trick3 = TrickControl.create_trick(round3)
+      val trick3 = TrickControl.createtrick(round3)
       val playedcard5 = TestUtil.simulateInput("1\n") {
         PlayerControl.playCard(player1)
       }
@@ -92,7 +92,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       "return false when no round has been completed" in {
         CardManager.shuffleAndReset()
         val match3 = Match(List(Player("Gunter")))
-        RoundControl.create_round(match3)
+        RoundControl.createround(match3)
         MatchControl.isOver(match3) shouldBe false
       }
       "return true if one player is remaining after a round has been played" in {
@@ -100,16 +100,16 @@ class MatchTests extends AnyWordSpec with Matchers{
         MatchControl.isOver(match1) shouldBe true
       }
       val round4 = TestUtil.simulateInput("1\n") {
-        RoundControl.create_round(match1)
+        RoundControl.createround(match1)
       }
-      val trick4 = TrickControl.create_trick(round4)
+      val trick4 = TrickControl.createtrick(round4)
       val playedcard7 = Card(CardValue.Ace, Suit.Hearts)
       val playedcard8 = Card(CardValue.Two, Suit.Hearts)
       TrickControl.playCard(trick4, round4, playedcard7, player1)
       TrickControl.playCard(trick4, round4, playedcard8, player2)
       TrickControl.wonTrick(trick4, round4)
 
-      val trick5 = TrickControl.create_trick(round4)
+      val trick5 = TrickControl.createtrick(round4)
       TrickControl.playCard(trick5, round4, playedcard8, player1)
       TrickControl.playCard(trick5, round4, playedcard7, player2)
       TrickControl.wonTrick(trick5, round4)
@@ -119,7 +119,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
 
       val round5 = TestUtil.simulateInput("1\n") {
-        RoundControl.create_round(match1)
+        RoundControl.createround(match1)
       }
       "error out if a round is finalized without any tricks played" in {
         assertThrows[IllegalStateException] {

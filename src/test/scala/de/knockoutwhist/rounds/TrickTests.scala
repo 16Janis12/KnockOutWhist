@@ -20,8 +20,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
       TrickControl.playCard(trick, round, card, player)
-      trick.get_first_card().isEmpty shouldBe false
-      trick.get_first_card().get shouldBe card
+      trick.getfirstcard().isEmpty shouldBe false
+      trick.getfirstcard().get shouldBe card
     }
     "be able to return no first card when none was played" in {
       val player = Player("Gunter")
@@ -29,7 +29,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val trick = new Trick(round)
-      trick.get_first_card().isEmpty shouldBe true
+      trick.getfirstcard().isEmpty shouldBe true
     }
     "be able to tell who won the trick" in {
       val playerlist = List(Player("Gunter"))
@@ -89,7 +89,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Two, Suit.Spades)
       val card2 = Card(CardValue.Ace, Suit.Spades)
-      val trick = TrickControl.create_trick(round)
+      val trick = TrickControl.createtrick(round)
       TrickControl.playCard(trick, round, card, player)
       TrickControl.playCard(trick, round, card2, player2) shouldBe true
     }
@@ -135,9 +135,9 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card = Card(CardValue.Ace, Suit.Spades)
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
-      trick.set_first_card(card)
+      trick.setfirstcard(card)
       assertThrows[IllegalStateException] {
-        trick.set_first_card(card2)
+        trick.setfirstcard(card2)
       }
     }
   }

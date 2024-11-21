@@ -1,6 +1,6 @@
 package de.knockoutwhist.events.directional
 
-import de.knockoutwhist.utils.events.{SimpleEvent, ReturnableEvent}
+import de.knockoutwhist.utils.events.{ReturnableEvent, SimpleEvent}
 
 import scala.io.StdIn
 import scala.util.Try

@@ -3,11 +3,11 @@ package de.knockoutwhist.events
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardValue.{Queen, Two}
 import de.knockoutwhist.cards.Suit.Hearts
-import de.knockoutwhist.cards.{Card, CardManager, CardValue, Hand, Suit}
+import de.knockoutwhist.cards.*
 import de.knockoutwhist.control.{RoundControl, TrickControl}
+import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
-import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.*
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
@@ -197,8 +197,8 @@ class TestAllEvent extends AnyWordSpec with Matchers {
     val player2 = Player("Peter")
     val listplayers = List(player1, player2)
     val match1 = Match(listplayers)
-    val round = RoundControl.create_round(match1)
-    val trick = TrickControl.create_trick(round)
+    val round = RoundControl.createround(match1)
+    val trick = TrickControl.createtrick(round)
     TrickControl.playCard(trick, round, Card(CardValue.Ten, Suit.Spades), player1)
     val event = ShowCurrentTrickEvent(round, trick)
     "be able to get created" in {
@@ -355,7 +355,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
 
   "The show round status event" should {
     TestUtil.disableDelay()
-    val round = Round(trumpSuit = Hearts, matchImpl = null, tricklist = ListBuffer(), players_in = null, firstRound = false, players_out = List(Player("Foo")))
+    val round = Round(trumpSuit = Hearts, matchImpl = null, tricklist = ListBuffer(), playersin = null, firstRound = false, playersout = List(Player("Foo")))
     var event: ShowRoundStatus = null
     "be able to be created" in {
       event = ShowRoundStatus(SHOW_START_ROUND, round)
