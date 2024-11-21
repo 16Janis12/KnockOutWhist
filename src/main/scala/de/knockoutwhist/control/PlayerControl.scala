@@ -50,11 +50,10 @@ object PlayerControl {
   }
 
   def determineWinnerTie(players: List[Player]): Player = {
-    determineWinnerTieText(players, true)
+    determineWinnerTie(players, true)
   }
 
-  @tailrec
-  private def determineWinnerTieText(players: List[Player], tieMessage: Boolean): Player = {
+  private def determineWinnerTie(players: List[Player], tieMessage: Boolean): Player = {
     if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     if (tieMessage) ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
     var currentStep = 0
@@ -76,14 +75,17 @@ object PlayerControl {
       }
     }
     ControlHandler.invoke(ShowTieCardsEvent(cut.toList))
+    evaluateTieWinner(cut)
+  }
 
-    var currentHighest: Card = null
+  private def evaluateTieWinner(cut: mutable.HashMap[Player, Card]): Player = {
     val winner: ListBuffer[Player] = ListBuffer()
+    var currentHighest: Card = null
     for ((player, card) <- cut) {
       if (currentHighest == null) {
         currentHighest = card
         winner += player
-      }else {
+      } else {
         val compared = card.cardValue.ordinal.compareTo(currentHighest.cardValue.ordinal)
         if (compared > 0) {
           currentHighest = card
@@ -99,7 +101,7 @@ object PlayerControl {
       return winner.head
     }
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE_TIE))
-    determineWinnerTieText(winner.toList, false)
+    determineWinnerTie(winner.toList, false)
   }
 
   @tailrec
