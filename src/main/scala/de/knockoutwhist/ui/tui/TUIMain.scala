@@ -43,7 +43,7 @@ object TUIMain extends EventListener with UI {
       case event: RequestDogPlayCardEvent =>
         reqdogeventmet(event)
       case event: RequestPickTrumpsuitEvent =>
-        reqpicktevmet(event)
+        reqpicktevmet()
       case event: ShowCurrentTrickEvent =>
         showcurtrevmet(event)
       case _ => None
@@ -323,7 +323,7 @@ object TUIMain extends EventListener with UI {
     }
     )
   }
-  private def reqpicktevmet(event: RequestPickTrumpsuitEvent): Option[Try[Suit]] = {
+  private def reqpicktevmet(): Option[Try[Suit]] = {
     Some(Try {
       val suit = readLine().toInt
       suit match {
