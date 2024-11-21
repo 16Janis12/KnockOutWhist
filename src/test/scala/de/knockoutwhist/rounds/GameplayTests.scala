@@ -14,6 +14,7 @@ class GameplayTests extends AnyWordSpec with Matchers {
   "The Match Control" must {
     "not throw an exception" in {
       TestUtil.enableDebugMode()
+      TestUtil.disableDelay()
       CardManager.shuffleAndReset()
       CardManager.resetOrder()
       TestUtil.cancelOut() {

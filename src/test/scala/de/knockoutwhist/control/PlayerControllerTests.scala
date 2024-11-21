@@ -12,6 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class PlayerControllerTests extends AnyWordSpec with Matchers {
 
   "The text player controller play function" should {
+    TestUtil.disableDelay()
     CardManager.shuffleAndReset()
     TestUtil.cancelOut() {
       "throw an exception of the player has no hand" in {

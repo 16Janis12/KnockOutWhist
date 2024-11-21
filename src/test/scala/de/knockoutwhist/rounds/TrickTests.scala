@@ -3,12 +3,14 @@ package de.knockoutwhist.rounds
 import de.knockoutwhist.cards.{Card, CardValue, Suit}
 import de.knockoutwhist.control.TrickControl
 import de.knockoutwhist.player.Player
+import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class TrickTests extends AnyWordSpec with Matchers {
 
   "A trick" should {
+    TestUtil.disableDelay()
     "be able to return the first card after it was played" in {
       val player = Player("Gunter")
       val player2 = Player("Peter")

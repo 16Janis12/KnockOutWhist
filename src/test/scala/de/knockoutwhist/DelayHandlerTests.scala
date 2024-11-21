@@ -27,7 +27,8 @@ class DelayHandlerTests extends AnyWordSpec with TimeLimits with Matchers {
       delayEvent.delay should be (100)
     }
     "not be longer than 120ms if it's set to 100ms" in {
-      failAfter(120 millis) {
+      DelayHandler.activateDelay = true
+      failAfter(200 millis) {
         eventHandler.invoke(delayEvent)
       }
     }

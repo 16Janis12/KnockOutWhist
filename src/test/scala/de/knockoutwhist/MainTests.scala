@@ -7,6 +7,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class MainTests extends AnyFunSuite {
 
   test("Main should be able to go to the main menu") {
+    TestUtil.disableDelay()
     TUIMain.init = false
     TestUtil.simulateInput("2\n") {
       KnockOutWhist.main(Array())
@@ -14,6 +15,7 @@ class MainTests extends AnyFunSuite {
   }
 
   test("Main should be able to be executed twice") {
+    TestUtil.disableDelay()
     TestUtil.simulateInput("2\n") {
       assertThrows[IllegalStateException] {
         KnockOutWhist.main(Array())

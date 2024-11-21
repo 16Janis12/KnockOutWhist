@@ -76,7 +76,7 @@ object TrickControl {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, finalTrick))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, winner))
     playerQueue.resetAndSetStart(winner)
-    if (!KnockOutWhist.debugmode) ControlHandler.invoke(DelayEvent(3000L))
+    ControlHandler.invoke(DelayEvent(3000L))
     finalTrick
   }
 

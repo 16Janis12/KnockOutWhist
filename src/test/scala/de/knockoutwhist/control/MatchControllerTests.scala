@@ -17,6 +17,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class MatchControllerTests extends AnyWordSpec with Matchers {
 
   "The enter players function" should {
+    TestUtil.disableDelay()
     "throw no exception" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,bar\n") {
@@ -48,6 +49,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The control round function" should {
+    TestUtil.disableDelay()
     "throw no exception and return a winner" in {
       val players = List(Player("foo"), Player("bar"))
       val matchImpl = Match(players, 1)
@@ -76,6 +78,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The next round function" should {
+    TestUtil.disableDelay()
     "return null if the match is over" in {
       val players = List(Player("foo"))
       val matchImpl = Match(players, 2)
@@ -91,6 +94,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The next trick function" should {
+    TestUtil.disableDelay()
     "return null if the round is over" in {
       val players = List(Player("foo"))
       val matchImpl = Match(players, 2)
@@ -105,6 +109,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
     }
   }
   "The controlSuit function" should {
+    TestUtil.disableDelay()
     "check if a player can play from the correct suit but doesnt" in {
       val player1 = Player("Gunter")
       val player2 = Player("Peter")
@@ -126,6 +131,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The control Trick function" should {
+    TestUtil.disableDelay()
     "return the other player if the dog decides not to play" in {
       val foo = Player("foo")
       foo.doglife = true

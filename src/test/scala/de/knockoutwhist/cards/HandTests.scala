@@ -1,6 +1,7 @@
 package de.knockoutwhist.cards
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
+import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderHandEvent
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -10,6 +11,7 @@ import scala.collection.mutable.ListBuffer
 class HandTests extends AnyWordSpec with Matchers {
 
   "The hand" should {
+    TestUtil.disableDelay()
     "be able to remove cards from its hand" in {
       val handholder = ListBuffer[Card]()
       handholder.addOne(Card(CardValue.Ace, Suit.Spades))
