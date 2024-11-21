@@ -1,5 +1,6 @@
 package de.knockoutwhist.cards
 
+import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
@@ -7,6 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class DeckTests extends AnyWordSpec with Matchers{
 
   "A deck" should {
+    TestUtil.disableDelay()
     "not be empty" in {
       CardManager.cardContainer must not be empty
     }

@@ -1,14 +1,16 @@
 package de.knockoutwhist.cards
-import de.knockoutwhist.utils.events.EventHandler
 import de.knockoutwhist.cards.CardValue.{Ace, Ten}
 import de.knockoutwhist.events.cards.RenderHandEvent
+import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderCardAsString
+import de.knockoutwhist.utils.events.EventHandler
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class CardTests extends AnyWordSpec with Matchers{
 
   "A card" should {
+    TestUtil.disableDelay()
     "be displayed with correct value and Suit" in {
       val card = Card(CardValue.Ace, Suit.Spades)
       val e = "Ace of Spades"

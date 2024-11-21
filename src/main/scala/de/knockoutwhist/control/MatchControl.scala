@@ -1,19 +1,12 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{Card, CardManager}
 import de.knockoutwhist.control.RoundControl.controlRound
 import de.knockoutwhist.events.*
-import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER_OF_PLAYERS, WRONG_CARD}
+import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER_OF_PLAYERS}
 import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_TRICK}
-import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
-import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.player.Player
-import de.knockoutwhist.rounds.{Match, Round, Trick}
+import de.knockoutwhist.rounds.Match
 import de.knockoutwhist.utils.CustomPlayerQueue
-import de.knockoutwhist.utils.Implicits.*
 
 import scala.compiletime.uninitialized
 import scala.io.StdIn
@@ -51,10 +44,9 @@ object MatchControl {
   def controlMatch(): Player = {
     val matchImpl = Match(playerQueue.toList)
     while (!isOver(matchImpl)) {
-      val roundImpl = controlRound(matchImpl)
+      controlRound(matchImpl)
     }
     val winner = finalizeMatch(matchImpl)
-    val playerwinner = winner.name
     ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, winner))
     winner
   }

@@ -3,23 +3,21 @@ package de.knockoutwhist.control
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.control.MatchControl.playerQueue
-import de.knockoutwhist.player.Player
-import de.knockoutwhist.rounds.{Match, Round, Trick}
-import de.knockoutwhist.utils.Implicits.*
-import de.knockoutwhist.control.RoundControl
-import de.knockoutwhist.control.TrickControl.controlTrick
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.ShowRoundStatus
 import de.knockoutwhist.events.util.DelayEvent
+import de.knockoutwhist.player.Player
+import de.knockoutwhist.rounds.{Match, Round}
+import de.knockoutwhist.utils.Implicits.*
 
 object RoundControl {
 
   def isOver(round: Round): Boolean = {
-    round.players_in.map(_.currentHand()).count(_.get.cards.isEmpty) == round.players_in.size
+    round.playersin.map(_.currentHand()).count(_.get.cards.isEmpty) == round.playersin.size
   }
 
   def dogNeedsToPlay(round: Round): Boolean = {
-    round.players_in.filter(!_.doglife).map(_.currentHand()).exists(_.get.cards.isEmpty)
+    round.playersin.filter(!_.doglife).map(_.currentHand()).exists(_.get.cards.isEmpty)
   }
 
   def finalizeRound(round: Round, matchImpl: Match,force: Boolean = false): (Player, Round) = {
@@ -36,7 +34,7 @@ object RoundControl {
 
     var playersOut = round.firstRound
       ? List()
-      |: round.players_in.filter(!tricksMapped.contains(_))
+      |: round.playersin.filter(!tricksMapped.contains(_))
 
     if (playersOut.nonEmpty && !matchImpl.dogLife) {
       matchImpl.dogLife = true
@@ -52,31 +50,31 @@ object RoundControl {
       ? winners.head
       |: PlayerControl.determineWinnerTie(winners.toList)
 
-    val finalRound = Round(round.trumpSuit, matchImpl, round.tricklist, round.players_in, playersOut, winner, round.firstRound)
+    val finalRound = Round(round.trumpSuit, matchImpl, round.tricklist, round.playersin, playersOut, winner, round.firstRound)
     matchImpl.roundlist += finalRound
     (winner, finalRound)
   }
 
   def remainingPlayers(round: Round): List[Player] = {
-    if (round.players_out == null) {
-      return round.players_in
+    if (round.playersout == null) {
+      return round.playersin
     }
-    round.players_in.filter(!round.players_out.contains(_))
+    round.playersin.filter(!round.playersout.contains(_))
   }
 
-  def create_round(matchImpl: Match): Round = {
+  def createround(matchImpl: Match): Round = {
     val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: RoundControl.remainingPlayers(matchImpl.roundlist.last)
     provideCards(matchImpl, remainingPlayer)
     if (matchImpl.roundlist.isEmpty) {
-      val random_trumpsuit = CardManager.nextCard().suit
-      matchImpl.current_round = Some(new Round(random_trumpsuit, matchImpl, remainingPlayer, true))
+      val randomTrumpsuit = CardManager.nextCard().suit
+      matchImpl.current_round = Some(new Round(randomTrumpsuit, matchImpl, remainingPlayer, true))
     } else {
       val winner = matchImpl.roundlist.last.winner
       val trumpsuit = PlayerControl.pickNextTrumpsuit(winner)
 
       matchImpl.current_round = Some(new Round(trumpsuit, matchImpl, remainingPlayer, false))
     }
-    matchImpl.number_of_cards -= 1
+    matchImpl.numberofcards -= 1
     matchImpl.current_round.get
   }
 
@@ -84,7 +82,7 @@ object RoundControl {
     if (MatchControl.isOver(matchImpl)) {
       return null
     }
-    create_round(matchImpl)
+    createround(matchImpl)
   }
 
 
@@ -96,10 +94,10 @@ object RoundControl {
     }
     val (roundWinner, finalRound) = RoundControl.finalizeRound(roundImpl, matchImpl)
     ControlHandler.invoke(ShowRoundStatus(WON_ROUND, finalRound, roundWinner))
-    if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(5000L))
-    if (finalRound.players_out.nonEmpty) {
+    ControlHandler.invoke(DelayEvent(5000L))
+    if (finalRound.playersout.nonEmpty) {
       ControlHandler.invoke(ShowRoundStatus(PLAYERS_OUT, finalRound))
-      finalRound.players_out.foreach(p => {
+      finalRound.playersout.foreach(p => {
         playerQueue.remove(p)
       })
     }
@@ -109,11 +107,11 @@ object RoundControl {
 
 
   private def provideCards(matchImpl: Match, players: List[Player]): Int = {
-    if (!KnockOutWhist.DEBUG_MODE) CardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     var hands = 0
     for (player <- players) {
       if (!player.doglife) {
-        player.provideHand(CardManager.createHand(matchImpl.number_of_cards))
+        player.provideHand(CardManager.createHand(matchImpl.numberofcards))
       } else {
         player.provideHand(CardManager.createHand(1))
       }
