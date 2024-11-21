@@ -1,6 +1,6 @@
 package de.knockoutwhist.rounds
-import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{CardManager, Suit}
+
+import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.utils.Implicits.*
 

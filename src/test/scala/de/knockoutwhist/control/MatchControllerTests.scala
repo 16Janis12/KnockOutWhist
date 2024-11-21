@@ -1,14 +1,11 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.cards.CardValue.Ace
 import de.knockoutwhist.cards.Suit.Hearts
-import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.{MatchControl, RoundControl, TrickControl}
+import de.knockoutwhist.cards.*
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
-import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils.CustomPlayerQueue
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}

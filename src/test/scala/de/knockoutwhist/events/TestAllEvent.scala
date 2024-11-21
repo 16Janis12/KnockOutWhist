@@ -3,11 +3,11 @@ package de.knockoutwhist.events
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardValue.{Queen, Two}
 import de.knockoutwhist.cards.Suit.Hearts
-import de.knockoutwhist.cards.{Card, CardManager, CardValue, Hand, Suit}
+import de.knockoutwhist.cards.*
 import de.knockoutwhist.control.{RoundControl, TrickControl}
+import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
-import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.*
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}

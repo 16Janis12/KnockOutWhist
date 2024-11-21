@@ -3,13 +3,12 @@ package de.knockoutwhist.control
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.control.MatchControl.playerQueue
-import de.knockoutwhist.player.Player
-import de.knockoutwhist.rounds.{Match, Round}
-import de.knockoutwhist.utils.Implicits.*
-
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.ShowRoundStatus
 import de.knockoutwhist.events.util.DelayEvent
+import de.knockoutwhist.player.Player
+import de.knockoutwhist.rounds.{Match, Round}
+import de.knockoutwhist.utils.Implicits.*
 
 object RoundControl {
 

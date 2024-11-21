@@ -5,11 +5,11 @@ import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.MatchControl.playerQueue
 import de.knockoutwhist.events.ERROR_STATUS.WRONG_CARD
 import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_TRICK}
-import de.knockoutwhist.events.{ShowErrorStatus, ShowPlayerStatus}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.util.DelayEvent
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.events.{ShowErrorStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.Player
+import de.knockoutwhist.rounds.{Round, Trick}
 
 object TrickControl {
 

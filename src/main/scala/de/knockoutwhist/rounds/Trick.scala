@@ -1,7 +1,6 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.Card
-import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.player.Player
 
 import scala.collection.mutable

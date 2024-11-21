@@ -1,9 +1,9 @@
 package de.knockoutwhist.cards
-import de.knockoutwhist.utils.events.EventHandler
 import de.knockoutwhist.cards.CardValue.{Ace, Ten}
 import de.knockoutwhist.events.cards.RenderHandEvent
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderCardAsString
+import de.knockoutwhist.utils.events.EventHandler
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
