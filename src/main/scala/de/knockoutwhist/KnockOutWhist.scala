@@ -14,7 +14,7 @@ object KnockOutWhist {
    */
   private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = false
 
-  def DEBUG_MODE = DEBUG_MODE_VAR
+  def debugmode = DEBUG_MODE_VAR
 
   def main(args: Array[String]): Unit = {
     if(!TUIMain.initial) throw new IllegalStateException("Game could not be started.")

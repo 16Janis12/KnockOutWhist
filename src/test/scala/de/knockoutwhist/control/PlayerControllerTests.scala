@@ -1,7 +1,7 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.cards.{CardManager, Hand}
 import de.knockoutwhist.cards.Suit.*
+import de.knockoutwhist.cards.{CardManager, Hand}
 import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.Round
@@ -12,6 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class PlayerControllerTests extends AnyWordSpec with Matchers {
 
   "The text player controller play function" should {
+    TestUtil.disableDelay()
     CardManager.shuffleAndReset()
     TestUtil.cancelOut() {
       "throw an exception of the player has no hand" in {

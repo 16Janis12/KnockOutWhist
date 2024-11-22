@@ -1,14 +1,11 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.cards.CardValue.Ace
 import de.knockoutwhist.cards.Suit.Hearts
-import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.{MatchControl, RoundControl, TrickControl}
+import de.knockoutwhist.cards.*
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
-import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils.CustomPlayerQueue
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
@@ -17,6 +14,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class MatchControllerTests extends AnyWordSpec with Matchers {
 
   "The enter players function" should {
+    TestUtil.disableDelay()
     "throw no exception" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,bar\n") {
@@ -48,6 +46,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The control round function" should {
+    TestUtil.disableDelay()
     "throw no exception and return a winner" in {
       val players = List(Player("foo"), Player("bar"))
       val matchImpl = Match(players, 1)
@@ -76,6 +75,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The next round function" should {
+    TestUtil.disableDelay()
     "return null if the match is over" in {
       val players = List(Player("foo"))
       val matchImpl = Match(players, 2)
@@ -91,6 +91,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The next trick function" should {
+    TestUtil.disableDelay()
     "return null if the round is over" in {
       val players = List(Player("foo"))
       val matchImpl = Match(players, 2)
@@ -105,6 +106,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
     }
   }
   "The controlSuit function" should {
+    TestUtil.disableDelay()
     "check if a player can play from the correct suit but doesnt" in {
       val player1 = Player("Gunter")
       val player2 = Player("Peter")
@@ -126,6 +128,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The control Trick function" should {
+    TestUtil.disableDelay()
     "return the other player if the dog decides not to play" in {
       val foo = Player("foo")
       foo.doglife = true

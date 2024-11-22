@@ -25,4 +25,4 @@ class TestSequence extends Sequential(
   new EventTests(),
   new TestAllEvent(),
   new DelayHandlerTests()
-) {}
+)

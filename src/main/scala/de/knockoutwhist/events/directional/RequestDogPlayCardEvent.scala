@@ -5,6 +5,6 @@ import de.knockoutwhist.utils.events.ReturnableEvent
 
 import scala.util.Try
 
-case class RequestDogPlayCardEvent(hand: Hand, needs_to_play: Boolean) extends ReturnableEvent[Try[Option[Card]]] {
+case class RequestDogPlayCardEvent(hand: Hand, needstoplay: Boolean) extends ReturnableEvent[Try[Option[Card]]] {
   override def id: String = "RequestDogPlayCardEvent"
 } 

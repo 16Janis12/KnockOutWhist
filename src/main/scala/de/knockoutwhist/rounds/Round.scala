@@ -1,29 +1,29 @@
 package de.knockoutwhist.rounds
-import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{CardManager, Suit}
+
+import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.player.Player
 import de.knockoutwhist.utils.Implicits.*
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick], players_in: List[Player], players_out: List[Player] = null, winner: Player = null, firstRound: Boolean) {
-  def this(trumpSuit: Suit, matchImpl: Match, players_in: List[Player], firstRound: Boolean) = {
-    this(trumpSuit, matchImpl, ListBuffer[Trick](), players_in, firstRound = firstRound)
+case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick], playersin: List[Player], playersout: List[Player] = null, winner: Player = null, firstRound: Boolean) {
+  def this(trumpSuit: Suit, matchImpl: Match, playersin: List[Player], firstRound: Boolean) = {
+    this(trumpSuit, matchImpl, ListBuffer[Trick](), playersin, firstRound = firstRound)
   }
 
-  private var current_trick: Option[Trick] = None
+  private var currenttrick: Option[Trick] = None
 
-  def get_current_trick(): Option[Trick] = {
-    current_trick
+  def getcurrenttrick(): Option[Trick] = {
+    currenttrick
   }
   
-  def set_current_trick(trick: Trick): Unit = {
-    current_trick = Some(trick)
+  def setcurrenttrick(trick: Trick): Unit = {
+    currenttrick = Some(trick)
   }
   
   override def toString: String = {
-    s"$trumpSuit, $tricklist, $players_in, $players_out, $winner, $firstRound"
+    s"$trumpSuit, $tricklist, $playersin, $playersout, $winner, $firstRound"
   }
   
   

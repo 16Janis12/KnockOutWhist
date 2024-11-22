@@ -1,15 +1,14 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.MatchControl.playerQueue
 import de.knockoutwhist.events.ERROR_STATUS.WRONG_CARD
 import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_TRICK}
-import de.knockoutwhist.events.{ShowErrorStatus, ShowPlayerStatus}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.util.DelayEvent
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.events.{ShowErrorStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.Player
+import de.knockoutwhist.rounds.{Round, Trick}
 
 object TrickControl {
 
@@ -17,14 +16,11 @@ object TrickControl {
     if (trick.finished) {
       throw new IllegalStateException("This trick is already finished")
     } else {
-      if (trick.get_first_card().isEmpty) {
-        trick.set_first_card(card)
+      if (trick.getfirstcard().isEmpty) {
+        trick.setfirstcard(card)
         trick.cards += (card -> player)
         true
-      } else if (card.suit == trick.get_first_card().getOrElse(card).suit) { // Wert aus Option extrahieren
-        trick.cards += (card -> player)
-        true
-      } else if (card.suit == round.trumpSuit) {
+      } else if ((card.suit == trick.getfirstcard().getOrElse(card).suit) || (card.suit == round.trumpSuit)) { // Wert aus Option extrahieren
         trick.cards += (card -> player)
         true
       } else {
@@ -39,7 +35,7 @@ object TrickControl {
       if (trick.cards.keys.exists(_.suit == round.trumpSuit)) {
         trick.cards.keys.filter(_.suit == round.trumpSuit).maxBy(_.cardValue.ordinal) //stream
       } else {
-        trick.cards.keys.filter(_.suit == trick.get_first_card().get.suit).maxBy(_.cardValue.ordinal) //stream
+        trick.cards.keys.filter(_.suit == trick.getfirstcard().get.suit).maxBy(_.cardValue.ordinal) //stream
       }
     }
     val winningPlayer = trick.cards(winningCard)
@@ -48,9 +44,9 @@ object TrickControl {
     (winningPlayer, finalTrick)
   }
 
-  def create_trick(round: Round): Trick = {
+  def createtrick(round: Round): Trick = {
     val trick = new Trick(round)
-    round.set_current_trick(trick)
+    round.setcurrenttrick(trick)
     trick
   }
 
@@ -76,7 +72,7 @@ object TrickControl {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, finalTrick))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, winner))
     playerQueue.resetAndSetStart(winner)
-    if (!KnockOutWhist.DEBUG_MODE) ControlHandler.invoke(DelayEvent(3000L))
+    ControlHandler.invoke(DelayEvent(3000L))
     finalTrick
   }
 
@@ -84,14 +80,14 @@ object TrickControl {
     if (RoundControl.isOver(roundImpl)) {
       return null
     }
-    create_trick(roundImpl)
+    createtrick(roundImpl)
   }
 
   private[control] def controlSuitplayed(trick: Trick, player: Player): Card = {
     var card = PlayerControl.playCard(player)
-    if (trick.get_first_card().isDefined) {
-      val firstCard = trick.get_first_card().get
-      while (!(firstCard.suit == card.suit)) {
+    if (trick.getfirstcard().isDefined) {
+      val firstCard = trick.getfirstcard().get
+      while (firstCard.suit != card.suit) {
         var hasSuit = false
         for (cardInHand <- player.currentHand().get.cards) {
           if (cardInHand.suit == firstCard.suit) {
