@@ -4,7 +4,7 @@ import de.knockoutwhist.control.RoundControl.controlRound
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER_OF_PLAYERS}
 import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.Match
 import de.knockoutwhist.utils.CustomPlayerQueue
 
@@ -14,16 +14,16 @@ import scala.util.Random
 
 object MatchControl {
 
-  private[control] var playerQueue: CustomPlayerQueue[Player] = uninitialized
+  private[control] var playerQueue: CustomPlayerQueue[AbstractPlayer] = uninitialized
 
-  def startMatch(): Player = {
+  def startMatch(): AbstractPlayer = {
     ControlHandler.invoke(ShowGlobalStatus(SHOW_START_MATCH))
     val players = enterPlayers()
-    playerQueue = CustomPlayerQueue[Player](players, Random.nextInt(players.length))
+    playerQueue = CustomPlayerQueue[AbstractPlayer](players, Random.nextInt(players.length))
     controlMatch()
   }
 
-  def enterPlayers(): Array[Player] = {
+  def enterPlayers(): Array[AbstractPlayer] = {
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
     val names = StdIn.readLine().split(",")
     if (names.length < 2) {
@@ -38,10 +38,10 @@ object MatchControl {
       ControlHandler.invoke(ShowErrorStatus(INVALID_NAME_FORMAT))
       return enterPlayers()
     }
-    names.map(s => Player(s))
+    names.map(s => AbstractPlayer(s))
   }
 
-  def controlMatch(): Player = {
+  def controlMatch(): AbstractPlayer = {
     val matchImpl = Match(playerQueue.toList)
     while (!isOver(matchImpl)) {
       controlRound(matchImpl)
@@ -59,7 +59,7 @@ object MatchControl {
     }
   }
 
-  def finalizeMatch(matchImpl: Match): Player = {
+  def finalizeMatch(matchImpl: Match): AbstractPlayer = {
     if (!isOver(matchImpl)) {
       throw new IllegalStateException("Match is not over yet.")
     }

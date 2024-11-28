@@ -1,11 +1,11 @@
 package de.knockoutwhist.rounds
 
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.utils.Implicits.*
 
 import scala.collection.mutable.ListBuffer
 
-case class Match(totalplayers: List[Player], var numberofcards: Int = 7) {
+case class Match(totalplayers: List[AbstractPlayer], var numberofcards: Int = 7) {
 
   val roundlist: ListBuffer[Round] = ListBuffer[Round]()
   var current_round: Option[Round] = None

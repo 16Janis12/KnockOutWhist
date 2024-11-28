@@ -3,7 +3,7 @@ package de.knockoutwhist.control
 import de.knockoutwhist.cards.Suit.*
 import de.knockoutwhist.cards.{CardManager, Hand}
 import de.knockoutwhist.control.PlayerControl
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.Round
 import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.should.Matchers
@@ -18,12 +18,12 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       "throw an exception of the player has no hand" in {
         assertThrows[NoSuchElementException] {
           TestUtil.simulateInput("1\n") {
-            PlayerControl.playCard(Player("Foo"))
+            PlayerControl.playCard(AbstractPlayer("Foo"))
           }
         }
       }
       "ask again on an invalid input" in {
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         CardManager.shuffleAndReset()
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
@@ -33,7 +33,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
         card should be(hand.cards.head)
       }
       "provide the card the player selected" in {
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         CardManager.shuffleAndReset()
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
@@ -46,7 +46,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
   }
 
   "The text player controller dogplay function" should {
-    val player = Player("Bar")
+    val player = AbstractPlayer("Bar")
     CardManager.shuffleAndReset()
     val hand = CardManager.createHand(2)
     player.provideHand(hand)
@@ -56,13 +56,13 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
         assertThrows[NoSuchElementException] {
           TestUtil.simulateInput("y\n") {
             TestUtil.disableDebugMode()
-            PlayerControl.dogplayCard(Player("Foo"), round)
+            PlayerControl.dogplayCard(AbstractPlayer("Foo"), round)
           }
         }
       }
       "ask again on an invalid input" in {
         TestUtil.enableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         CardManager.shuffleAndReset()
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
@@ -73,7 +73,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "provide the card the player selected" in {
         TestUtil.enableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         CardManager.shuffleAndReset()
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
@@ -84,7 +84,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "allow the dog to not play this trick" in {
         TestUtil.enableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         CardManager.shuffleAndReset()
         val hand = CardManager.createHand(1)
         player.provideHand(hand)
@@ -95,11 +95,11 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "force the dog to play in the last round" in {
         TestUtil.enableDebugMode()
-        val player1 = Player("Foo")
+        val player1 = AbstractPlayer("Foo")
         CardManager.shuffleAndReset()
         player1.provideHand(CardManager.createHand(1))
         player1.doglife = true
-        val player2 = Player("Bar")
+        val player2 = AbstractPlayer("Bar")
         player2.provideHand(Hand(List()))
         val round2 = new Round(Spades, null, List(player1,player2), true)
         val card = TestUtil.simulateInput("n\ny\n") {
@@ -114,8 +114,8 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
     TestUtil.cancelOut() {
       "return the player with the highest card" in {
         TestUtil.disableDebugMode()
-        val player1 = Player("Foo")
-        val player2 = Player("Bar")
+        val player1 = AbstractPlayer("Foo")
+        val player2 = AbstractPlayer("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("1\n2\n") {
           PlayerControl.determineWinnerTie(players)
@@ -125,8 +125,8 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       "return the player with the highest card after a tie" in {
         TestUtil.enableDebugMode()
         CardManager.resetOrder()
-        val player1 = Player("Foo")
-        val player2 = Player("Bar")
+        val player1 = AbstractPlayer("Foo")
+        val player2 = AbstractPlayer("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("1\n13\n5\n1\n") {
           PlayerControl.determineWinnerTie(players)
@@ -136,8 +136,8 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       "return the player with the highest card after a tie (winner first)" in {
         TestUtil.enableDebugMode()
         CardManager.resetOrder()
-        val player1 = Player("Foo")
-        val player2 = Player("Bar")
+        val player1 = AbstractPlayer("Foo")
+        val player2 = AbstractPlayer("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("13\n1\n") {
           PlayerControl.determineWinnerTie(players)
@@ -147,8 +147,8 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       "ask again on an invalid input" in {
         TestUtil.enableDebugMode()
         CardManager.resetOrder()
-        val player1 = Player("Foo")
-        val player2 = Player("Bar")
+        val player1 = AbstractPlayer("Foo")
+        val player2 = AbstractPlayer("Bar")
         val players = List(player1, player2)
         val winner = TestUtil.simulateInput("a\n200\n1\n2\n") {
           PlayerControl.determineWinnerTie(players)
@@ -162,7 +162,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
     TestUtil.cancelOut() {
       "return the suit the player selected (Spades)" in {
         TestUtil.disableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("4\n") {
           PlayerControl.pickNextTrumpsuit(player)
@@ -171,7 +171,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "return the suit the player selected (Hearts)" in {
         TestUtil.disableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("1\n") {
           PlayerControl.pickNextTrumpsuit(player)
@@ -180,7 +180,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "return the suit the player selected (Diamonds)" in {
         TestUtil.disableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("2\n") {
           PlayerControl.pickNextTrumpsuit(player)
@@ -189,7 +189,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "return the suit the player selected (Clubs)" in {
         TestUtil.disableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("3\n") {
           PlayerControl.pickNextTrumpsuit(player)
@@ -198,7 +198,7 @@ class PlayerControllerTests extends AnyWordSpec with Matchers {
       }
       "ask again on an invalid input" in {
         TestUtil.enableDebugMode()
-        val player = Player("Foo")
+        val player = AbstractPlayer("Foo")
         player.provideHand(CardManager.createHand(4))
         val suit = TestUtil.simulateInput("a\n10\n1\n") {
           PlayerControl.pickNextTrumpsuit(player)

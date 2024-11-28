@@ -1,6 +1,6 @@
 package de.knockoutwhist.events
 
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.events.SimpleEvent
 
@@ -45,7 +45,7 @@ case class ShowGlobalStatus(status: GLOBAL_STATUS, objects: Any*) extends ShowSt
   override def id: String = "ShowGlobalStatus"
 }
 
-case class ShowPlayerStatus(status: PLAYER_STATUS, player: Player, objects: Any*) extends ShowStatusEvent {
+case class ShowPlayerStatus(status: PLAYER_STATUS, player: AbstractPlayer, objects: Any*) extends ShowStatusEvent {
   override def id: String = "ShowPlayerStatus"
 }
 

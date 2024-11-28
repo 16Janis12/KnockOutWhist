@@ -1,14 +1,14 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.Suit
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.utils.Implicits.*
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick], playersin: List[Player], playersout: List[Player] = null, winner: Player = null, firstRound: Boolean) {
-  def this(trumpSuit: Suit, matchImpl: Match, playersin: List[Player], firstRound: Boolean) = {
+case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick], playersin: List[AbstractPlayer], playersout: List[AbstractPlayer] = null, winner: AbstractPlayer = null, firstRound: Boolean) {
+  def this(trumpSuit: Suit, matchImpl: Match, playersin: List[AbstractPlayer], firstRound: Boolean) = {
     this(trumpSuit, matchImpl, ListBuffer[Trick](), playersin, firstRound = firstRound)
   }
 

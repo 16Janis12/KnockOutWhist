@@ -9,7 +9,7 @@ import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.Round
 
 import scala.annotation.tailrec
@@ -20,7 +20,7 @@ import scala.util.{Failure, Success}
 object PlayerControl {
 
   @tailrec
-  def playCard(player: Player): Card = {
+  def playCard(player: AbstractPlayer): Card = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
@@ -35,7 +35,7 @@ object PlayerControl {
   }
 
   @tailrec
-  def dogplayCard(player: Player, round: Round): Option[Card] = {
+  def dogplayCard(player: AbstractPlayer, round: Round): Option[Card] = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundControl.dogNeedsToPlay(round)))
@@ -49,16 +49,16 @@ object PlayerControl {
     }
   }
 
-  def determineWinnerTie(players: List[Player]): Player = {
+  def determineWinnerTie(players: List[AbstractPlayer]): AbstractPlayer = {
     determineWinnerTie(players, true)
   }
 
-  private def determineWinnerTie(players: List[Player], tieMessage: Boolean): Player = {
+  private def determineWinnerTie(players: List[AbstractPlayer], tieMessage: Boolean): AbstractPlayer = {
     if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     if (tieMessage) ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
     var currentStep = 0
     var remaining = CardManager.cardContainer.size - (players.length - 1)
-    val cut: mutable.HashMap[Player, Card] = mutable.HashMap()
+    val cut: mutable.HashMap[AbstractPlayer, Card] = mutable.HashMap()
     for (player <- players) {
       var selCard: Card = null
       while (selCard == null) {
@@ -78,8 +78,8 @@ object PlayerControl {
     evaluateTieWinner(cut)
   }
 
-  private def evaluateTieWinner(cut: mutable.HashMap[Player, Card]): Player = {
-    val winner: ListBuffer[Player] = ListBuffer()
+  private def evaluateTieWinner(cut: mutable.HashMap[AbstractPlayer, Card]): AbstractPlayer = {
+    val winner: ListBuffer[AbstractPlayer] = ListBuffer()
     var currentHighest: Card = null
     for ((player, card) <- cut) {
       if (currentHighest == null) {
@@ -105,7 +105,7 @@ object PlayerControl {
   }
 
   @tailrec
-  def pickNextTrumpsuit(player: Player): Suit = {
+  def pickNextTrumpsuit(player: AbstractPlayer): Suit = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TRUMPSUIT_OPTIONS, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
     ControlHandler.invoke(RequestPickTrumpsuitEvent()) match {

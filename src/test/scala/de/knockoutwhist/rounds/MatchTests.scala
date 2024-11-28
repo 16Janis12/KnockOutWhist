@@ -3,7 +3,7 @@ package de.knockoutwhist.rounds
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, CardValue, Suit}
 import de.knockoutwhist.control.{MatchControl, PlayerControl, RoundControl, TrickControl}
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
@@ -19,8 +19,8 @@ class MatchTests extends AnyWordSpec with Matchers{
     TestUtil.disableDelay()
     TestUtil.cancelOut() {
       TestUtil.disableDebugMode()
-      val player1 = Player("Gunter")
-      val player2 = Player("Peter")
+      val player1 = AbstractPlayer("Gunter")
+      val player2 = AbstractPlayer("Peter")
       val player_list = List(player1, player2)
       val match1 = Match(player_list)
       val round1 = RoundControl.createround(match1)
@@ -91,7 +91,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
       "return false when no round has been completed" in {
         CardManager.shuffleAndReset()
-        val match3 = Match(List(Player("Gunter")))
+        val match3 = Match(List(AbstractPlayer("Gunter")))
         RoundControl.createround(match3)
         MatchControl.isOver(match3) shouldBe false
       }
@@ -134,7 +134,7 @@ class MatchTests extends AnyWordSpec with Matchers{
         round5.toString should be(s"${Suit.Hearts}, ${ListBuffer()}, $player_list, null, null, false")
       }
       "show the winner of the match when it has ended" in {
-        MatchControl.finalizeMatch(match1) shouldBe Player("Peter")
+        MatchControl.finalizeMatch(match1) shouldBe AbstractPlayer("Peter")
       }
       "have a working toString Method" in {
         match1.toString shouldBe "List(Gunter, Peter), 2"

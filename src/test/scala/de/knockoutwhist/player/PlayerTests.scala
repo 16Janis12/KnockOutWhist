@@ -15,7 +15,7 @@ class PlayerTests extends AnyWordSpec with Matchers {
       val card3 = Card(CardValue.Ten, Suit.Diamonds)
       val listCard = List(card, card2, card3)
       val testhand = Hand(listCard)
-      val player = Player("Gunter")
+      val player = AbstractPlayer("Gunter")
       player.provideHand(testhand) shouldBe true
     }
     "be able to remove a Card" in {
@@ -24,7 +24,7 @@ class PlayerTests extends AnyWordSpec with Matchers {
       val card3 = Card(CardValue.Ten, Suit.Diamonds)
       val listCard = List(card, card2, card3)
       val testhand = Hand(listCard)
-      val player = Player("Gunter")
+      val player = AbstractPlayer("Gunter")
       player.provideHand(testhand)
       player.removeCard(card) shouldBe 2
       player.currentHand().get.cards should be (List(card2, card3))

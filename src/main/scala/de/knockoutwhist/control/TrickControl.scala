@@ -7,12 +7,12 @@ import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_T
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowPlayerStatus}
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Round, Trick}
 
 object TrickControl {
 
-  def playCard(trick: Trick, round: Round, card: Card, player: Player): Boolean = {
+  def playCard(trick: Trick, round: Round, card: Card, player: AbstractPlayer): Boolean = {
     if (trick.finished) {
       throw new IllegalStateException("This trick is already finished")
     } else {
@@ -30,7 +30,7 @@ object TrickControl {
     }
   }
 
-  def wonTrick(trick: Trick, round: Round): (Player, Trick) = {
+  def wonTrick(trick: Trick, round: Round): (AbstractPlayer, Trick) = {
     val winningCard = {
       if (trick.cards.keys.exists(_.suit == round.trumpSuit)) {
         trick.cards.keys.filter(_.suit == round.trumpSuit).maxBy(_.cardValue.ordinal) //stream
@@ -83,7 +83,7 @@ object TrickControl {
     createtrick(roundImpl)
   }
 
-  private[control] def controlSuitplayed(trick: Trick, player: Player): Card = {
+  private[control] def controlSuitplayed(trick: Trick, player: AbstractPlayer): Card = {
     var card = PlayerControl.playCard(player)
     if (trick.getfirstcard().isDefined) {
       val firstCard = trick.getfirstcard().get

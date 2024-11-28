@@ -5,9 +5,8 @@ import de.knockoutwhist.cards.{Card, Hand, Suit}
 
 import scala.collection.mutable.ListBuffer
 
-case class Player(name: String) {
+abstract case class AbstractPlayer(name: String) {
   private var hand: Option[Hand] = None
-
   def currentHand(): Option[Hand] = hand
   var doglife: Boolean = false
   def provideHand(hand: Hand): Boolean = {
@@ -20,9 +19,13 @@ case class Player(name: String) {
     hand.get.cards.size
   }
 
+  def handleAction(action: InputAction, objects: Any*): Boolean 
+  
+  
   override def toString: String = {
     name
   }
+  
   
   
   
