@@ -1,10 +1,8 @@
 package de.knockoutwhist.player
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.rounds.Trick
 
-import scala.collection.mutable.ListBuffer
 import scala.util.Try
 
 abstract case class AbstractPlayer private[player](name: String) {
