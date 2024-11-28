@@ -4,7 +4,7 @@ import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardValue.{Queen, Two}
 import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.control.{RoundControl, TrickControl}
+import de.knockoutwhist.control.{MatchControl, RoundControl, TrickControl}
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
@@ -12,7 +12,8 @@ import de.knockoutwhist.events.ROUND_STATUS.*
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.testutils.{TestUtil, TestUtil as shouldBe}
 import de.knockoutwhist.ui.tui.TUIMain
@@ -55,7 +56,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
   "The show tie cards event" should {
     TestUtil.disableDelay()
-    val event = ShowTieCardsEvent(List((AbstractPlayer("Foo"), Card(Two,Suit.Hearts))))
+    val event = ShowTieCardsEvent(List((PlayerFactory.createPlayer("Foo", HUMAN), Card(Two,Suit.Hearts))))
     "be able to be created" in {
       event should not be null
     }
@@ -63,7 +64,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
       event.id should be ("ShowTieCardsEvent")
     }
     "have the correct player" in {
-      event.card.head._1 should be (AbstractPlayer("Foo"))
+      event.card.head._1 should be (PlayerFactory.createPlayer("Foo", HUMAN))
     }
     "have the correct card" in {
       event.card.head._2.cardValue should be (Two)
@@ -193,8 +194,8 @@ class TestAllEvent extends AnyWordSpec with Matchers {
   }
   "The ShowCurrentTrickEvent" should {
     TestUtil.disableDelay()
-    val player1 = AbstractPlayer("Gunter")
-    val player2 = AbstractPlayer("Peter")
+    val player1 = PlayerFactory.createPlayer("Gunter", HUMAN)
+    val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
     val listplayers = List(player1, player2)
     val match1 = Match(listplayers)
     val round = RoundControl.createround(match1)
@@ -240,7 +241,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
       }
     }
     "be able to return true with status SHOW_TIE_WINNER if arguments match" in {
-      event = ShowGlobalStatus(SHOW_TIE_WINNER, AbstractPlayer("Foo"))
+      event = ShowGlobalStatus(SHOW_TIE_WINNER, PlayerFactory.createPlayer("Foo", HUMAN))
       TestUtil.cancelOut() {
         eventHandler.invoke(event) should be(true)
       }
@@ -270,7 +271,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
       }
     }
     "be able to return true with status SHOW_FINISHED_MATCH if arguments match" in {
-      event = ShowGlobalStatus(SHOW_FINISHED_MATCH, AbstractPlayer("Foo"))
+      event = ShowGlobalStatus(SHOW_FINISHED_MATCH, PlayerFactory.createPlayer("Foo", HUMAN))
       TestUtil.cancelOut() {
         eventHandler.invoke(event) should be(true)
       }
@@ -279,7 +280,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
 
   "The show player status event" should {
     TestUtil.disableDelay()
-    val player = AbstractPlayer("Foo")
+    val player = PlayerFactory.createPlayer("Foo", HUMAN)
     var event: ShowPlayerStatus = null
     "be able to be created" in {
       event = ShowPlayerStatus(SHOW_TURN, player)
@@ -355,7 +356,8 @@ class TestAllEvent extends AnyWordSpec with Matchers {
 
   "The show round status event" should {
     TestUtil.disableDelay()
-    val round = Round(trumpSuit = Hearts, matchImpl = null, tricklist = ListBuffer(), playersin = null, firstRound = false, playersout = List(AbstractPlayer("Foo")))
+    val match1 = Match(List(PlayerFactory.createPlayer("Gunter", HUMAN)))
+    val round = Round(trumpSuit = Hearts, matchImpl = match1, tricklist = ListBuffer(), playersin = null, firstRound = false, playersout = List(PlayerFactory.createPlayer("Foo", HUMAN)))
     var event: ShowRoundStatus = null
     "be able to be created" in {
       event = ShowRoundStatus(SHOW_START_ROUND, round)
@@ -386,7 +388,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
       }
     }
     "be able to return true with status WON_ROUND if arguments match" in {
-      event = ShowRoundStatus(WON_ROUND, round, AbstractPlayer("Foo"))
+      event = ShowRoundStatus(WON_ROUND, round, PlayerFactory.createPlayer("Foo", HUMAN))
       TestUtil.cancelOut() {
         eventHandler.invoke(event) should be(true)
       }

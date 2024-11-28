@@ -3,7 +3,8 @@ package de.knockoutwhist.control
 import de.knockoutwhist.cards.CardValue.Ace
 import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.utils.CustomPlayerQueue
@@ -18,28 +19,28 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
     "throw no exception" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,bar\n") {
-          MatchControl.enterPlayers() should be (List(AbstractPlayer("foo"), AbstractPlayer("bar")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN)))
         }
       }
     }
     "not accept less than 2 players" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo\nbar,foo2\n") {
-          MatchControl.enterPlayers() should be (List(AbstractPlayer("bar"), AbstractPlayer("foo2")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("bar", HUMAN), PlayerFactory.createPlayer("foo2", HUMAN)))
         }
       }
     }
     "not accept players with the same name" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,foo\nbar,foo\n") {
-          MatchControl.enterPlayers() should be (List(AbstractPlayer("bar"), AbstractPlayer("foo")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("bar", HUMAN), PlayerFactory.createPlayer("foo", HUMAN)))
         }
       }
     }
     "not accept player names less than 2 or greater than 10 characters" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("f,b\nbarrrrrrrrrrrrrrrrr,foooooooooooooooooooo\nbar,foo\n") {
-          MatchControl.enterPlayers() should be (List(AbstractPlayer("bar"), AbstractPlayer("foo")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("bar", HUMAN), PlayerFactory.createPlayer("foo", HUMAN)))
         }
       }
     }
@@ -48,7 +49,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The control round function" should {
     TestUtil.disableDelay()
     "throw no exception and return a winner" in {
-      val players = List(AbstractPlayer("foo"), AbstractPlayer("bar"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN))
       val matchImpl = Match(players, 1)
       TestUtil.disableDebugMode()
       MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
@@ -59,7 +60,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       }
     }
     "throw no exception and return a winner if both players stay in" in {
-      val players = List(AbstractPlayer("foo"), AbstractPlayer("bar"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN))
       val matchImpl = Match(players)
       TestUtil.enableDebugMode()
       CardManager.shuffleAndReset()
@@ -77,7 +78,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The next round function" should {
     TestUtil.disableDelay()
     "return null if the match is over" in {
-      val players = List(AbstractPlayer("foo"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN))
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
       MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
@@ -93,7 +94,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The next trick function" should {
     TestUtil.disableDelay()
     "return null if the round is over" in {
-      val players = List(AbstractPlayer("foo"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN))
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
       MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
@@ -108,8 +109,8 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The controlSuit function" should {
     TestUtil.disableDelay()
     "check if a player can play from the correct suit but doesnt" in {
-      val player1 = AbstractPlayer("Gunter")
-      val player2 = AbstractPlayer("Peter")
+      val player1 = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val players = List(player1, player2)
       val hand =  Hand(List(Card(CardValue.Ten, Suit.Spades),Card(CardValue.Two, Suit.Hearts)))
       player1.provideHand(hand)
@@ -130,10 +131,10 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The control Trick function" should {
     TestUtil.disableDelay()
     "return the other player if the dog decides not to play" in {
-      val foo = AbstractPlayer("foo")
+      val foo = PlayerFactory.createPlayer("foo", HUMAN)
       foo.doglife = true
       foo.provideHand(CardManager.createHand(1))
-      val bar = AbstractPlayer("bar")
+      val bar = PlayerFactory.createPlayer("bar", HUMAN)
       bar.provideHand(CardManager.createHand(3))
       val players = List(foo, bar)
       val matchImpl = Match(players, 2)
@@ -153,10 +154,10 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       for (i <- 0 to 12) {
         CardManager.nextCard()
       }
-      val foo = AbstractPlayer("foo")
+      val foo = PlayerFactory.createPlayer("foo", HUMAN)
       foo.doglife = true
       foo.provideHand(CardManager.createHand(1))
-      val bar = AbstractPlayer("bar")
+      val bar = PlayerFactory.createPlayer("bar", HUMAN)
       bar.provideHand(CardManager.createHand(3))
       val players = List(foo, bar)
       val matchImpl = Match(players, 2)
