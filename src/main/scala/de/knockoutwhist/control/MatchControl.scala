@@ -15,7 +15,7 @@ import scala.util.Random
 
 object MatchControl {
 
-  private[control] var playerQueue: CustomPlayerQueue[AbstractPlayer] = uninitialized
+  var playerQueue: CustomPlayerQueue[AbstractPlayer] = uninitialized //später wieder private machen
 
   def startMatch(): AbstractPlayer = {
     ControlHandler.invoke(ShowGlobalStatus(SHOW_START_MATCH))
