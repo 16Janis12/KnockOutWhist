@@ -67,6 +67,7 @@ object TrickControl {
           TrickControl.playCard(trick, round, card.get, player)
         }
       }
+      trick.remainingPlayers -= 1
     }
     val (winner, finalTrick) = TrickControl.wonTrick(trick, round)
     ControlHandler.invoke(ShowCurrentTrickEvent(round, finalTrick))

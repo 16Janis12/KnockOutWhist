@@ -12,6 +12,7 @@ case class Trick (round: Round, cards: mutable.HashMap[Card, AbstractPlayer], wi
     this(round, mutable.HashMap[Card, AbstractPlayer]())
   }
   private var first_card: Option[Card] = None // statt als Parameter im Konstruktor
+  var remainingPlayers: Int = round.playersin.size
 
   def setfirstcard(card: Card): Option[Card] = {
     if(first_card.isDefined) {

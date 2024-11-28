@@ -11,8 +11,8 @@ case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick
   def this(trumpSuit: Suit, matchImpl: Match, playersin: List[AbstractPlayer], firstRound: Boolean) = {
     this(trumpSuit, matchImpl, ListBuffer[Trick](), playersin, firstRound = firstRound)
   }
-
   private var currenttrick: Option[Trick] = None
+  var remainingTricks: Int = matchImpl.numberofcards
 
   def getcurrenttrick(): Option[Trick] = {
     currenttrick
