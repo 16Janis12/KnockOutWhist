@@ -4,7 +4,8 @@ import de.knockoutwhist.control.RoundControl.controlRound
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.{IDENTICAL_NAMES, INVALID_NAME_FORMAT, INVALID_NUMBER_OF_PLAYERS}
 import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.Match
 import de.knockoutwhist.utils.CustomPlayerQueue
 
@@ -38,7 +39,7 @@ object MatchControl {
       ControlHandler.invoke(ShowErrorStatus(INVALID_NAME_FORMAT))
       return enterPlayers()
     }
-    names.map(s => AbstractPlayer(s))
+    names.map(s => PlayerFactory.createPlayer(s, HUMAN))
   }
 
   def controlMatch(): AbstractPlayer = {

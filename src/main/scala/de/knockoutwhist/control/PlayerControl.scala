@@ -10,7 +10,7 @@ import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCard
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.rounds.Round
+import de.knockoutwhist.rounds.{Round, Trick}
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -20,32 +20,32 @@ import scala.util.{Failure, Success}
 object PlayerControl {
 
   @tailrec
-  def playCard(player: AbstractPlayer): Card = {
+  def playCard(player: AbstractPlayer, trick: Trick): Card = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, true))
-    ControlHandler.invoke(RequestCardEvent(player.currentHand().get)) match {
+    player.handlePlayCard(player.currentHand().get, trick) match {
       case Success(value) =>
         value
       case Failure(exception) =>
         ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-        playCard(player)
+        playCard(player, trick)
     }
   }
 
   @tailrec
-  def dogplayCard(player: AbstractPlayer, round: Round): Option[Card] = {
+  def dogplayCard(player: AbstractPlayer, round: Round, trick: Trick): Option[Card] = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundControl.dogNeedsToPlay(round)))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
-    ControlHandler.invoke(RequestDogPlayCardEvent(player.currentHand().get, RoundControl.dogNeedsToPlay(round))) match {
+    player.handleDogPlayCard(player.currentHand().get, trick, RoundControl.dogNeedsToPlay(round)) match {
       case Success(value) =>
         value
       case Failure(exception) =>
         ControlHandler.invoke(ShowErrorStatus(INVALID_INPUT))
-        dogplayCard(player, round)
+        dogplayCard(player, round, trick)
     }
   }
 
@@ -63,7 +63,7 @@ object PlayerControl {
       var selCard: Card = null
       while (selCard == null) {
         ControlHandler.invoke(ShowPlayerStatus(SHOW_TIE_NUMBERS, player, remaining))
-        ControlHandler.invoke(RequestNumberEvent(1, remaining)) match {
+        player.handlePickTieCard(1, remaining) match {
           case Success(value) =>
             selCard = CardManager.cardContainer(currentStep + (value-1))
             cut.put(player, selCard)
@@ -108,7 +108,7 @@ object PlayerControl {
   def pickNextTrumpsuit(player: AbstractPlayer): Suit = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TRUMPSUIT_OPTIONS, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
-    ControlHandler.invoke(RequestPickTrumpsuitEvent()) match {
+    player.handlePickTrumpsuit() match {
       case Success(value) =>
         value
       case Failure(exception) =>

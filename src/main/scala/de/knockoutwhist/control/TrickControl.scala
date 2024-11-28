@@ -59,7 +59,7 @@ object TrickControl {
         player.removeCard(rightCard)
         TrickControl.playCard(trick, round, rightCard, player)
       } else if (player.currentHand().exists(_.cards.nonEmpty)) {
-        val card = PlayerControl.dogplayCard(player, round)
+        val card = PlayerControl.dogplayCard(player, round, trick)
         if (card.isEmpty) {
           ControlHandler.invoke(ShowPlayerStatus(SHOW_NOT_PLAYED, player))
         } else {
@@ -85,7 +85,7 @@ object TrickControl {
   }
 
   private[control] def controlSuitplayed(trick: Trick, player: AbstractPlayer): Card = {
-    var card = PlayerControl.playCard(player)
+    var card = PlayerControl.playCard(player, trick)
     if (trick.getfirstcard().isDefined) {
       val firstCard = trick.getfirstcard().get
       while (firstCard.suit != card.suit) {
@@ -99,7 +99,7 @@ object TrickControl {
           return card
         } else {
           ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
-          card = PlayerControl.playCard(player)
+          card = PlayerControl.playCard(player, trick)
         }
       }
     }

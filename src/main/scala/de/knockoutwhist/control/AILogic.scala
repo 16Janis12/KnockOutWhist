@@ -43,12 +43,32 @@ case object AILogic {
     }
   }
   
-  private def decideTrumpSuit(ai: AbstractPlayer): Suit = {
+  def decideTrumpSuit(ai: AbstractPlayer): Suit = {
     val hand = ai.currentHand().get
     hand.cards.groupBy(_.suit).maxBy(_._2.size)._1
   }
   
-  private def decideTie(min: Int, max: Int): Int = {
+  def decideTie(min: Int, max: Int): Int = {
     Random.between(min, max+1)
+  }
+  def decideDogCard(ai: AbstractPlayer, trick: Trick, needstoplay: Boolean): Option[Card] = {
+    val firstCardSuit = trick.getfirstcard().get.suit
+    val hand = ai.currentHand().get
+    val trumpsuit = trick.round.trumpSuit
+    val trumpsuitPlayed = trick.cards.keys.exists(_.suit == trumpsuit)
+    if(needstoplay) {
+      Some(hand.cards.head)
+    } else if(trumpsuitPlayed) {
+      sortbestcard(ai, trick, trumpsuit, hand)
+    } else {
+      sortbestcard(ai, trick, firstCardSuit, hand)
+    }
+  }
+  private def sortbestcard(ai: AbstractPlayer, trick: Trick, suit: Suit, hand: Hand): Option[Card] = {
+    val highestCard = trick.cards.keys.filter(_.suit == suit).maxBy(_.cardValue.ordinal)
+    if (hand.cards.head.suit == suit && hand.cards.head.cardValue.ordinal > highestCard.cardValue.ordinal) {
+      return Some(hand.cards.head)
+    }
+    None
   }
 }
