@@ -5,7 +5,7 @@ import de.knockoutwhist.rounds.Trick
 
 import scala.util.Try
   
-class AIPlayer(name: String) extends AbstractPlayer(name) {
+class AIPlayer private[player](name: String) extends AbstractPlayer(name) {
   override def handlePlayCard(hand: Hand, trick: Trick): Try[Card] = {
     Try{
       AILogic.decideCard(this, trick)
