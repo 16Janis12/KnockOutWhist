@@ -3,7 +3,8 @@ package de.knockoutwhist.control
 import de.knockoutwhist.cards.CardValue.Ace
 import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.utils.CustomPlayerQueue
@@ -18,28 +19,28 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
     "throw no exception" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,bar\n") {
-          MatchControl.enterPlayers() should be (List(Player("foo"), Player("bar")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN)))
         }
       }
     }
     "not accept less than 2 players" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo\nbar,foo2\n") {
-          MatchControl.enterPlayers() should be (List(Player("bar"), Player("foo2")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("bar", HUMAN), PlayerFactory.createPlayer("foo2", HUMAN)))
         }
       }
     }
     "not accept players with the same name" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("foo,foo\nbar,foo\n") {
-          MatchControl.enterPlayers() should be (List(Player("bar"), Player("foo")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("bar", HUMAN), PlayerFactory.createPlayer("foo", HUMAN)))
         }
       }
     }
     "not accept player names less than 2 or greater than 10 characters" in {
       TestUtil.cancelOut() {
         TestUtil.simulateInput("f,b\nbarrrrrrrrrrrrrrrrr,foooooooooooooooooooo\nbar,foo\n") {
-          MatchControl.enterPlayers() should be (List(Player("bar"), Player("foo")))
+          MatchControl.enterPlayers() should be (List(PlayerFactory.createPlayer("bar", HUMAN), PlayerFactory.createPlayer("foo", HUMAN)))
         }
       }
     }
@@ -48,10 +49,10 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The control round function" should {
     TestUtil.disableDelay()
     "throw no exception and return a winner" in {
-      val players = List(Player("foo"), Player("bar"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN))
       val matchImpl = Match(players, 1)
       TestUtil.disableDebugMode()
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n") {
           RoundControl.controlRound(matchImpl).winner should be (players.head).or(be (players(1)))
@@ -59,13 +60,13 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       }
     }
     "throw no exception and return a winner if both players stay in" in {
-      val players = List(Player("foo"), Player("bar"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN))
       val matchImpl = Match(players)
       TestUtil.enableDebugMode()
       CardManager.shuffleAndReset()
       CardManager.resetOrder()
 
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n") {
           RoundControl.controlRound(matchImpl).winner should be(players.head).or(be(players(1)))
@@ -77,10 +78,10 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The next round function" should {
     TestUtil.disableDelay()
     "return null if the match is over" in {
-      val players = List(Player("foo"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN))
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n") {
           RoundControl.controlRound(matchImpl)
@@ -93,10 +94,10 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The next trick function" should {
     TestUtil.disableDelay()
     "return null if the round is over" in {
-      val players = List(Player("foo"))
+      val players = List(PlayerFactory.createPlayer("foo", HUMAN))
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n1\n1\n") {
           val round = RoundControl.controlRound(matchImpl)
@@ -108,8 +109,8 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The controlSuit function" should {
     TestUtil.disableDelay()
     "check if a player can play from the correct suit but doesnt" in {
-      val player1 = Player("Gunter")
-      val player2 = Player("Peter")
+      val player1 = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val players = List(player1, player2)
       val hand =  Hand(List(Card(CardValue.Ten, Suit.Spades),Card(CardValue.Two, Suit.Hearts)))
       player1.provideHand(hand)
@@ -118,7 +119,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       val trick = new Trick(round)
       TrickControl.playCard(trick, round, Card(Ace, Suit.Hearts), player2)
       TestUtil.enableDebugMode()
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("1\n2\n") {
           val card = TrickControl.controlSuitplayed(trick, player1)
@@ -130,15 +131,15 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
   "The control Trick function" should {
     TestUtil.disableDelay()
     "return the other player if the dog decides not to play" in {
-      val foo = Player("foo")
+      val foo = PlayerFactory.createPlayer("foo", HUMAN)
       foo.doglife = true
       foo.provideHand(CardManager.createHand(1))
-      val bar = Player("bar")
+      val bar = PlayerFactory.createPlayer("bar", HUMAN)
       bar.provideHand(CardManager.createHand(3))
       val players = List(foo, bar)
       val matchImpl = Match(players, 2)
       TestUtil.enableDebugMode()
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       val round = new Round(Hearts,matchImpl,players,false)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("n\n1\n") {
@@ -153,14 +154,14 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       for (i <- 0 to 12) {
         CardManager.nextCard()
       }
-      val foo = Player("foo")
+      val foo = PlayerFactory.createPlayer("foo", HUMAN)
       foo.doglife = true
       foo.provideHand(CardManager.createHand(1))
-      val bar = Player("bar")
+      val bar = PlayerFactory.createPlayer("bar", HUMAN)
       bar.provideHand(CardManager.createHand(3))
       val players = List(foo, bar)
       val matchImpl = Match(players, 2)
-      MatchControl.playerQueue = CustomPlayerQueue[Player](players.toArray[Player], 0)
+      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       val round = new Round(foo.currentHand().get.cards.head.suit, matchImpl, players, false)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("y\n1\n") {

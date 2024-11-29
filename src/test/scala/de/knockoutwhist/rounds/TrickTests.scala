@@ -2,7 +2,8 @@ package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.{Card, CardValue, Suit}
 import de.knockoutwhist.control.TrickControl
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -12,8 +13,8 @@ class TrickTests extends AnyWordSpec with Matchers {
   "A trick" should {
     TestUtil.disableDelay()
     "be able to return the first card after it was played" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
@@ -24,16 +25,16 @@ class TrickTests extends AnyWordSpec with Matchers {
       trick.getfirstcard().get shouldBe card
     }
     "be able to return no first card when none was played" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val trick = new Trick(round)
       trick.getfirstcard().isEmpty shouldBe true
     }
     "be able to tell who won the trick" in {
-      val playerlist = List(Player("Gunter"))
-      val player = Player("Gunter")
+      val playerlist = List(PlayerFactory.createPlayer("Gunter", HUMAN))
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
       val round = new Round(Suit.Spades, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
@@ -48,8 +49,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       won(1).winner should equal(won(0))
     }
     "throw a IllegalStateException if it is already finished" in {
-      val playerlist = List(Player("Gunter"))
-      val player = Player("Gunter")
+      val playerlist = List(PlayerFactory.createPlayer("Gunter", HUMAN))
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
       val round = new Round(Suit.Spades, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
@@ -61,8 +62,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       }
     }
     "filter the cards by suit correctly if no trump was played" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Hearts, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
@@ -75,16 +76,16 @@ class TrickTests extends AnyWordSpec with Matchers {
 
     }
     "return true for the first card played in a trick" in {
-      val playerlist = List(Player("Gunter"))
-      val player = Player("Gunter")
+      val playerlist = List(PlayerFactory.createPlayer("Gunter", HUMAN))
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
       val round = new Round(Suit.Spades, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
       TrickControl.playCard(trick, round, card, player) shouldBe true
     }
     "return true if the suit matches the first card played" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Two, Suit.Spades)
@@ -94,8 +95,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       TrickControl.playCard(trick, round, card2, player2) shouldBe true
     }
     "return true if the card matches the trump-card" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
@@ -105,8 +106,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       TrickControl.playCard(trick, round, card2, player2) shouldBe true
     }
     "return false if the card doesn't match the suit of the trump-card + first-card" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
@@ -116,8 +117,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       TrickControl.playCard(trick, round, card2, player2) shouldBe false
     }
     "have a working to string" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
@@ -128,8 +129,8 @@ class TrickTests extends AnyWordSpec with Matchers {
       trick.toString() shouldBe s"${trick.cards}, ${null}, ${false}"
     }
     "can't set a first card twice" in {
-      val player = Player("Gunter")
-      val player2 = Player("Peter")
+      val player = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)

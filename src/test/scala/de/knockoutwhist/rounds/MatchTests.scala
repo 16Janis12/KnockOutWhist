@@ -1,9 +1,9 @@
 package de.knockoutwhist.rounds
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, CardValue, Suit}
 import de.knockoutwhist.control.{MatchControl, PlayerControl, RoundControl, TrickControl}
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
@@ -19,19 +19,19 @@ class MatchTests extends AnyWordSpec with Matchers{
     TestUtil.disableDelay()
     TestUtil.cancelOut() {
       TestUtil.disableDebugMode()
-      val player1 = Player("Gunter")
-      val player2 = Player("Peter")
+      val player1 = PlayerFactory.createPlayer("Gunter", HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
       val player_list = List(player1, player2)
       val match1 = Match(player_list)
       val round1 = RoundControl.createround(match1)
       val trumpsuit = round1.trumpSuit
       val trick1 = TrickControl.createtrick(round1)
       val playedcard1 = TestUtil.simulateInput("1\n") {
-        PlayerControl.playCard(player1)
+        PlayerControl.playCard(player1, trick1)
       }
       TrickControl.playCard(trick1, round1, playedcard1, player1)
       val playedcard2 = TestUtil.simulateInput("1\n") {
-        PlayerControl.playCard(player2)
+        PlayerControl.playCard(player2, trick1)
       }
       TrickControl.playCard(trick1, round1, playedcard2, player2)
       "return the players ingame in players_remaining" in {
@@ -45,11 +45,11 @@ class MatchTests extends AnyWordSpec with Matchers{
       TestUtil.enableDebugMode()
       val trick2: Trick = TrickControl.createtrick(round2)
       val playedcard3 = TestUtil.simulateInput("1\n") {
-        PlayerControl.playCard(player1)
+        PlayerControl.playCard(player1, trick2)
       }
       TrickControl.playCard(trick1, round2, playedcard3, player1)
       val playedcard4 = TestUtil.simulateInput("1\n") {
-        PlayerControl.playCard(player2)
+        PlayerControl.playCard(player2, trick2)
       }
       TrickControl.playCard(trick2, round2, playedcard4, player2)
       "be able to return the current trick of the round" in {
@@ -73,11 +73,11 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
       val trick3 = TrickControl.createtrick(round3)
       val playedcard5 = TestUtil.simulateInput("1\n") {
-        PlayerControl.playCard(player1)
+        PlayerControl.playCard(player1, trick3)
       }
       TrickControl.playCard(trick1, round3, playedcard5, player1) //stand trick1
       val playedcard6 = TestUtil.simulateInput("1\n") {
-        PlayerControl.playCard(player2)
+        PlayerControl.playCard(player2, trick3)
       }
       TrickControl.playCard(trick3, round3, playedcard6, player2)
       TrickControl.wonTrick(trick3, round3)
@@ -91,7 +91,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
       "return false when no round has been completed" in {
         CardManager.shuffleAndReset()
-        val match3 = Match(List(Player("Gunter")))
+        val match3 = Match(List(PlayerFactory.createPlayer("Gunter", HUMAN)))
         RoundControl.createround(match3)
         MatchControl.isOver(match3) shouldBe false
       }
@@ -134,7 +134,7 @@ class MatchTests extends AnyWordSpec with Matchers{
         round5.toString should be(s"${Suit.Hearts}, ${ListBuffer()}, $player_list, null, null, false")
       }
       "show the winner of the match when it has ended" in {
-        MatchControl.finalizeMatch(match1) shouldBe Player("Peter")
+        MatchControl.finalizeMatch(match1) shouldBe PlayerFactory.createPlayer("Peter", HUMAN)
       }
       "have a working toString Method" in {
         match1.toString shouldBe "List(Gunter, Peter), 2"

@@ -6,7 +6,7 @@ import de.knockoutwhist.control.MatchControl.playerQueue
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.ShowRoundStatus
 import de.knockoutwhist.events.util.DelayEvent
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.Implicits.*
 
@@ -20,7 +20,7 @@ object RoundControl {
     round.playersin.filter(!_.doglife).map(_.currentHand()).exists(_.get.cards.isEmpty)
   }
 
-  def finalizeRound(round: Round, matchImpl: Match,force: Boolean = false): (Player, Round) = {
+  def finalizeRound(round: Round, matchImpl: Match,force: Boolean = false): (AbstractPlayer, Round) = {
     if (!force && round.tricklist.isEmpty)
       throw new IllegalStateException("No tricks played in this round")
     if (!force && !isOver(round))
@@ -55,7 +55,7 @@ object RoundControl {
     (winner, finalRound)
   }
 
-  def remainingPlayers(round: Round): List[Player] = {
+  def remainingPlayers(round: Round): List[AbstractPlayer] = {
     if (round.playersout == null) {
       return round.playersin
     }
@@ -91,6 +91,7 @@ object RoundControl {
     ControlHandler.invoke(ShowRoundStatus(SHOW_START_ROUND, roundImpl))
     while (!RoundControl.isOver(roundImpl)) {
       TrickControl.controlTrick(roundImpl)
+      roundImpl.remainingTricks -= 1
     }
     val (roundWinner, finalRound) = RoundControl.finalizeRound(roundImpl, matchImpl)
     ControlHandler.invoke(ShowRoundStatus(WON_ROUND, finalRound, roundWinner))
@@ -106,7 +107,7 @@ object RoundControl {
   }
 
 
-  private def provideCards(matchImpl: Match, players: List[Player]): Int = {
+  private def provideCards(matchImpl: Match, players: List[AbstractPlayer]): Int = {
     if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     var hands = 0
     for (player <- players) {

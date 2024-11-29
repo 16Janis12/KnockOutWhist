@@ -10,7 +10,7 @@ import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
 
@@ -165,10 +165,10 @@ object TUIMain extends EventListener with UI {
         println("It's a tie! Let's cut to determine the winner.")
         Some(true)
       case SHOW_TIE_WINNER =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
+        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
           None
         } else {
-          println(s"${event.objects.head.asInstanceOf[Player].name} wins the cut!")
+          println(s"${event.objects.head.asInstanceOf[AbstractPlayer].name} wins the cut!")
           Some(true)
         }
       case SHOW_TIE_TIE =>
@@ -183,11 +183,11 @@ object TUIMain extends EventListener with UI {
         println("Please enter the names of the players, separated by a comma.")
         Some(true)
       case SHOW_FINISHED_MATCH =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
+        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
           None
         } else {
           TUIUtil.clearConsole()
-          println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[Player]}")
+          println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[AbstractPlayer]}")
           Some(true)
         }
     }
@@ -247,10 +247,10 @@ object TUIMain extends EventListener with UI {
         TUIUtil.clearConsole(2)
         Some(true)
       case WON_ROUND =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Player]) {
+        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
           None
         } else {
-          println(s"${event.objects.head.asInstanceOf[Player].name} won the round.")
+          println(s"${event.objects.head.asInstanceOf[AbstractPlayer].name} won the round.")
           Some(true)
         }
       case PLAYERS_OUT =>
