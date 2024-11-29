@@ -1,10 +1,9 @@
 package de.knockoutwhist.events
 
-import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.CardValue.{Queen, Two}
-import de.knockoutwhist.cards.Suit.Hearts
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.control.{MatchControl, RoundControl, TrickControl}
+import de.knockoutwhist.cards.CardValue.Two
+import de.knockoutwhist.cards.Suit.Hearts
+import de.knockoutwhist.control.{RoundControl, TrickControl}
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
@@ -15,14 +14,13 @@ import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Match, Round}
-import de.knockoutwhist.testutils.{TestUtil, TestUtil as shouldBe}
+import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils.events.{EventHandler, SimpleEvent}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.collection.mutable.ListBuffer
-import scala.compiletime.uninitialized
 import scala.util.{Failure, Success}
 
 class TestAllEvent extends AnyWordSpec with Matchers {

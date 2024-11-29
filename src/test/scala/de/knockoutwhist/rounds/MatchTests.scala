@@ -1,6 +1,5 @@
 package de.knockoutwhist.rounds
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, CardValue, Suit}
 import de.knockoutwhist.control.{MatchControl, PlayerControl, RoundControl, TrickControl}
 import de.knockoutwhist.player.Playertype.HUMAN

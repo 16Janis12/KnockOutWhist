@@ -4,7 +4,6 @@ import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.Trick
 
-import scala.compiletime.ops.float.Max
 import scala.util.Random
 
 case object AILogic {
