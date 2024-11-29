@@ -69,5 +69,15 @@ class QueueTests extends AnyWordSpec with Matchers {
       iterator.next() should be(5)
       iterator.hasNext should be(false)
     }
+    "iterate with second iterator over the queue" in {
+      val queue = new CustomPlayerQueue[Int](Array(1, 2, 3, 4, 5))
+      val iterator = queue.fromFirstIterator
+      iterator.next() should be(1)
+      iterator.next() should be(2)
+      iterator.next() should be(3)
+      iterator.next() should be(4)
+      iterator.next() should be(5)
+      iterator.hasNext should be(false)
+    }
   }
 }
