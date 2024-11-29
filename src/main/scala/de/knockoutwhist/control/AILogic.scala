@@ -19,17 +19,21 @@ case object AILogic {
       if (trumpCards.isEmpty) hand.cards.minBy(_.cardValue.ordinal)
       else {
         val bestOption = decideWhichTrumpCard(hand, trick, trumpsInGame.toList)
-        bestOption match {
-          case Some(card) => card
-          case None =>
-            val card = hand.cards.filter(_.suit != trick.round.trumpSuit)
-            if(card.isEmpty) hand.cards.minBy(_.cardValue.ordinal)
-            else card.minBy(_.cardValue.ordinal)
-        }
+        grabBestResult(bestOption, hand, trick)
       }
     } else {
       if(trumpsInGame.nonEmpty) cardsOfSuit.minBy(_.cardValue.ordinal)
       else cardsOfSuit.maxBy(_.cardValue.ordinal)
+    }
+  }
+
+  private def grabBestResult(bestOption: Option[Card], hand: Hand, trick: Trick): Card = {
+    bestOption match {
+      case Some(card) => card
+      case None =>
+        val card = hand.cards.filter(_.suit != trick.round.trumpSuit)
+        if (card.isEmpty) hand.cards.minBy(_.cardValue.ordinal)
+        else card.minBy(_.cardValue.ordinal)
     }
   }
 
@@ -62,12 +66,12 @@ case object AILogic {
     if(needstoplay) {
       Some(hand.cards.head)
     } else if(trumpsuitPlayed) {
-      sortbestcard(ai, trick, trumpsuit, hand)
+      sortbestcard(trick, trumpsuit, hand)
     } else {
-      sortbestcard(ai, trick, firstCardSuit, hand)
+      sortbestcard(trick, firstCardSuit, hand)
     }
   }
-  private def sortbestcard(ai: AbstractPlayer, trick: Trick, suit: Suit, hand: Hand): Option[Card] = {
+  private def sortbestcard(trick: Trick, suit: Suit, hand: Hand): Option[Card] = {
     val highestCard = trick.cards.keys.filter(_.suit == suit).maxBy(_.cardValue.ordinal)
     if (hand.cards.head.suit == suit && hand.cards.head.cardValue.ordinal > highestCard.cardValue.ordinal) {
       return Some(hand.cards.head)
