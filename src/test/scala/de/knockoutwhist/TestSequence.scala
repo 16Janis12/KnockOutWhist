@@ -3,7 +3,7 @@ package de.knockoutwhist
 import de.knockoutwhist.cards.{CardTests, DeckTests, HandTests}
 import de.knockoutwhist.control.{MatchControllerTests, PlayerControllerTests}
 import de.knockoutwhist.events.TestAllEvent
-import de.knockoutwhist.player.PlayerTests
+import de.knockoutwhist.player.{AITests, PlayerTests}
 import de.knockoutwhist.rounds.{GameplayTests, MatchTests, TrickTests}
 import de.knockoutwhist.utils.events.EventTests
 import de.knockoutwhist.utils.{ImplicitTests, QueueTests}
@@ -24,5 +24,6 @@ class TestSequence extends Sequential(
   new HandTests(),
   new EventTests(),
   new TestAllEvent(),
-  new DelayHandlerTests()
+  new DelayHandlerTests(),
+  new AITests()
 )

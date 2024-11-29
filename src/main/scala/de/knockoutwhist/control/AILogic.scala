@@ -10,6 +10,7 @@ import scala.util.Random
 case object AILogic {
   
   def decideCard(ai: AbstractPlayer, trick: Trick): Card = {
+    if(trick.getfirstcard().isEmpty) return ai.currentHand().get.cards.maxBy(_.cardValue.ordinal)
     val firstCardSuit = trick.getfirstcard().get.suit
     val hand = ai.currentHand().get
     val cardsOfSuit = hand.cards.filter(_.suit == firstCardSuit)
@@ -21,7 +22,10 @@ case object AILogic {
         val bestOption = decideWhichTrumpCard(hand, trick, trumpsInGame.toList)
         bestOption match {
           case Some(card) => card
-          case None => hand.cards.minBy(_.cardValue.ordinal)
+          case None =>
+            val card = hand.cards.filter(_.suit != trick.round.trumpSuit)
+            if(card.isEmpty) hand.cards.minBy(_.cardValue.ordinal)
+            else card.minBy(_.cardValue.ordinal)
         }
       }
     } else {
