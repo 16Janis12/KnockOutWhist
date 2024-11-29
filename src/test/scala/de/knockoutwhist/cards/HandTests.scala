@@ -1,6 +1,5 @@
 package de.knockoutwhist.cards
 
-import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderHandEvent
 import org.scalatest.matchers.should.Matchers

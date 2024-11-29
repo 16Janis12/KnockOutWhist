@@ -7,12 +7,12 @@ import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_T
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowPlayerStatus}
-import de.knockoutwhist.player.Player
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Round, Trick}
 
 object TrickControl {
 
-  def playCard(trick: Trick, round: Round, card: Card, player: Player): Boolean = {
+  def playCard(trick: Trick, round: Round, card: Card, player: AbstractPlayer): Boolean = {
     if (trick.finished) {
       throw new IllegalStateException("This trick is already finished")
     } else {
@@ -30,7 +30,7 @@ object TrickControl {
     }
   }
 
-  def wonTrick(trick: Trick, round: Round): (Player, Trick) = {
+  def wonTrick(trick: Trick, round: Round): (AbstractPlayer, Trick) = {
     val winningCard = {
       if (trick.cards.keys.exists(_.suit == round.trumpSuit)) {
         trick.cards.keys.filter(_.suit == round.trumpSuit).maxBy(_.cardValue.ordinal) //stream
@@ -59,7 +59,7 @@ object TrickControl {
         player.removeCard(rightCard)
         TrickControl.playCard(trick, round, rightCard, player)
       } else if (player.currentHand().exists(_.cards.nonEmpty)) {
-        val card = PlayerControl.dogplayCard(player, round)
+        val card = PlayerControl.dogplayCard(player, round, trick)
         if (card.isEmpty) {
           ControlHandler.invoke(ShowPlayerStatus(SHOW_NOT_PLAYED, player))
         } else {
@@ -67,6 +67,7 @@ object TrickControl {
           TrickControl.playCard(trick, round, card.get, player)
         }
       }
+      trick.remainingPlayers -= 1
     }
     val (winner, finalTrick) = TrickControl.wonTrick(trick, round)
     ControlHandler.invoke(ShowCurrentTrickEvent(round, finalTrick))
@@ -83,8 +84,8 @@ object TrickControl {
     createtrick(roundImpl)
   }
 
-  private[control] def controlSuitplayed(trick: Trick, player: Player): Card = {
-    var card = PlayerControl.playCard(player)
+  private[control] def controlSuitplayed(trick: Trick, player: AbstractPlayer): Card = {
+    var card = PlayerControl.playCard(player, trick)
     if (trick.getfirstcard().isDefined) {
       val firstCard = trick.getfirstcard().get
       while (firstCard.suit != card.suit) {
@@ -98,7 +99,7 @@ object TrickControl {
           return card
         } else {
           ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
-          card = PlayerControl.playCard(player)
+          card = PlayerControl.playCard(player, trick)
         }
       }
     }

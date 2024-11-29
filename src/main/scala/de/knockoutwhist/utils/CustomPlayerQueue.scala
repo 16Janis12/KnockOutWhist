@@ -40,4 +40,11 @@ class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0)
       CustomPlayerQueue.this.nextPlayer()
     }
   }
+
+  //Useful if start is not important
+  def fromFirstIterator: Iterator[A] = new Iterator[A]:
+    private val it: Iterator[A] = players.iterator
+    override def hasNext: Boolean = it.hasNext
+
+    override def next(): A = it.next()
 }

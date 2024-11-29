@@ -1,13 +1,12 @@
 package de.knockoutwhist.player
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand, Suit}
+import de.knockoutwhist.rounds.Trick
 
-import scala.collection.mutable.ListBuffer
+import scala.util.Try
 
-case class Player(name: String) {
+abstract case class AbstractPlayer private[player](var name: String) {
   private var hand: Option[Hand] = None
-
   def currentHand(): Option[Hand] = hand
   var doglife: Boolean = false
   def provideHand(hand: Hand): Boolean = {
@@ -20,9 +19,17 @@ case class Player(name: String) {
     hand.get.cards.size
   }
 
+  def handlePlayCard(hand: Hand, trick: Trick): Try[Card]
+  def handleDogPlayCard(hand: Hand, trick: Trick, needstoplay: Boolean): Try[Option[Card]]
+  def handlePickTrumpsuit(): Try[Suit]
+  def handlePickTieCard(min: Int, max: Int): Try[Int] 
+  
+  
+  
   override def toString: String = {
     name
   }
+  
   
   
   
