@@ -84,7 +84,7 @@ class AITests extends AnyWordSpec with Matchers {
     }
     "calculate which card to use in case of a used trump (can't overrule, discard trump)" in {
       val ai1 = PlayerFactory.createPlayer("Robot1", AI)
-      val ai2 = PlayerFactory.createPlayer("Robot2", AI)
+      val ai2 = PlayerFactory.createPlayer(playertype = AI)
       val playerList = List(ai1, ai2)
       val round = new Round(Hearts, Match(playerList), playerList, firstRound = false)
       round.remainingTricks = 5

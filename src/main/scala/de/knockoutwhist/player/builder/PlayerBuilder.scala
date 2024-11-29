@@ -1,4 +1,6 @@
-package de.knockoutwhist.player
+package de.knockoutwhist.player.builder
+
+import de.knockoutwhist.player.AbstractPlayer
 
 trait PlayerBuilder {
   def reset(): PlayerBuilder

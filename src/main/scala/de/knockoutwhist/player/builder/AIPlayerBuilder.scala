@@ -1,4 +1,6 @@
-package de.knockoutwhist.player
+package de.knockoutwhist.player.builder
+
+import de.knockoutwhist.player.{AIPlayer, AbstractPlayer}
 
 class AIPlayerBuilder extends PlayerBuilder {
   private var unfinished: Option[AIPlayer] = None

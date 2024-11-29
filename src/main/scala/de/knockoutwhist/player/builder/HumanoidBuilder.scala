@@ -1,4 +1,6 @@
-package de.knockoutwhist.player
+package de.knockoutwhist.player.builder
+
+import de.knockoutwhist.player.{AbstractPlayer, HumanPlayer}
 
 import scala.compiletime.uninitialized
 
