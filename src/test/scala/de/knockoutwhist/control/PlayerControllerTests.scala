@@ -2,15 +2,12 @@ package de.knockoutwhist.control
 
 import de.knockoutwhist.cards.Suit.*
 import de.knockoutwhist.cards.{Card, CardManager, Hand}
-import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
-import de.knockoutwhist.rounds.{Match, Round, Trick}
+import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.testutils.TestUtil
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
-import scala.collection.mutable
 
 class PlayerControllerTests extends AnyWordSpec with Matchers {
 

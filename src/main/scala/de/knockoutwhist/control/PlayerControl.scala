@@ -6,7 +6,6 @@ import de.knockoutwhist.events.ERROR_STATUS.{INVALID_INPUT, INVALID_NUMBER, NOT_
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
 import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.AbstractPlayer

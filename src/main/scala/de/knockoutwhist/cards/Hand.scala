@@ -1,7 +1,5 @@
 package de.knockoutwhist.cards
 
-import scala.collection.mutable.ListBuffer
-
 case class Hand(cards: List[Card]) {
 
   def removeCard(card: Card): Hand = {

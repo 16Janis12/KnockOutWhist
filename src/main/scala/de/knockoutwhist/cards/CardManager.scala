@@ -1,7 +1,5 @@
 package de.knockoutwhist.cards
 
-import de.knockoutwhist.KnockOutWhist
-
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 

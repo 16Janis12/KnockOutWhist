@@ -1,7 +1,6 @@
 package de.knockoutwhist.player
 
 import de.knockoutwhist.control.MatchControl
-import de.knockoutwhist.control.MatchControl.playerQueue
 import de.knockoutwhist.player.Playertype.{AI, HUMAN}
 import de.knockoutwhist.rounds.Match
 import de.knockoutwhist.testutils.TestUtil
