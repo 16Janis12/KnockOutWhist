@@ -5,7 +5,7 @@ import de.knockoutwhist.rounds.Trick
 
 import scala.util.Try
 
-abstract case class AbstractPlayer private[player](name: String) {
+abstract case class AbstractPlayer private[player](var name: String) {
   private var hand: Option[Hand] = None
   def currentHand(): Option[Hand] = hand
   var doglife: Boolean = false
