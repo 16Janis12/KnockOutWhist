@@ -26,10 +26,9 @@ class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0)
   }
   
   override def toList: List[A] = players.toList
-
   override def isEmpty: Boolean = players.isEmpty
   override def size: Int = players.length
-  
+  override def clone(): CustomPlayerQueue[A] = new CustomPlayerQueue(players.clone(), current)
   
 
   def iterator: Iterator[A] = new Iterator[A] {
