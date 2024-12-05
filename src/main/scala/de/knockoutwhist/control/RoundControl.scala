@@ -10,6 +10,8 @@ import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.Implicits.*
 
+import scala.collection.mutable.ListBuffer
+
 object RoundControl {
 
   def isOver(round: Round): Boolean = {
@@ -107,17 +109,18 @@ object RoundControl {
   }
 
 
-  private def provideCards(matchImpl: Match, players: List[AbstractPlayer]): Int = {
+  def provideCards(matchImpl: Match, players: List[AbstractPlayer]): Match = {
     if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
-    var hands = 0
+    val listbuff = new ListBuffer[AbstractPlayer]()
     for (player <- players) {
       if (!player.doglife) {
-        player.provideHand(CardManager.createHand(matchImpl.numberofcards))
+        val player = player.provideHand(CardManager.createHand(matchImpl.numberofcards))
+        listbuff.addOne(player)
       } else {
-        player.provideHand(CardManager.createHand(1))
+        val player = player.provideHand(CardManager.createHand(1))
+        listbuff.addOne(player)
       }
-      hands += 1
     }
-    hands
+    matchImpl.updatePlayers(listbuff.toList)
   }
 }
