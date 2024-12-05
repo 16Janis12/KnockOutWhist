@@ -12,7 +12,7 @@ import de.knockoutwhist.utils.CustomPlayerQueue
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.collection.mutable
+import scala.collection.immutable
 import scala.util.{Random, Success}
 
 class AITests extends AnyWordSpec with Matchers {
@@ -45,10 +45,9 @@ class AITests extends AnyWordSpec with Matchers {
       val playerList = List(ai1,ai2)
       val round = new Round(Hearts, Match(playerList), playerList, firstRound = false)
       round.remainingTricks = 5
-      val playedCards = mutable.HashMap[Card, AbstractPlayer]()
-      playedCards.put(Card(Two,Hearts), ai1)
-      val trick = Trick(round = round, cards = playedCards)
-      trick.setfirstcard(Card(Two,Spades))
+      val playedCards = immutable.HashMap[Card, AbstractPlayer](Card(Two,Hearts) -> ai1)
+      var trick = Trick(round = round, cards = playedCards)
+      trick = trick.setfirstcard(Card(Two,Spades))
       trick.remainingPlayers = 2
       ai2.provideHand(Hand(List(Card(Three, Hearts))))
       AILogic.decideCard(ai2, trick) shouldBe Card(Three, Hearts)
@@ -59,10 +58,9 @@ class AITests extends AnyWordSpec with Matchers {
       val playerList = List(ai1, ai2)
       val round = new Round(Hearts, Match(playerList), playerList, firstRound = false)
       round.remainingTricks = 5
-      val playedCards = mutable.HashMap[Card, AbstractPlayer]()
-      playedCards.put(Card(Three, Hearts), ai1)
-      val trick = Trick(round = round, cards = playedCards)
-      trick.setfirstcard(Card(Two, Spades))
+      val playedCards = immutable.HashMap[Card, AbstractPlayer](Card(Three, Hearts) -> ai1)
+      var trick = Trick(round = round, cards = playedCards)
+      trick = trick.setfirstcard(Card(Two, Spades))
       trick.remainingPlayers = 2
       ai2.provideHand(Hand(List(Card(Two, Hearts), Card(Ace, Diamonds))))
       AILogic.decideCard(ai2, trick) shouldBe Card(Ace, Diamonds)
@@ -74,10 +72,9 @@ class AITests extends AnyWordSpec with Matchers {
       val round = new Round(Hearts, Match(playerList), playerList, firstRound = false)
       round.remainingTricks = 5
 
-      val playedCards = mutable.HashMap[Card, AbstractPlayer]()
-      playedCards.put(Card(Two, Hearts), ai1)
-      val trick = Trick(round = round, cards = playedCards)
-      trick.setfirstcard(Card(Two, Spades))
+      val playedCards = immutable.HashMap[Card, AbstractPlayer](Card(Two, Hearts) -> ai1)
+      var trick = Trick(round = round, cards = playedCards)
+      trick = trick.setfirstcard(Card(Two, Spades))
       trick.remainingPlayers = 2
       ai2.provideHand(Hand(List(Card(Three, Hearts), Card(Ace, Hearts))))
       AILogic.decideCard(ai2, trick) shouldBe Card(Three, Hearts)
@@ -88,10 +85,9 @@ class AITests extends AnyWordSpec with Matchers {
       val playerList = List(ai1, ai2)
       val round = new Round(Hearts, Match(playerList), playerList, firstRound = false)
       round.remainingTricks = 5
-      val playedCards = mutable.HashMap[Card, AbstractPlayer]()
-      playedCards.put(Card(Three, Hearts), ai1)
-      val trick = Trick(round = round, cards = playedCards)
-      trick.setfirstcard(Card(Two, Spades))
+      val playedCards = immutable.HashMap[Card, AbstractPlayer](Card(Three, Hearts) -> ai1)
+      var trick = Trick(round = round, cards = playedCards)
+      trick = trick.setfirstcard(Card(Two, Spades))
       trick.remainingPlayers = 2
       ai2.provideHand(Hand(List(Card(Two, Hearts))))
       AILogic.decideCard(ai2, trick) shouldBe Card(Two, Hearts)
@@ -103,10 +99,9 @@ class AITests extends AnyWordSpec with Matchers {
       val playerList = List(ai1,ai2)
       val round = new Round(Hearts, Match(playerList), playerList, firstRound = false)
       round.remainingTricks = 5
-      val playedCards = mutable.HashMap[Card, AbstractPlayer]()
-      playedCards.put(Card(Two,Hearts), ai1)
-      val trick = Trick(round = round, cards = playedCards)
-      trick.setfirstcard(Card(Two,Spades))
+      val playedCards = immutable.HashMap[Card, AbstractPlayer](Card(Two,Hearts) -> ai1)
+      var trick = Trick(round = round, cards = playedCards)
+      trick = trick.setfirstcard(Card(Two,Spades))
       trick.remainingPlayers = 2
       ai2.provideHand(Hand(List(Card(Three, Hearts))))
       AILogic.decideDogCard(ai2, trick, false) shouldBe Some(Card(Three, Hearts))

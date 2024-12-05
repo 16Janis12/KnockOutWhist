@@ -197,8 +197,8 @@ class TestAllEvent extends AnyWordSpec with Matchers {
     val listplayers = List(player1, player2)
     val match1 = Match(listplayers)
     val round = RoundControl.createround(match1)
-    val trick = TrickControl.createtrick(round)
-    TrickControl.playCard(trick, round, Card(CardValue.Ten, Suit.Spades), player1)
+    var trick = TrickControl.createtrick(round)
+    trick = TrickControl.playCard(trick, round, Card(CardValue.Ten, Suit.Spades), player1)._1
     val event = ShowCurrentTrickEvent(round, trick)
     "be able to get created" in {
       event should not be null

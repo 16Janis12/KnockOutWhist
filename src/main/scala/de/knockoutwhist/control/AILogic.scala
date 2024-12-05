@@ -9,8 +9,8 @@ import scala.util.Random
 case object AILogic {
   
   def decideCard(ai: AbstractPlayer, trick: Trick): Card = {
-    if(trick.getfirstcard().isEmpty) return ai.currentHand().get.cards.maxBy(_.cardValue.ordinal)
-    val firstCardSuit = trick.getfirstcard().get.suit
+    if(trick.firstCard.isEmpty) return ai.currentHand().get.cards.maxBy(_.cardValue.ordinal)
+    val firstCardSuit = trick.firstCard.get.suit
     val hand = ai.currentHand().get
     val cardsOfSuit = hand.cards.filter(_.suit == firstCardSuit)
     val trumpsInGame = trick.cards.keys.filter(_.suit == trick.round.trumpSuit)
@@ -59,7 +59,7 @@ case object AILogic {
     Random.between(min, max+1)
   }
   def decideDogCard(ai: AbstractPlayer, trick: Trick, needstoplay: Boolean): Option[Card] = {
-    val firstCardSuit = trick.getfirstcard().get.suit
+    val firstCardSuit = trick.firstCard.get.suit
     val hand = ai.currentHand().get
     val trumpsuit = trick.round.trumpSuit
     val trumpsuitPlayed = trick.cards.keys.exists(_.suit == trumpsuit)

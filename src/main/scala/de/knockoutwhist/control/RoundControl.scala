@@ -90,7 +90,7 @@ object RoundControl {
     val roundImpl = nextRound(matchImpl)
     ControlHandler.invoke(ShowRoundStatus(SHOW_START_ROUND, roundImpl))
     while (!RoundControl.isOver(roundImpl)) {
-      TrickControl.controlTrick(roundImpl)
+      TrickControl.controlTrick(round = roundImpl)
       roundImpl.remainingTricks -= 1
     }
     val (roundWinner, finalRound) = RoundControl.finalizeRound(roundImpl, matchImpl)

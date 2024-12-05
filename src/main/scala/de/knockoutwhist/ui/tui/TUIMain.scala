@@ -340,8 +340,8 @@ object TUIMain extends EventListener with UI {
     val sb = new StringBuilder()
     sb.append("Current Trick:\n")
     sb.append("Trump-Suit: " + event.round.trumpSuit + "\n")
-    if (event.trick.getfirstcard().isDefined) {
-      sb.append(s"Suit to play: ${event.trick.getfirstcard().get.suit}\n")
+    if (event.trick.firstCard.isDefined) {
+      sb.append(s"Suit to play: ${event.trick.firstCard.get.suit}\n")
     }
     for ((card, player) <- event.trick.cards) {
       sb.append(s"${player.name} played ${card.toString}\n")

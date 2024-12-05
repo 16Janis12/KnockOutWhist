@@ -3,25 +3,26 @@ package de.knockoutwhist.rounds
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.player.AbstractPlayer
 
-import scala.collection.mutable
+import scala.collection.immutable
 
 
-case class Trick (round: Round, cards: mutable.HashMap[Card, AbstractPlayer], winner: AbstractPlayer = null, finished: Boolean = false) {
+case class Trick (round: Round, cards: immutable.HashMap[Card, AbstractPlayer], winner: AbstractPlayer = null, finished: Boolean = false, firstCard: Option[Card] = None) {
   
   def this(round: Round) = {
-    this(round, mutable.HashMap[Card, AbstractPlayer]())
+    this(round, immutable.HashMap[Card, AbstractPlayer]())
   }
-  private var first_card: Option[Card] = None // statt als Parameter im Konstruktor
   var remainingPlayers: Int = round.playersin.size
 
-  def setfirstcard(card: Card): Option[Card] = {
-    if(first_card.isDefined) {
+  def addCard(card: Card, player: AbstractPlayer): Trick = {
+    Trick(round, cards + (card -> player), winner, finished, firstCard)
+  }
+  
+  def setfirstcard(card: Card): Trick = {
+    if(firstCard.isDefined) {
       throw new IllegalStateException("This trick is already finished")
     }
-    first_card = Some(card)
-    first_card
+    Trick(round, cards, winner, finished, Some(card))
   }
-  def getfirstcard(): Option[Card] = first_card
 
   override def toString: String = {
     s"$cards, $winner, $finished"

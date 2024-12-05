@@ -116,8 +116,8 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       player1.provideHand(hand)
       val matchImpl = Match(players, 2)
       val round = new Round(Suit.Clubs, matchImpl, players, false)
-      val trick = new Trick(round)
-      TrickControl.playCard(trick, round, Card(Ace, Suit.Hearts), player2)
+      var trick = new Trick(round)
+      trick = TrickControl.playCard(trick, round, Card(Ace, Suit.Hearts), player2)._1
       TestUtil.enableDebugMode()
       MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](players.toArray[AbstractPlayer], 0)
       TestUtil.cancelOut() {
@@ -143,7 +143,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       val round = new Round(Hearts,matchImpl,players,false)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("n\n1\n") {
-          val finalTrick = TrickControl.controlTrick(round)
+          val finalTrick = TrickControl.controlTrick(round = round)
           finalTrick.winner should be(bar)
         }
       }
@@ -165,7 +165,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
       val round = new Round(foo.currentHand().get.cards.head.suit, matchImpl, players, false)
       TestUtil.cancelOut() {
         TestUtil.simulateInput("y\n1\n") {
-          val finalTrick = TrickControl.controlTrick(round)
+          val finalTrick = TrickControl.controlTrick(round = round)
           finalTrick.winner should be(bar)
         }
       }

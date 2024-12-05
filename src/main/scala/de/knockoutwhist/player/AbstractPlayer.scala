@@ -22,16 +22,10 @@ abstract case class AbstractPlayer private[player](var name: String) {
   def handlePlayCard(hand: Hand, trick: Trick): Try[Card]
   def handleDogPlayCard(hand: Hand, trick: Trick, needstoplay: Boolean): Try[Option[Card]]
   def handlePickTrumpsuit(): Try[Suit]
-  def handlePickTieCard(min: Int, max: Int): Try[Int] 
-  
-  
+  def handlePickTieCard(min: Int, max: Int): Try[Int]
   
   override def toString: String = {
     name
   }
-  
-  
-  
-  
   
 }

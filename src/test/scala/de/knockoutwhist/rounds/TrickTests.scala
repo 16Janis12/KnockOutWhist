@@ -21,8 +21,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
       TrickControl.playCard(trick, round, card, player)
-      trick.getfirstcard().isEmpty shouldBe false
-      trick.getfirstcard().get shouldBe card
+      trick.firstCard.get shouldBe card
     }
     "be able to return no first card when none was played" in {
       val player = PlayerFactory.createPlayer("Gunter", HUMAN)
@@ -30,7 +29,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val playerlist = List(player, player2)
       val round = new Round(Suit.Diamonds, Match(playerlist), playerlist, false)
       val trick = new Trick(round)
-      trick.getfirstcard().isEmpty shouldBe true
+      trick.firstCard.isEmpty shouldBe true
     }
     "be able to tell who won the trick" in {
       val playerlist = List(PlayerFactory.createPlayer("Gunter", HUMAN))
@@ -81,7 +80,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val round = new Round(Suit.Spades, Match(playerlist), playerlist, false)
       val card = Card(CardValue.Ace, Suit.Spades)
       val trick = new Trick(round)
-      TrickControl.playCard(trick, round, card, player) shouldBe true
+      TrickControl.playCard(trick, round, card, player)._2 shouldBe true
     }
     "return true if the suit matches the first card played" in {
       val player = PlayerFactory.createPlayer("Gunter", HUMAN)
@@ -92,7 +91,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card2 = Card(CardValue.Ace, Suit.Spades)
       val trick = TrickControl.createtrick(round)
       TrickControl.playCard(trick, round, card, player)
-      TrickControl.playCard(trick, round, card2, player2) shouldBe true
+      TrickControl.playCard(trick, round, card2, player2)._2 shouldBe true
     }
     "return true if the card matches the trump-card" in {
       val player = PlayerFactory.createPlayer("Gunter", HUMAN)
@@ -103,7 +102,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card2 = Card(CardValue.Two, Suit.Diamonds)
       val trick = new Trick(round)
       TrickControl.playCard(trick, round, card, player)
-      TrickControl.playCard(trick, round, card2, player2) shouldBe true
+      TrickControl.playCard(trick, round, card2, player2)._2 shouldBe true
     }
     "return false if the card doesn't match the suit of the trump-card + first-card" in {
       val player = PlayerFactory.createPlayer("Gunter", HUMAN)
@@ -114,7 +113,7 @@ class TrickTests extends AnyWordSpec with Matchers {
       val card2 = Card(CardValue.Two, Suit.Clubs)
       val trick = new Trick(round)
       TrickControl.playCard(trick, round, card, player)
-      TrickControl.playCard(trick, round, card2, player2) shouldBe false
+      TrickControl.playCard(trick, round, card2, player2)._2 shouldBe false
     }
     "have a working to string" in {
       val player = PlayerFactory.createPlayer("Gunter", HUMAN)
