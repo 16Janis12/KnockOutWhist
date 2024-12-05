@@ -7,7 +7,7 @@ class AIPlayerBuilder extends PlayerBuilder {
 
   override def setName(name: String): PlayerBuilder = {
     if (unfinished.isEmpty) {
-      unfinished = Some(AIPlayer(name))
+      unfinished = Some(AIPlayer(name, None))
     } else {
       unfinished.get.name = name
     }
