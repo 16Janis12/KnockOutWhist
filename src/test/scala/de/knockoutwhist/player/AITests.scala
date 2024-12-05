@@ -3,8 +3,8 @@ package de.knockoutwhist.player
 import de.knockoutwhist.cards.CardValue.{Ace, Three, Two}
 import de.knockoutwhist.cards.Suit.*
 import de.knockoutwhist.cards.{Card, CardManager, Hand}
-import de.knockoutwhist.control.{AILogic, MatchControl}
-import de.knockoutwhist.control.MatchControl.playerQueue
+import de.knockoutwhist.controlold.{AILogic, MatchControl}
+import de.knockoutwhist.controlold.MatchControl.playerQueue
 import de.knockoutwhist.player.Playertype.{AI, HUMAN}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.testutils.TestUtil
@@ -28,10 +28,7 @@ class AITests extends AnyWordSpec with Matchers {
       val ai1 = PlayerFactory.createPlayer("Robot1", AI)
       val ai2 = PlayerFactory.createPlayer("Robot2", AI)
       val playerarray = Array(ai1, ai2)
-      val playerlist = List(ai1, ai2)
-      val match1 = Match(playerlist)
-      MatchControl.playerQueue = CustomPlayerQueue[AbstractPlayer](playerarray, Random.nextInt(playerarray.length))
-      MatchControl.controlMatch() shouldBe ai2
+      MatchControl.controlMatch(playerarray) shouldBe ai2
     }
     "request a tie card" in {
       val ai1 = PlayerFactory.createPlayer("Robot1", AI)

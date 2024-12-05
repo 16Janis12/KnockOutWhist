@@ -1,7 +1,6 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.{Card, CardValue, Suit}
-import de.knockoutwhist.control.TrickControl
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.testutils.TestUtil

@@ -1,16 +1,17 @@
 package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.{ControlHandler, MatchControl}
+import de.knockoutwhist.control.{ControlHandler, MainLogic}
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
+import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent, RequestPlayersEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
 
@@ -46,6 +47,8 @@ object TUIMain extends EventListener with UI {
         reqpicktevmet()
       case event: ShowCurrentTrickEvent =>
         showcurtrevmet(event)
+      case event: RequestPlayersEvent =>
+        reqplayersevent()
       case _ => None
     }
   }
@@ -121,7 +124,7 @@ object TUIMain extends EventListener with UI {
       case Success(value) =>
         value match {
           case 1 =>
-            MatchControl.startMatch()
+            MainLogic.startMatch()
             init = false
             initial
           case 2 =>
@@ -322,6 +325,25 @@ object TUIMain extends EventListener with UI {
       }
     }
     )
+  }
+  private def reqplayersevent(): Option[List[AbstractPlayer]] = {
+    Some({
+      ControlHandler.invoke(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
+      val names = readLine().split(",")
+      if (names.length < 2) {
+        ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
+        return reqplayersevent()
+      }
+      if (names.distinct.length != names.length) {
+        ControlHandler.invoke(ShowErrorStatus(IDENTICAL_NAMES))
+        return reqplayersevent()
+      }
+      if (names.count(_.trim.isBlank) > 0 || names.count(_.trim.length <= 2) > 0 || names.count(_.trim.length > 10) > 0) {
+        ControlHandler.invoke(ShowErrorStatus(INVALID_NAME_FORMAT))
+        return reqplayersevent()
+      }
+      names.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList
+    })
   }
   private def reqpicktevmet(): Option[Try[Suit]] = {
     Some(Try {

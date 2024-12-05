@@ -1,7 +1,8 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.controlold
 
 import de.knockoutwhist.cards.Suit.*
 import de.knockoutwhist.cards.{Card, CardManager, Hand}
+import de.knockoutwhist.control.PlayerControl
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Match, Round}

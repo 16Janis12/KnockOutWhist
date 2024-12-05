@@ -1,7 +1,8 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.{Card, CardManager, CardValue, Suit}
-import de.knockoutwhist.control.{MatchControl, PlayerControl, RoundControl, TrickControl}
+import de.knockoutwhist.control.PlayerControl
+import de.knockoutwhist.controlold.MatchControl
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.testutils.TestUtil
@@ -53,7 +54,7 @@ class MatchTests extends AnyWordSpec with Matchers{
       }
       trick2 = TrickControl.playCard(trick2, round2, playedcard4, player2)._1
       "be able to return the current trick of the round" in {
-        round2.getcurrenttrick().get should be(trick2)
+        round2.currenttrick.get should be(trick2)
       }
       val rtrick2 = TrickControl.wonTrick(trick2, round2)
       "return false if the round isn't over" in {

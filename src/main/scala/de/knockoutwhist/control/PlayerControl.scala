@@ -37,9 +37,9 @@ object PlayerControl {
   def dogplayCard(player: AbstractPlayer, round: Round, trick: Trick): Option[Card] = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     ControlHandler.invoke(DelayEvent(3000L))
-    ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundControl.dogNeedsToPlay(round)))
+    ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundLogic.dogNeedsToPlay(round)))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
-    player.handleDogPlayCard(player.currentHand().get, trick, RoundControl.dogNeedsToPlay(round)) match {
+    player.handleDogPlayCard(player.currentHand().get, trick, RoundLogic.dogNeedsToPlay(round)) match {
       case Success(value) =>
         value
       case Failure(exception) =>

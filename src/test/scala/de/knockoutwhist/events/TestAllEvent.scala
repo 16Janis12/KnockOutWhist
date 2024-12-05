@@ -3,7 +3,6 @@ package de.knockoutwhist.events
 import de.knockoutwhist.cards.*
 import de.knockoutwhist.cards.CardValue.Two
 import de.knockoutwhist.cards.Suit.Hearts
-import de.knockoutwhist.control.{RoundControl, TrickControl}
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*

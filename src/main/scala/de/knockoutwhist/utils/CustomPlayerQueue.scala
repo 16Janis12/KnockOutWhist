@@ -5,6 +5,8 @@ class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0)
 
   private var current = start
   
+  def currentIndex: Int = current
+  
   def nextPlayer(): A = {
     val player = players(current)
     current = (current + 1) % players.length
@@ -31,14 +33,7 @@ class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0)
   override def clone(): CustomPlayerQueue[A] = new CustomPlayerQueue(players.clone(), current)
   
 
-  def iterator: Iterator[A] = new Iterator[A] {
-    private var index = 0
-    def hasNext: Boolean = index < players.length
-    def next(): A = {
-      index += 1
-      CustomPlayerQueue.this.nextPlayer()
-    }
-  }
+  def iterator: Iterator[A] = new QueueIterator[A](this)
 
   //Useful if start is not important
   def fromFirstIterator: Iterator[A] = new Iterator[A]:
@@ -46,4 +41,13 @@ class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0)
     override def hasNext: Boolean = it.hasNext
 
     override def next(): A = it.next()
+}
+
+class QueueIterator[A](queue: CustomPlayerQueue[A]) extends Iterator[A] {
+  var index = 0
+  def hasNext: Boolean = index < queue.size
+  def next(): A = {
+    index += 1
+    queue.nextPlayer()
+  }
 }

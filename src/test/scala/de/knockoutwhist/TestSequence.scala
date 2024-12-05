@@ -1,7 +1,7 @@
 package de.knockoutwhist
 
 import de.knockoutwhist.cards.{CardTests, DeckTests, HandTests}
-import de.knockoutwhist.control.{MatchControllerTests, PlayerControllerTests}
+import de.knockoutwhist.controlold.{MatchControllerTests, PlayerControllerTests}
 import de.knockoutwhist.events.TestAllEvent
 import de.knockoutwhist.player.builder.BuilderTests
 import de.knockoutwhist.player.{AITests, PlayerTests}

@@ -2,24 +2,29 @@ package de.knockoutwhist.rounds
 
 import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import scala.collection.immutable
+import scala.collection.immutable.List
+import scala.util.Random
 
-case class Round (trumpSuit: Suit, matchImpl: Match, tricklist: ListBuffer[Trick], playersin: List[AbstractPlayer], playersout: List[AbstractPlayer] = null, winner: AbstractPlayer = null, firstRound: Boolean) {
-  def this(trumpSuit: Suit, matchImpl: Match, playersin: List[AbstractPlayer], firstRound: Boolean) = {
-    this(trumpSuit, matchImpl, ListBuffer[Trick](), playersin, firstRound = firstRound)
+case class Round (trumpSuit: Suit, tricklist: List[Trick], playersin: List[AbstractPlayer], playersout: List[AbstractPlayer] = null, startingPlayer: Int = -1, winner: AbstractPlayer = null, firstRound: Boolean) {
+  def this(trumpSuit: Suit, playersin: List[AbstractPlayer], firstRound: Boolean) = {
+    this(trumpSuit, List[Trick](), playersin, firstRound = firstRound)
   }
-  private var currenttrick: Option[Trick] = None
-  var remainingTricks: Int = matchImpl.numberofcards
 
-  def getcurrenttrick(): Option[Trick] = {
-    currenttrick
+  val playerQueue: CustomPlayerQueue[AbstractPlayer] = CustomPlayerQueue[AbstractPlayer](
+    playersin.toArray,
+    (startingPlayer == -1) ? Random.nextInt(playersin.length) |: startingPlayer
+  )
+  
+  def addTrick(trick: Trick): Round = {
+    Round(trumpSuit, tricklist :+ trick, playersin, playersout, playerQueue.currentIndex, winner, firstRound)
   }
   
-  def setcurrenttrick(trick: Trick): Unit = {
-    currenttrick = Some(trick)
+  def updatePlayersIn(playersin: List[AbstractPlayer]): Round = {
+    Round(trumpSuit, tricklist, playersin, playersout, playerQueue.currentIndex, winner, firstRound)
   }
   
   override def toString: String = {

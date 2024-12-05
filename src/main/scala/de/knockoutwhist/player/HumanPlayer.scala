@@ -8,18 +8,20 @@ import de.knockoutwhist.rounds.Trick
 import scala.util.Try
 
 
-class HumanPlayer private[player](name: String, hand: Option[Hand]) extends AbstractPlayer(name, hand) {
+class HumanPlayer private[player](name: String, hand: Option[Hand], doglife: Boolean = false) extends AbstractPlayer(name, hand, doglife) {
   override def provideHand(hand: Hand): AbstractPlayer = {
     HumanPlayer(name, Some(hand))
   }
 
-  override def removeCard(card: Card): (Int,AbstractPlayer) = {
-    val npl = HumanPlayer(name, Some(hand.get.removeCard(card)))
-    (npl.hand.size, npl)
+  override def setDogLife(): AbstractPlayer = HumanPlayer(name, hand, true)
+
+  override def removeCard(card: Card): AbstractPlayer = {
+    HumanPlayer(name, Some(hand.get.removeCard(card)))
   }
+  
   override def handlePlayCard(hand: Hand, trick: Trick): Try[Card] = {
     ControlHandler.invoke(RequestCardEvent(hand))
-    }
+  }
 
   override def handleDogPlayCard(hand: Hand, trick: Trick, needstoplay: Boolean): Try[Option[Card]] = {
     ControlHandler.invoke(RequestDogPlayCardEvent(hand, needstoplay))
