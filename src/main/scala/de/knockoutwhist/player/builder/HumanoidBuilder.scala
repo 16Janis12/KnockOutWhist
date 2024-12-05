@@ -8,7 +8,7 @@ class HumanoidBuilder extends PlayerBuilder {
   private var unfinished: Option[HumanPlayer] = None
   override def setName(name: String): PlayerBuilder = {
     if (unfinished.isEmpty) {
-      unfinished = Some(HumanPlayer(name))
+      unfinished = Some(HumanPlayer(name, None))
     } else {
       unfinished.get.name = name
     }

@@ -5,19 +5,11 @@ import de.knockoutwhist.rounds.Trick
 
 import scala.util.Try
 
-abstract case class AbstractPlayer private[player](var name: String) {
-  private var hand: Option[Hand] = None
+abstract case class AbstractPlayer private[player](var name: String, hand: Option[Hand], doglife: Boolean = false) {
   def currentHand(): Option[Hand] = hand
-  var doglife: Boolean = false
-  def provideHand(hand: Hand): Boolean = {
-    this.hand = Some(hand)
-    true
-  }
+  def provideHand(hand: Hand): AbstractPlayer
   
-  def removeCard(card: Card): Int = {
-    hand = Some(hand.get.removeCard(card))
-    hand.get.cards.size
-  }
+  def removeCard(card: Card): (Int, AbstractPlayer)
 
   def handlePlayCard(hand: Hand, trick: Trick): Try[Card]
   def handleDogPlayCard(hand: Hand, trick: Trick, needstoplay: Boolean): Try[Option[Card]]

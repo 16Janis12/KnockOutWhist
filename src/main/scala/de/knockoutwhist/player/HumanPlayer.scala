@@ -8,7 +8,15 @@ import de.knockoutwhist.rounds.Trick
 import scala.util.Try
 
 
-class HumanPlayer private[player](name: String) extends AbstractPlayer(name) {
+class HumanPlayer private[player](name: String, hand: Option[Hand]) extends AbstractPlayer(name, hand) {
+  override def provideHand(hand: Hand): AbstractPlayer = {
+    HumanPlayer(name, Some(hand))
+  }
+
+  override def removeCard(card: Card): (Int,AbstractPlayer) = {
+    val npl = HumanPlayer(name, Some(hand.get.removeCard(card)))
+    (npl.hand.size, npl)
+  }
   override def handlePlayCard(hand: Hand, trick: Trick): Try[Card] = {
     ControlHandler.invoke(RequestCardEvent(hand))
     }
