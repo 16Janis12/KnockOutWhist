@@ -21,12 +21,14 @@ object PlayerLogic {
   def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Suit = {
     if (matchImpl.roundlist.isEmpty) {
       val randomTrumpsuit = CardManager.nextCard().suit
-      UndoManager.doStep(TrumpSuitSelectedCommand(matchImpl, randomTrumpsuit, remaining_players, true, None))
+      val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
+      val round = new Round(randomTrumpsuit, remaining_players, true)
+      MainLogic.controlRound(newMatchImpl, round)
       randomTrumpsuit
     } else {
       val winner = matchImpl.totalplayers.filter(matchImpl.roundlist.last.winner.name == _.name).head
       val trumpsuit = PlayerControl.pickNextTrumpsuit(winner)
-      UndoManager.doStep(TrumpSuitSelectedCommand(matchImpl, trumpsuit, remaining_players, false, Some(winner)))
+      UndoManager.doStep(TrumpSuitSelectedCommand(matchImpl, trumpsuit, remaining_players, false, winner))
       trumpsuit
     }
   }

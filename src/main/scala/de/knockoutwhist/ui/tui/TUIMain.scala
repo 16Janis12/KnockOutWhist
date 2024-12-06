@@ -296,8 +296,7 @@ object TUIMain extends EventListener with UI {
   }
   private def reqnumbereventmet(event: RequestNumberEvent): Option[Try[Int]] = {
     Some(Try {
-      val input = readLine()
-      val number = input.toInt
+      val number = input().toInt
       if (number < event.min || number > event.max) {
         throw new IllegalArgumentException(s"Number must be between ${event.min} and ${event.max}")
       }
@@ -306,13 +305,7 @@ object TUIMain extends EventListener with UI {
   }
   private def reqcardeventmet(event: RequestCardEvent): Option[Try[Card]] = {
     Some(Try {
-      val readLn = readLine()
-      if(readLn.equalsIgnoreCase("undo")) {
-        UndoManager.undoStep()
-      } else if(readLn.equalsIgnoreCase("redo")) {
-        UndoManager.redoStep()
-      }
-      val card = readLn.toInt - 1
+      val card = input().toInt - 1
       if (card < 0 || card >= event.hand.cards.length) {
         throw new IllegalArgumentException(s"Number has to be between 1 and ${event.hand.cards.length}")
       } else {
@@ -322,7 +315,7 @@ object TUIMain extends EventListener with UI {
   }
   private def reqdogeventmet(event: RequestDogPlayCardEvent): Option[Try[Option[Card]]]= {
     Some(Try {
-      val card = readLine()
+      val card = input()
       if (card.equalsIgnoreCase("y")) {
         Some(event.hand.cards.head)
       } else if (card.equalsIgnoreCase("n") && !event.needstoplay) {
@@ -336,7 +329,7 @@ object TUIMain extends EventListener with UI {
   private def reqplayersevent(): Option[List[AbstractPlayer]] = {
     Some({
       ControlHandler.invoke(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
-      val names = readLine().split(",")
+      val names = input().split(",")
       if (names.length < 2) {
         ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
         return reqplayersevent()
@@ -354,7 +347,7 @@ object TUIMain extends EventListener with UI {
   }
   private def reqpicktevmet(): Option[Try[Suit]] = {
     Some(Try {
-      val suit = readLine().toInt
+      val suit = input().toInt
       suit match {
         case 1 => Suit.Hearts
         case 2 => Suit.Diamonds
@@ -378,4 +371,17 @@ object TUIMain extends EventListener with UI {
     println(sb.toString())
     Some(true)
   }
+
+  private def input(): String = {
+    val in = readLine()
+    if (in.equals("undo")) {
+      UndoManager.undoStep()
+      return ""
+    } else if (in.equals("redo")) {
+      UndoManager.redoStep()
+      return ""
+    }
+    in
+  }
+
 }

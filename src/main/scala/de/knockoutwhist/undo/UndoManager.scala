@@ -6,6 +6,7 @@ object UndoManager {
   private var redoStack: List[Command] = Nil
 
   def doStep(command: Command): Unit = {
+    redoStack = Nil
     undoStack = command :: undoStack
     command.doStep()
   }
@@ -14,9 +15,9 @@ object UndoManager {
     undoStack match {
       case Nil => false
       case head :: stack =>
-        head.undoStep()
         undoStack = stack
         redoStack = head :: redoStack
+        head.undoStep()
         true
     }
   }
@@ -25,9 +26,9 @@ object UndoManager {
     redoStack match {
       case Nil => false
       case head :: stack =>
-        head.doStep()
         redoStack = stack
         undoStack = head :: undoStack
+        head.doStep()
         true
     }
   }
