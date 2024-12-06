@@ -72,7 +72,7 @@ object MainLogic {
   def controlPlayer(matchImpl: Match, round: Round, trick: Trick, player: AbstractPlayer, currentIndex: Int): Unit = {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
     if (!player.doglife) {
-      val rightCard = TrickLogic.controlSuitplayed(trick, player)
+      val rightCard = TrickLogic.controlSuitplayed(round, trick, player)
       val newPlayer = player.removeCard(rightCard)
       val newTrick = playCard(trick, rightCard, newPlayer)
       val newRound = round.updatePlayersIn(round.playersin.updated(round.playersin.indexOf(player), newPlayer))

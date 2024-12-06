@@ -8,8 +8,8 @@ import de.knockoutwhist.rounds.{Round, Trick}
 
 object TrickLogic {
   
-  private[control] def controlSuitplayed(trick: Trick, player: AbstractPlayer): Card = {
-    var card = PlayerControl.playCard(player, trick)
+  private[control] def controlSuitplayed(round: Round, trick: Trick, player: AbstractPlayer): Card = {
+    var card = PlayerControl.playCard(player, round, trick)
     if (trick.firstCard.isDefined) {
       val firstCard = trick.firstCard.get
       while (firstCard.suit != card.suit) {
@@ -23,7 +23,7 @@ object TrickLogic {
           return card
         } else {
           ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
-          card = PlayerControl.playCard(player, trick)
+          card = PlayerControl.playCard(player, round, trick)
         }
       }
     }

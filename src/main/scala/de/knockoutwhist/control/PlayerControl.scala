@@ -19,17 +19,17 @@ import scala.util.{Failure, Success}
 object PlayerControl {
 
   @tailrec
-  def playCard(player: AbstractPlayer, trick: Trick): Card = {
+  def playCard(player: AbstractPlayer, round: Round, trick: Trick): Card = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
     ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, true))
-    player.handlePlayCard(player.currentHand().get, trick) match {
+    player.handlePlayCard(player.currentHand().get, round, trick) match {
       case Success(value) =>
         value
       case Failure(exception) =>
         ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-        playCard(player, trick)
+        playCard(player, round, trick)
     }
   }
 
@@ -39,7 +39,7 @@ object PlayerControl {
     ControlHandler.invoke(DelayEvent(3000L))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundLogic.dogNeedsToPlay(round)))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
-    player.handleDogPlayCard(player.currentHand().get, trick, RoundLogic.dogNeedsToPlay(round)) match {
+    player.handleDogPlayCard(player.currentHand().get, round, trick, RoundLogic.dogNeedsToPlay(round)) match {
       case Success(value) =>
         value
       case Failure(exception) =>

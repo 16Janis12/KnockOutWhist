@@ -1,7 +1,7 @@
 package de.knockoutwhist.player
 
 import de.knockoutwhist.cards.{Card, Hand, Suit}
-import de.knockoutwhist.rounds.Trick
+import de.knockoutwhist.rounds.{Round, Trick}
 
 import scala.util.Try
 
@@ -12,8 +12,8 @@ abstract case class AbstractPlayer private[player](var name: String, hand: Optio
   def setDogLife(): AbstractPlayer
   def removeCard(card: Card): AbstractPlayer
 
-  def handlePlayCard(hand: Hand, trick: Trick): Try[Card]
-  def handleDogPlayCard(hand: Hand, trick: Trick, needstoplay: Boolean): Try[Option[Card]]
+  def handlePlayCard(hand: Hand, round: Round, trick: Trick): Try[Card]
+  def handleDogPlayCard(hand: Hand,round: Round, trick: Trick, needstoplay: Boolean): Try[Option[Card]]
   def handlePickTrumpsuit(): Try[Suit]
   def handlePickTieCard(min: Int, max: Int): Try[Int]
   
