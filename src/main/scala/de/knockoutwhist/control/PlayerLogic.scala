@@ -34,7 +34,7 @@ object PlayerLogic {
   def preSelect(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer]): Unit = {
     if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
-    UndoManager.doStep(SelectTieCommand(winners, matchImpl, round, playersout, immutable.HashMap(), 0, CardManager.cardContainer.size - (winners.length - 1)))
+    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, CardManager.cardContainer.size - (winners.length - 1))
   }
 
   def selectTie(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
@@ -46,10 +46,7 @@ object PlayerLogic {
       player.handlePickTieCard(1, remaining) match {
         case Success(value) =>
           val selCard = CardManager.cardContainer(currentStep + (value - 1))
-          val newCut = cut + (player -> selCard)
-          val newCurrentStep = currentStep + value
-          val newRemaining = remaining - (value - 1)
-          UndoManager.doStep(SelectTieCommand(winners, matchImpl, round, playersout, newCut, newCurrentStep, newRemaining, currentIndex + 1))
+          UndoManager.doStep(SelectTieCommand(winners, matchImpl, round, playersout, cut, value, selCard, currentStep, remaining, currentIndex))
         case Failure(exception) =>
           ControlHandler.invoke(ShowErrorStatus(NOT_A_NUMBER))
           selectTie(winners, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)

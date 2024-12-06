@@ -13,6 +13,7 @@ import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.UI
+import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
 
 import scala.annotation.tailrec
@@ -305,7 +306,13 @@ object TUIMain extends EventListener with UI {
   }
   private def reqcardeventmet(event: RequestCardEvent): Option[Try[Card]] = {
     Some(Try {
-      val card = readLine().toInt - 1
+      val readLn = readLine()
+      if(readLn.equalsIgnoreCase("undo")) {
+        UndoManager.undoStep()
+      } else if(readLn.equalsIgnoreCase("redo")) {
+        UndoManager.redoStep()
+      }
+      val card = readLn.toInt - 1
       if (card < 0 || card >= event.hand.cards.length) {
         throw new IllegalArgumentException(s"Number has to be between 1 and ${event.hand.cards.length}")
       } else {

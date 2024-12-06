@@ -2,17 +2,17 @@ package de.knockoutwhist.control
 
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.events.GLOBAL_STATUS.SHOW_FINISHED_MATCH
-import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_NOT_PLAYED, SHOW_WON_PLAYER_TRICK}
-import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
+import de.knockoutwhist.events.PLAYER_STATUS.SHOW_WON_PLAYER_TRICK
+import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, WON_ROUND}
 import de.knockoutwhist.events.directional.RequestPlayersEvent
-import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.util.DelayEvent
+import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.undo.UndoManager
-import de.knockoutwhist.undo.commands.{CreateTrickCommand, EnterPlayersCommand, PlayerPlayCommand, RoundCreateCommand}
-import de.knockoutwhist.utils.QueueIterator
+import de.knockoutwhist.undo.commands.{EnterPlayersCommand, PlayerPlayCommand, PlayerPlayDogCommand}
+import de.knockoutwhist.utils.Implicits.*
 
 object MainLogic {
 
@@ -25,13 +25,16 @@ object MainLogic {
     if(MatchLogic.isOver(matchImpl)) {
       ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, RoundLogic.remainingPlayers(matchImpl.roundlist.last).head))
     } else {
-      UndoManager.doStep(RoundCreateCommand(matchImpl))
+      val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: RoundLogic.remainingPlayers(matchImpl.roundlist.last)
+      val newMatch = RoundLogic.provideCards(matchImpl, remainingPlayer)
+      PlayerLogic.trumpsuitStep(newMatch._1, newMatch._2)
     }
   }
 
   def controlRound(matchImpl: Match, round: Round): Unit = {
     if(!RoundLogic.isOver(round)) {
-      UndoManager.doStep(CreateTrickCommand(matchImpl, round))
+      val trick = Trick()
+      controlTrick(matchImpl, round, trick)
       return
     }
     val result = RoundLogic.finalizeRound(RoundLogic.smashResults(round), matchImpl)
@@ -57,7 +60,7 @@ object MainLogic {
     if(currentIndex < round.playersin.size) {
       val player = round.playerQueue.nextPlayer()
       ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
-      UndoManager.doStep(PlayerPlayCommand(matchImpl, round, trick, player, currentIndex))
+      controlPlayer(matchImpl, round, trick, player, currentIndex)
     }else {
       val result = TrickLogic.wonTrick(trick, round)
       val newRound = round.addTrick(result._2)
@@ -73,23 +76,10 @@ object MainLogic {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
     if (!player.doglife) {
       val rightCard = TrickLogic.controlSuitplayed(round, trick, player)
-      val newPlayer = player.removeCard(rightCard)
-      val newTrick = playCard(trick, rightCard, newPlayer)
-      val newRound = round.updatePlayersIn(round.playersin.updated(round.playersin.indexOf(player), newPlayer))
-      val newMatch = matchImpl.updatePlayers(matchImpl.totalplayers.updated(matchImpl.totalplayers.indexOf(player), newPlayer))
-      controlTrick(newMatch, newRound, newTrick, currentIndex+1)
+      UndoManager.doStep(PlayerPlayCommand(matchImpl, round, trick, player, rightCard, currentIndex))
     } else if (player.currentHand().exists(_.cards.nonEmpty)) {
       val card = PlayerControl.dogplayCard(player, round, trick)
-      if (card.isEmpty) {
-        ControlHandler.invoke(ShowPlayerStatus(SHOW_NOT_PLAYED, player))
-        controlTrick(matchImpl, round, trick, currentIndex+1)
-      } else {
-        val newPlayer = player.removeCard(card.get)
-        val newTrick = playCard(trick, card.get, newPlayer)
-        val newRound = round.updatePlayersIn(round.playersin.updated(round.playersin.indexOf(player), newPlayer))
-        val newMatch = matchImpl.updatePlayers(matchImpl.totalplayers.updated(matchImpl.totalplayers.indexOf(player), newPlayer))
-        controlTrick(newMatch, newRound, newTrick, currentIndex+1)
-      }
+      UndoManager.doStep(PlayerPlayDogCommand(matchImpl, round, trick, player, card, currentIndex))
     }else {
       controlTrick(matchImpl, round, trick, currentIndex+1)
     }
