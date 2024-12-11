@@ -72,6 +72,11 @@ object MainMenu {
       alignment = TopCenter
       spacing = 20
       margin = Insets(100, 0, 0, 0)
+      val players: VBox = new VBox {
+        alignment = BottomCenter
+        spacing = 20
+        margin = Insets(0, 0, 50, 0)
+      }
       children = Seq(
         new Label {
           alignment = TopCenter
@@ -88,8 +93,31 @@ object MainMenu {
           snapToTicks = true
           maxWidth = 450
           maxHeight = 30
-          
-        }
+          value.onChange((_, oldvalue, newvalue) => {
+            players.children.clear()
+              for (i <- 1 to newvalue.intValue()) {
+                players.children.add(new TextField {
+                  promptText = "Enter Player"
+                  visible = true
+                  maxWidth = 450
+                  maxHeight = 30
+                })
+              }
+          })
+
+        },
+        players
+//        new VBox {
+//          alignment = BottomCenter
+//          spacing = 20
+//          margin = Insets(0, 0, 50, 0)
+//          for (i <- 1 to 5) {
+//              children.add(new TextField {
+//                promptText = "Enter Player 1"
+//                visible = true
+//              })
+//          }
+//        }
       )
     })
   }
