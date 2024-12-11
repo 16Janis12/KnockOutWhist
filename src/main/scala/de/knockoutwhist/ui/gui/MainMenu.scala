@@ -1,6 +1,7 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
+import de.knockoutwhist.control.MainLogic
 import de.knockoutwhist.utils.gui.Animations
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
@@ -16,6 +17,7 @@ import scalafx.scene.text.Font
 import scalafx.util.Duration
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Future
 
 object MainMenu {
 
@@ -40,7 +42,7 @@ object MainMenu {
           font = Font.font(25)
           styleClass += Styles.SUCCESS
           onMouseClicked = _ => {
-            createPlayeramountmenu()
+            MainLogic.startMatch()
           }
         },
         new Button {
@@ -88,7 +90,9 @@ object MainMenu {
           snapToTicks = true
           maxWidth = 450
           maxHeight = 30
-          
+          value.onChange((_, _, newValue) => {
+            
+          })
         }
       )
     })

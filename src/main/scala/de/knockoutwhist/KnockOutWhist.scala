@@ -18,6 +18,7 @@ object KnockOutWhist {
 
   def main(args: Array[String]): Unit = {
     if(!GUIMain.initial) throw new IllegalStateException("Game could not be started.")
+    
   }
   
 }
