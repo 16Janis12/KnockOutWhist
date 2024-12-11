@@ -4,6 +4,8 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.utils.gui.Animations
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
+import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
+import scalafx.scene.control.{Button, Label, Slider, TextField}
 import scalafx.geometry.Pos.{BottomCenter, TopCenter}
 import scalafx.scene.Parent
 import scalafx.scene.control.{Button, Label}
@@ -37,6 +39,9 @@ object MainMenu {
           text = "Start Game"
           font = Font.font(25)
           styleClass += Styles.SUCCESS
+          onMouseClicked = _ => {
+            createPlayeramountmenu()
+          }
         },
         new Button {
           alignment = TopCenter
@@ -61,6 +66,32 @@ object MainMenu {
     fadeIn.onFinished = _ => {
       mainMenu.children = Seq(child)
     }
+  }
+  def createPlayeramountmenu(): Unit = {
+    changeChild(new VBox {
+      alignment = TopCenter
+      spacing = 20
+      margin = Insets(100, 0, 0, 0)
+      children = Seq(
+        new Label {
+          alignment = TopCenter
+          text = "Select Playeramount below:"
+          font = Font.font(30)
+        },
+        new Slider {
+          min = 2
+          max = 7
+          showTickLabels = true
+          showTickMarks = true
+          majorTickUnit = 1
+          minorTickCount = 0
+          snapToTicks = true
+          maxWidth = 450
+          maxHeight = 30
+          
+        }
+      )
+    })
   }
 
 }
