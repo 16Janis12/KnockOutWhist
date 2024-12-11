@@ -1,6 +1,7 @@
 package de.knockoutwhist
 
 
+import de.knockoutwhist.ui.gui.GUIMain
 import de.knockoutwhist.ui.tui.TUIMain
 
 
@@ -16,7 +17,7 @@ object KnockOutWhist {
   def debugmode: Boolean = DEBUG_MODE_VAR
 
   def main(args: Array[String]): Unit = {
-    if(!TUIMain.initial) throw new IllegalStateException("Game could not be started.")
+    if(!GUIMain.initial) throw new IllegalStateException("Game could not be started.")
   }
   
 }
