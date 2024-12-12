@@ -1,7 +1,11 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
+import de.knockoutwhist.control.{ControlThread, MainLogic}
+import de.knockoutwhist.player.Playertype.HUMAN
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.utils.gui.Animations
+import javafx.scene.{Node, control}
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft}
@@ -15,12 +19,12 @@ import scalafx.scene.text.Font
 import scalafx.util.Duration
 
 import java.awt.Taskbar.Feature
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 object MainMenu {
 
   private val mainMenu: StackPane = new StackPane()
-
 
   def createMainMenu: StackPane = {
     changeChild(new VBox {
@@ -40,7 +44,9 @@ object MainMenu {
           font = Font.font(25)
           styleClass += Styles.SUCCESS
           onMouseClicked = _ => {
-            createPlayeramountmenu()
+            ControlThread.runLater {
+              MainLogic.startMatch()
+            }
           }
         },
         new Button {
@@ -56,7 +62,7 @@ object MainMenu {
     mainMenu
   }
 
-  private def changeChild(child: Parent, duration: Duration = Duration(500)): Unit = {
+  def changeChild(child: Parent, duration: Duration = Duration(500)): Unit = {
     val times = ListBuffer[Timeline]()
     mainMenu.children.foreach(node => times += Animations.fadeOutLeft(node, duration))
     val fadeIn = Animations.fadeInRight(child, duration)
@@ -106,9 +112,16 @@ object MainMenu {
                     fitHeight = 20
                   }
                   onMouseClicked = _ => {
-                    //startgame()
+                    val playerNamesList = ListBuffer[AbstractPlayer]()
+                    players.children.foreach {
+                      case field: control.TextField =>
+                        playerNamesList += PlayerFactory.createPlayer(field.getText, HUMAN)
+                      case _ =>
+                    }
+                    ControlThread.runLater {
+                      MainLogic.enteredPlayers(playerNamesList.toList)
+                    }
                   }
-                  
                 }
               )
             }
@@ -133,7 +146,7 @@ object MainMenu {
             players.children.clear()
               for (i <- 1 to newvalue.intValue()) {
                 players.children.add(new TextField {
-                  promptText = "Enter Player"
+                  promptText = s"Enter Player $i"
                   visible = true
                   maxWidth = 450
                   maxHeight = 30
