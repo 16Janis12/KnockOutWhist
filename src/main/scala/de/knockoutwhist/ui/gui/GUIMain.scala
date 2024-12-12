@@ -1,26 +1,34 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
+import de.knockoutwhist.events.cards.RenderHandEvent
+import de.knockoutwhist.events.directional.RequestPlayersEvent
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
-import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
+import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent, SimpleEvent}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.beans.property.ObjectProperty
 import scalafx.scene.{Node, Parent, Scene}
 
+import java.util
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.compiletime.uninitialized
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
-object GUIMain extends JFXApp3 with UI with EventListener {
-
+object GUIMain extends Thread with JFXApp3 with UI {
   private var currentRoot: Parent = uninitialized
+  
+  override def run(): Unit  = {
+    initial
+  }
 
   override def initial: Boolean = {
     main(new Array[String](_length = 0))
     true
   }
-
-  override def listen[R](event: ReturnableEvent[R]): Option[R] = ???
 
   override def start(): Unit = {
     currentRoot = MainMenu.createMainMenu
@@ -39,6 +47,4 @@ object GUIMain extends JFXApp3 with UI with EventListener {
     }
     stage.show()
   }
-
-
 }

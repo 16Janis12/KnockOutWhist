@@ -1,14 +1,14 @@
 package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.{ControlHandler, MainLogic}
+import de.knockoutwhist.control.{ControlHandler, MainLogic, PlayerLogic, TrickLogic}
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent, RequestPlayersEvent}
+import de.knockoutwhist.events.directional.*
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
@@ -21,7 +21,8 @@ import scala.io.StdIn.readLine
 import scala.util.{Failure, Success, Try}
 
 object TUIMain extends EventListener with UI {
-
+  
+  
   var init = false
 
   override def listen[R](event: ReturnableEvent[R]): Option[R] = {
@@ -38,14 +39,14 @@ object TUIMain extends EventListener with UI {
         showroundstatusmethod(event)
       case event: ShowErrorStatus =>
         showerrstatmet(event)
-      case event: RequestNumberEvent =>
+      case event: RequestTieNumberEvent =>
         reqnumbereventmet(event)
       case event: RequestCardEvent =>
         reqcardeventmet(event)
       case event: RequestDogPlayCardEvent =>
         reqdogeventmet(event)
       case event: RequestPickTrumpsuitEvent =>
-        reqpicktevmet()
+        reqpicktevmet(event)
       case event: ShowCurrentTrickEvent =>
         showcurtrevmet(event)
       case event: RequestPlayersEvent =>
@@ -294,27 +295,33 @@ object TUIMain extends EventListener with UI {
         }
     }
   }
-  private def reqnumbereventmet(event: RequestNumberEvent): Option[Try[Int]] = {
-    Some(Try {
+  private def reqnumbereventmet(event: RequestTieNumberEvent): Option[Boolean] = {
+    val tryTie = Try {
       val number = input().toInt
-      if (number < event.min || number > event.max) {
-        throw new IllegalArgumentException(s"Number must be between ${event.min} and ${event.max}")
+      if (number < 1 || number > event.remaining) {
+        throw new IllegalArgumentException(s"Number must be between 1 and ${event.remaining}")
       }
       number
-    })
+    }
+    
+    Some(true)
   }
-  private def reqcardeventmet(event: RequestCardEvent): Option[Try[Card]] = {
-    Some(Try {
+
+  private def reqcardeventmet(event: RequestCardEvent): Option[Boolean] = {
+    val tryCard = Try {
       val card = input().toInt - 1
       if (card < 0 || card >= event.hand.cards.length) {
         throw new IllegalArgumentException(s"Number has to be between 1 and ${event.hand.cards.length}")
       } else {
         event.hand.cards(card)
       }
-    })
+    }
+    TrickLogic.controlSuitplayed(tryCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+    Some(true)
   }
-  private def reqdogeventmet(event: RequestDogPlayCardEvent): Option[Try[Option[Card]]]= {
-    Some(Try {
+
+  private def reqdogeventmet(event: RequestDogPlayCardEvent): Option[Boolean] = {
+    val tryDogCard = Try {
       val card = input()
       if (card.equalsIgnoreCase("y")) {
         Some(event.hand.cards.head)
@@ -324,29 +331,31 @@ object TUIMain extends EventListener with UI {
         throw new IllegalArgumentException("Didn't want to play card but had to")
       }
     }
-    )
+    TrickLogic.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+    Some(true)
   }
-  private def reqplayersevent(): Option[List[AbstractPlayer]] = {
-    Some({
-      ControlHandler.invoke(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
-      val names = input().split(",")
-      if (names.length < 2) {
-        ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
-        return reqplayersevent()
-      }
-      if (names.distinct.length != names.length) {
-        ControlHandler.invoke(ShowErrorStatus(IDENTICAL_NAMES))
-        return reqplayersevent()
-      }
-      if (names.count(_.trim.isBlank) > 0 || names.count(_.trim.length <= 2) > 0 || names.count(_.trim.length > 10) > 0) {
-        ControlHandler.invoke(ShowErrorStatus(INVALID_NAME_FORMAT))
-        return reqplayersevent()
-      }
-      names.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList
-    })
+
+  private def reqplayersevent(): Option[Boolean] = {
+    ControlHandler.invoke(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
+    val names = input().split(",")
+    if (names.length < 2) {
+      ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
+      return reqplayersevent()
+    }
+    if (names.distinct.length != names.length) {
+      ControlHandler.invoke(ShowErrorStatus(IDENTICAL_NAMES))
+      return reqplayersevent()
+    }
+    if (names.count(_.trim.isBlank) > 0 || names.count(_.trim.length <= 2) > 0 || names.count(_.trim.length > 10) > 0) {
+      ControlHandler.invoke(ShowErrorStatus(INVALID_NAME_FORMAT))
+      return reqplayersevent()
+    }
+    MainLogic.enteredPlayers(names.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList)
+    Some(true)
   }
-  private def reqpicktevmet(): Option[Try[Suit]] = {
-    Some(Try {
+
+  private def reqpicktevmet(event: RequestPickTrumpsuitEvent): Option[Boolean] = {
+    val trySuit = Try {
       val suit = input().toInt
       suit match {
         case 1 => Suit.Hearts
@@ -355,7 +364,9 @@ object TUIMain extends EventListener with UI {
         case 4 => Suit.Spades
         case _ => throw IllegalArgumentException("Didn't enter a number between 1 and 4")
       }
-    })
+    }
+    PlayerLogic.trumpSuitSelected(event.matchImpl, trySuit, event.remaining_players, event.firstRound, event.player)
+    Some(true)
   }
   private def showcurtrevmet(event: ShowCurrentTrickEvent): Option[Boolean] = {
     TUIUtil.clearConsole()

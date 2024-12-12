@@ -2,7 +2,7 @@ package de.knockoutwhist.control
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Suit}
-import de.knockoutwhist.events.ERROR_STATUS.NOT_A_NUMBER
+import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS
 import de.knockoutwhist.events.cards.ShowTieCardsEvent
@@ -14,23 +14,29 @@ import de.knockoutwhist.undo.commands.{SelectTieCommand, TrumpSuitSelectedComman
 
 import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 object PlayerLogic {
   
-  def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Suit = {
+  def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Unit = {
     if (matchImpl.roundlist.isEmpty) {
       val randomTrumpsuit = CardManager.nextCard().suit
       val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
       val round = new Round(randomTrumpsuit, remaining_players, true)
       MainLogic.controlRound(newMatchImpl, round)
-      randomTrumpsuit
     } else {
       val winner = matchImpl.totalplayers.filter(matchImpl.roundlist.last.winner.name == _.name).head
-      val trumpsuit = PlayerControl.pickNextTrumpsuit(winner)
-      UndoManager.doStep(TrumpSuitSelectedCommand(matchImpl, trumpsuit, remaining_players, false, winner))
-      trumpsuit
+      PlayerControl.pickNextTrumpsuit(matchImpl, remaining_players, false, winner)
     }
+  }
+
+  def trumpSuitSelected(matchImpl: Match, suit: Try[Suit], remaining_players: List[AbstractPlayer], firstRound: Boolean, decided: AbstractPlayer): Unit = {
+    if (suit.isFailure) {
+      ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
+      PlayerControl.pickNextTrumpsuit(matchImpl, remaining_players, firstRound, decided)
+      return
+    }
+    UndoManager.doStep(TrumpSuitSelectedCommand(matchImpl, suit.get, remaining_players, false, decided))
   }
 
   def preSelect(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer]): Unit = {
@@ -45,15 +51,18 @@ object PlayerLogic {
     } else {
       val player = winners(currentIndex)
       ControlHandler.invoke(ShowPlayerStatus(SHOW_TIE_NUMBERS, player, remaining))
-      player.handlePickTieCard(1, remaining) match {
-        case Success(value) =>
-          val selCard = CardManager.cardContainer(currentStep + (value - 1))
-          UndoManager.doStep(SelectTieCommand(winners, matchImpl, round, playersout, cut, value, selCard, currentStep, remaining, currentIndex))
-        case Failure(exception) =>
-          ControlHandler.invoke(ShowErrorStatus(NOT_A_NUMBER))
-          selectTie(winners, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
-      }
+      player.handlePickTieCard(winners, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
     }
+  }
+
+  def selectedTie(winner: List[AbstractPlayer],matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], value: Try[Int], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
+    if (value.isFailure) {
+      ControlHandler.invoke(ShowErrorStatus(NOT_A_NUMBER))
+      selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
+      return
+    }
+    val selCard = CardManager.cardContainer(currentStep + (value.get - 1))
+    UndoManager.doStep(SelectTieCommand(winner, matchImpl, round, playersout, cut, value.get, selCard, currentStep, remaining, currentIndex))
   }
 
   private def evaluateTieWinner(matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card]): Unit = {

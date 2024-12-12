@@ -1,33 +1,65 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.cards.Card
-import de.knockoutwhist.events.ERROR_STATUS.WRONG_CARD
+import de.knockoutwhist.cards.{Card, Hand}
+import de.knockoutwhist.events.ERROR_STATUS.{INVALID_INPUT, INVALID_NUMBER, WRONG_CARD}
 import de.knockoutwhist.events.ShowErrorStatus
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.rounds.{Match, Round, Trick}
+import de.knockoutwhist.undo.UndoManager
+import de.knockoutwhist.undo.commands.{PlayerPlayCommand, PlayerPlayDogCommand}
+
+import scala.util.Try
 
 object TrickLogic {
   
-  private[control] def controlSuitplayed(round: Round, trick: Trick, player: AbstractPlayer): Card = {
-    var card = PlayerControl.playCard(player, round, trick)
+  def controlSuitplayed(card: Try[Card], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
+    if (card.isFailure) {
+      ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
+      PlayerControl.playCard(matchImpl, player, round, trick, currentIndex)
+      return
+    }
+    val realCard = card.get
     if (trick.firstCard.isDefined) {
       val firstCard = trick.firstCard.get
-      while (firstCard.suit != card.suit) {
+      if (firstCard.suit != realCard.suit) {
         var hasSuit = false
         for (cardInHand <- player.currentHand().get.cards) {
           if (cardInHand.suit == firstCard.suit) {
             hasSuit = true
           }
         }
-        if (!hasSuit) {
-          return card
-        } else {
+        if (hasSuit) {
           ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
-          card = PlayerControl.playCard(player, round, trick)
+          PlayerControl.playCard(matchImpl, player, round, trick, currentIndex)
+          return
         }
       }
     }
-    card
+    UndoManager.doStep(PlayerPlayCommand(matchImpl, round, trick, player, realCard, currentIndex))
+  }
+  
+  def controlDogPlayed(card: Try[Option[Card]], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
+    if (card.isFailure) {
+      ControlHandler.invoke(ShowErrorStatus(INVALID_INPUT))
+      PlayerControl.dogplayCard(matchImpl, player, round, trick, currentIndex)
+      return
+    }
+    UndoManager.doStep(PlayerPlayDogCommand(matchImpl, round, trick, player, card.get, currentIndex))
+  }
+  
+  def alternativeCards(card: Card, round: Round, trick: Trick, player: AbstractPlayer): List[Card] = {
+    if (trick.firstCard.isDefined) {
+      val firstCard = trick.firstCard.get
+      if (firstCard.suit != card.suit) {
+        val alternatives: List[Card] = for cardInHand <- player.currentHand().get.cards
+          if cardInHand.suit == firstCard.suit
+            yield cardInHand
+        if (alternatives.nonEmpty) {
+          return alternatives
+        }
+      }
+    }
+    Nil
   }
 
   def wonTrick(trick: Trick, round: Round): (AbstractPlayer, Trick) = {
