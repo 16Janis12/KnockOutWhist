@@ -26,6 +26,8 @@ import scala.collection.mutable.ListBuffer
 object MainMenu {
 
   private val mainMenu: StackPane = new StackPane()
+  
+  def current_root: Parent = mainMenu
 
   def createMainMenu: StackPane = {
     changeChild(new VBox {

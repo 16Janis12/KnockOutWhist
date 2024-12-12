@@ -47,7 +47,7 @@ object GUIMain extends JFXApp3 with EventListener with UI {
   }
 
   override def start(): Unit = {
-    currentRoot = MainMenu.createMainMenu
+    currentRoot = MainMenu.current_root
     val cont = ObjectProperty(currentRoot)
     JFXApp3.userAgentStylesheet_=(new PrimerDark().getUserAgentStylesheet)
     stage = new PrimaryStage {
