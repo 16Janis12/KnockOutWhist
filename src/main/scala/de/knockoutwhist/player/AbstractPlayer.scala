@@ -1,8 +1,9 @@
 package de.knockoutwhist.player
 
 import de.knockoutwhist.cards.{Card, Hand, Suit}
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.rounds.{Match, Round, Trick}
 
+import scala.collection.immutable
 import scala.util.Try
 
 abstract case class AbstractPlayer private[player](var name: String, hand: Option[Hand], doglife: Boolean = false) {
@@ -12,10 +13,10 @@ abstract case class AbstractPlayer private[player](var name: String, hand: Optio
   def setDogLife(): AbstractPlayer
   def removeCard(card: Card): AbstractPlayer
 
-  def handlePlayCard(hand: Hand, round: Round, trick: Trick): Try[Card]
-  def handleDogPlayCard(hand: Hand,round: Round, trick: Trick, needstoplay: Boolean): Try[Option[Card]]
-  def handlePickTrumpsuit(): Try[Suit]
-  def handlePickTieCard(min: Int, max: Int): Try[Int]
+  def handlePlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int): Unit
+  def handleDogPlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, needstoplay: Boolean): Unit
+  def handlePickTrumpsuit(matchImpl: Match, remaining_players: List[AbstractPlayer], firstRound: Boolean): Unit
+  def handlePickTieCard(winner: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit
   
   override def toString: String = {
     name

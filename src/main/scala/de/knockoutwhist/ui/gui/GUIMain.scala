@@ -3,7 +3,6 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.events.cards.RenderHandEvent
 import de.knockoutwhist.events.directional.RequestPlayersEvent
-import de.knockoutwhist.events.guiTransmitter.AnswerPlayerList
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent, SimpleEvent}
@@ -19,7 +18,7 @@ import scala.compiletime.uninitialized
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-object GUIMain extends Thread with JFXApp3 with UI with EventListener {
+object GUIMain extends Thread with JFXApp3 with UI {
   private var currentRoot: Parent = uninitialized
   
   override def run(): Unit  = {
@@ -47,40 +46,5 @@ object GUIMain extends Thread with JFXApp3 with UI with EventListener {
       }
     }
     stage.show()
-  }
-
-  override def listen[R](event: ReturnableEvent[R]): Option[R] = {
-      event match {
-        case event: RequestPlayersEvent =>
-          EventHandler.handleRequestEvent(event)
-      }
-    }
-    
-
-
-  }
-
-  object EventHandler extends EventListener {
-
-    private val resultHashMap: mutable.HashMap[Class[?], SimpleEvent] = mutable.HashMap[Class[?], SimpleEvent]()
-
-    override def listen[R](event: ReturnableEvent[R]): Option[R] = {
-      event match {
-        case event: AnswerPlayerList =>
-          resultHashMap.put(event.getClass, event)
-          Some(true)
-        case _ => None
-      }
-    }
-
-    def handleRequestEvent(requestPlayersEvent: RequestPlayersEvent): Option[List[AbstractPlayer]] = {
-      if (resultHashMap.contains(classOf[AnswerPlayerList])) {
-        val answerPlayerList = resultHashMap(classOf[AnswerPlayerList]).asInstanceOf[AnswerPlayerList]
-        Some(answerPlayerList.playerList)
-      } else {
-        None
-      }
-
-    }
   }
 }

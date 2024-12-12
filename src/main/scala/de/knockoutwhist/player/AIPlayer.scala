@@ -1,8 +1,9 @@
 package de.knockoutwhist.player
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.controlold.AILogic
-import de.knockoutwhist.rounds.{Round, Trick}
+import de.knockoutwhist.rounds.{Match, Round, Trick}
 
+import scala.collection.immutable
 import scala.util.Try
   
 class AIPlayer private[player](name: String, hand: Option[Hand], doglife: Boolean = false) extends AbstractPlayer(name, hand, doglife) {
@@ -16,26 +17,20 @@ class AIPlayer private[player](name: String, hand: Option[Hand], doglife: Boolea
 
   override def setDogLife(): AbstractPlayer = AIPlayer(name, hand, true)
 
-  override def handlePlayCard(hand: Hand, round: Round, trick: Trick): Try[Card] = {
-    Try{
-      AILogic.decideCard(this, round, trick)
-    }
+  override def handlePlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int): Unit = {
+    AILogic.decideCard(this, round, trick)
   }
 
-  override def handleDogPlayCard(hand: Hand, round: Round, trick: Trick, needstoplay: Boolean): Try[Option[Card]] = {
-    Try{
-      AILogic.decideDogCard(this, round, trick, needstoplay)
-    }
+  override def handleDogPlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, needstoplay: Boolean): Unit = {
+    AILogic.decideDogCard(this, round, trick, needstoplay)
   }
-  override def handlePickTrumpsuit(): Try[Suit] = {
-    Try{
-      AILogic.decideTrumpSuit(this)
-    }
+  
+  override def handlePickTrumpsuit(matchImpl: Match, remaining_players: List[AbstractPlayer], firstRound: Boolean): Unit = {
+    AILogic.decideTrumpSuit(this)
   }
 
-  override def handlePickTieCard(min: Int, max: Int): Try[Int] = {
-    Try{
-      AILogic.decideTie(min, max)
-    }
+  override def handlePickTieCard(winner: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
+    AILogic.decideTie(1, remaining)
   }
+  
 }

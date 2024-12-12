@@ -8,7 +8,7 @@ import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.ROUND_STATUS.*
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestNumberEvent, RequestPickTrumpsuitEvent}
+import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestTieNumberEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
@@ -105,7 +105,7 @@ class TestAllEvent extends AnyWordSpec with Matchers {
 
   "The request number event" should {
     TestUtil.disableDelay()
-    val event = RequestNumberEvent(6, 12)
+    val event = RequestTieNumberEvent(6, 12)
     "be able to be created" in {
       event should not be null
     }

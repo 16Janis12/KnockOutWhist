@@ -17,7 +17,10 @@ import de.knockoutwhist.utils.Implicits.*
 object MainLogic {
 
   def startMatch(): Unit = {
-    val players = ControlHandler.invoke(RequestPlayersEvent())
+    ControlHandler.invoke(RequestPlayersEvent())
+  }
+  
+  def enteredPlayers(players: List[AbstractPlayer]): Unit = {
     UndoManager.doStep(EnterPlayersCommand(players))
   }
 
@@ -75,11 +78,9 @@ object MainLogic {
   def controlPlayer(matchImpl: Match, round: Round, trick: Trick, player: AbstractPlayer, currentIndex: Int): Unit = {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
     if (!player.doglife) {
-      val rightCard = TrickLogic.controlSuitplayed(round, trick, player)
-      UndoManager.doStep(PlayerPlayCommand(matchImpl, round, trick, player, rightCard, currentIndex))
+      PlayerControl.playCard(matchImpl, player, round, trick, currentIndex)
     } else if (player.currentHand().exists(_.cards.nonEmpty)) {
-      val card = PlayerControl.dogplayCard(player, round, trick)
-      UndoManager.doStep(PlayerPlayDogCommand(matchImpl, round, trick, player, card, currentIndex))
+      PlayerControl.dogplayCard(matchImpl, player, round, trick, currentIndex)
     }else {
       controlTrick(matchImpl, round, trick, currentIndex+1)
     }

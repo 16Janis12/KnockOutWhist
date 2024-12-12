@@ -17,7 +17,7 @@ object KnockOutWhist {
   def debugmode: Boolean = DEBUG_MODE_VAR
 
   def main(args: Array[String]): Unit = {
-    if(!GUIMain.initial) throw new IllegalStateException("Game could not be started.")
+    if(!TUIMain.initial) throw new IllegalStateException("Game could not be started.")
     
   }
   
