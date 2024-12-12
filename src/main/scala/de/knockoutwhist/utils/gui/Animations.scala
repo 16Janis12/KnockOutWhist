@@ -53,11 +53,15 @@ object Animations {
     val timeline = new Timeline {
       keyFrames = Seq(
         KeyFrame(Duration.Zero, values = Set(
-          KeyValue(node.translateYProperty(), 0, Interpolator.EASE_BOTH)
+          KeyValue(node.translateYProperty(), 0, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleXProperty(), 1, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleYProperty(), 1, Interpolator.EASE_BOTH),
         )
         ),
         KeyFrame(duration, values = Set(
-          KeyValue(node.translateYProperty(), endY, Interpolator.EASE_BOTH)
+          KeyValue(node.translateYProperty(), endY, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleXProperty(), 0.2, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleYProperty(), 0.2, Interpolator.EASE_BOTH),
         ))
       )
     }

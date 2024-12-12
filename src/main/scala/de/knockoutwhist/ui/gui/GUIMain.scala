@@ -40,7 +40,8 @@ object GUIMain extends JFXApp3 with EventListener with UI {
         case event: ShowPlayerStatus =>
           event.status match
             case SHOW_TURN =>
-              UIData.currentPlayer = event.player
+              Game.updateTurn(event.player)
+            case _ =>
         case event: SimpleEvent =>
           println(s"Event ${event.id} not handled")
       }

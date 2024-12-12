@@ -24,10 +24,70 @@ import scala.compiletime.uninitialized
 
 
 object Game {
+
+  private val playersTurnLabel: Label = new Label {
+    alignment = TopCenter
+    text = "It's {Player?}s turn:"
+    font = Font.font(35)
+    hgrow = Always
+  }
   
-  
+  private val nextPlayers: HBox = new HBox {
+    alignment = TopLeft
+    children = Seq(
+      new Label {
+        alignment = TopLeft
+        text = "Next Players turn:"
+        font = Font.font(20)
+        margin = Insets(30, 0, 0, 20)
+      }
+    )
+  }
+
+  private val playedCards: HBox = new HBox {
+    alignment = BottomCenter
+    spacing = 10
+    margin = Insets(0, 0, 20, 0)
+    children = Seq(
+      new ImageView {
+        alignment = BottomCenter
+        image = new Image("cards/TH.png")
+        fitWidth = 102
+        fitHeight = 150
+        onMouseClicked = _ => System.exit(0)
+      },
+    )
+  }
+
+  private val playerCards: HBox = new HBox {
+    alignment = BottomCenter
+    spacing = 10
+    margin = Insets(30, 0, 20, 0)
+    children = Seq(
+      new ImageView {
+        alignment = BottomCenter
+        image = new Image("cards/3H.png")
+        fitWidth = 170
+        fitHeight = 250
+        onMouseClicked = _ => {
+          val slideOut = Animations.slideOutUp(children.head.asInstanceOf[javafx.scene.image.ImageView], Duration(400), -350)
+          slideOut.onFinished = _ => {
+            visible = false
+          }
+          slideOut.play()
+        }
+      },
+      new ImageView {
+        alignment = BottomCenter
+        image = new Image("cards/4C.png")
+        fitWidth = 170
+        fitHeight = 250
+        onMouseClicked = _ => System.exit(0)
+      },
+    )
+  }
+
   def createGame(): Unit = {
-    val uiData = ObjectProperty(UIData)
     MainMenu.changeChild(new StackPane {
       children = Seq(
         new VBox {
@@ -35,24 +95,10 @@ object Game {
           spacing = 10
           margin = Insets(20, 0, 0, 0)
           hgrow = Always
+
           children = Seq(
-            new Label {
-              alignment = TopCenter
-              text = "It's {Player?}s turn:"
-              font = Font.font(35)
-              hgrow = Always
-            },
-            new HBox {
-              alignment = TopLeft
-              children = Seq(
-                new Label {
-                  alignment = TopLeft
-                  text = "Next Players turn:"
-                  font = Font.font(20)
-                  margin = Insets(30, 0, 0, 20)
-                }
-              )
-            },
+            playersTurnLabel,
+            nextPlayers,
             new Label {
               alignment = Center
               text = "Played Cards"
@@ -60,63 +106,25 @@ object Game {
               font = Font.font(20)
               margin = Insets(50,0,0,0)
             },
-            new HBox {
-              alignment = BottomCenter
-              spacing = 10
-              margin = Insets(0, 0, 20, 0)
-              children = Seq(
-                new ImageView {
-                  alignment = BottomCenter
-                  image = new Image("cards/TH.png")
-                  fitWidth = 170
-                  fitHeight = 250
-                  onMouseClicked = _ => System.exit(0)
-                },
-              )
-            },
+            playedCards,
             new Label {
               alignment = Center
               text = "Your Cards:"
               font = Font.font(20)
               margin = Insets(35,0,0,0)
             },
-            new HBox {
-              alignment = BottomCenter
-              spacing = 10
-              margin = Insets(30, 0, 20, 0)
-              children = Seq(
-                new ImageView {
-                  alignment = BottomCenter
-                  image = new Image("cards/3H.png")
-                  fitWidth = 170
-                  fitHeight = 250
-                  onMouseClicked = _ => {
-                    Animations.slideOutUp(children.head.asInstanceOf[javafx.scene.image.ImageView], duration = Duration(300))
-                    visible = false
-                  }
-                },
-                new ImageView {
-                  alignment = BottomCenter
-                  image = new Image("cards/4C.png")
-                  fitWidth = 170
-                  fitHeight = 250
-                  onMouseClicked = _ => System.exit(0)
-                },
-              )
-            },
+            playerCards,
           )
         }
       )
     })
   }
   
+  def updateTurn(player: AbstractPlayer): Unit = {
+    playersTurnLabel.text = s"It's ${player.name}s turn:"
+  }
+  
   def matchcard(card: Card): Boolean = {
     true
   }
-}
-
-object UIData {
-  var currentPlayer: AbstractPlayer = uninitialized
-  var currentTrick: Trick = uninitialized
-  var currentRound: Round = uninitialized
 }
