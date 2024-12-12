@@ -5,7 +5,7 @@ import de.knockoutwhist.events.cards.RenderHandEvent
 import de.knockoutwhist.events.directional.RequestPlayersEvent
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
-import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent, SimpleEvent}
+import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.beans.property.ObjectProperty

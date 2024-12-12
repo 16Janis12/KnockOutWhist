@@ -1,5 +1,7 @@
 package de.knockoutwhist.undo
 
+import de.knockoutwhist.control.ControlThread
+
 object UndoManager {
 
   private var undoStack: List[Command] = Nil
@@ -11,25 +13,35 @@ object UndoManager {
     command.doStep()
   }
 
-  def undoStep(): Boolean = {
-    undoStack match {
-      case Nil => false
-      case head :: stack =>
-        undoStack = stack
-        redoStack = head :: redoStack
-        head.undoStep()
-        true
+  def undoStep(): Unit = {
+    ControlThread.runLater {
+      undoStack match {
+        case Nil => false
+        case head :: stack =>
+          undoStack = stack
+          redoStack = head :: redoStack
+          try {
+            head.undoStep()
+          } catch {
+            case _: UndoneException =>
+          }
+      }
     }
   }
-  
-  def redoStep(): Boolean = {
-    redoStack match {
-      case Nil => false
-      case head :: stack =>
-        redoStack = stack
-        undoStack = head :: undoStack
-        head.doStep()
-        true
+
+  def redoStep(): Unit = {
+    ControlThread.runLater {
+      redoStack match {
+        case Nil => false
+        case head :: stack =>
+          redoStack = stack
+          undoStack = head :: undoStack
+          try {
+            head.doStep()
+          } catch {
+            case _: UndoneException =>
+          }
+      }
     }
   }
 

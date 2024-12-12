@@ -3,7 +3,7 @@ package de.knockoutwhist.events.directional
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
-import de.knockoutwhist.utils.events.{ReturnableEvent, SimpleEvent}
+import de.knockoutwhist.utils.events.SimpleEvent
 
 import scala.collection.immutable
 import scala.util.Try

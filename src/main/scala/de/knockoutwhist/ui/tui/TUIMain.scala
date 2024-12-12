@@ -1,7 +1,7 @@
 package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.{ControlHandler, MainLogic, PlayerLogic, TrickLogic}
+import de.knockoutwhist.control.{ControlHandler, ControlThread, MainLogic, PlayerLogic, TrickLogic}
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
@@ -10,48 +10,62 @@ import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.*
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
+import de.knockoutwhist.events.ui.GameState.MAIN_MENU
+import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
+import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.UI
-import de.knockoutwhist.undo.UndoManager
-import de.knockoutwhist.utils.events.{EventListener, ReturnableEvent}
+import de.knockoutwhist.undo.{UndoManager, UndoneException}
+import de.knockoutwhist.utils.CustomThread
+import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 
 import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.util.{Failure, Success, Try}
 
-object TUIMain extends EventListener with UI {
-  
+object TUIMain extends CustomThread with EventListener with UI {
+
+  setName("TUI")
   
   var init = false
 
-  override def listen[R](event: ReturnableEvent[R]): Option[R] = {
-    event match {
-      case event: RenderHandEvent =>
-        renderhandmethod(event)
-      case event: ShowTieCardsEvent =>
-        showtiecardseventmethod(event)
-      case event: ShowGlobalStatus =>
-        showglobalstatusmethod(event)
-      case event: ShowPlayerStatus =>
-        showplayerstatusmethod(event)
-      case event: ShowRoundStatus =>
-        showroundstatusmethod(event)
-      case event: ShowErrorStatus =>
-        showerrstatmet(event)
-      case event: RequestTieNumberEvent =>
-        reqnumbereventmet(event)
-      case event: RequestCardEvent =>
-        reqcardeventmet(event)
-      case event: RequestDogPlayCardEvent =>
-        reqdogeventmet(event)
-      case event: RequestPickTrumpsuitEvent =>
-        reqpicktevmet(event)
-      case event: ShowCurrentTrickEvent =>
-        showcurtrevmet(event)
-      case event: RequestPlayersEvent =>
-        reqplayersevent()
-      case _ => None
+  override def instance: CustomThread = TUIMain
+
+  override def listen(event: SimpleEvent): Unit = {
+    runLater {
+      event match {
+        case event: RenderHandEvent =>
+          renderhandmethod(event)
+        case event: ShowTieCardsEvent =>
+          showtiecardseventmethod(event)
+        case event: ShowGlobalStatus =>
+          showglobalstatusmethod(event)
+        case event: ShowPlayerStatus =>
+          showplayerstatusmethod(event)
+        case event: ShowRoundStatus =>
+          showroundstatusmethod(event)
+        case event: ShowErrorStatus =>
+          showerrstatmet(event)
+        case event: RequestTieNumberEvent =>
+          reqnumbereventmet(event)
+        case event: RequestCardEvent =>
+          reqcardeventmet(event)
+        case event: RequestDogPlayCardEvent =>
+          reqdogeventmet(event)
+        case event: RequestPickTrumpsuitEvent =>
+          reqpicktevmet(event)
+        case event: ShowCurrentTrickEvent =>
+          showcurtrevmet(event)
+        case event: RequestPlayersEvent =>
+          reqplayersevent()
+        case event: GameStateUpdateEvent =>
+          if (event.gameState == GameState.MAIN_MENU) {
+            mainMenu()
+          }
+          Some(true)
+        case _ => None
+      }
     }
   }
   
@@ -108,41 +122,52 @@ object TUIMain extends EventListener with UI {
     }
   }
 
-  @tailrec
   override def initial: Boolean = {
     if (init) {
       return false
     }
     init = true
+    start()
+    true
+  }
+
+  @tailrec
+  private def mainMenu(): Unit = {
     TUIUtil.clearConsole()
     println("Welcome to Knockout Whist!")
     println()
     println("Please select an option:")
     println("1. Start a new match")
     println("2. Exit")
-    Try{
+    Try {
       readLine().toInt
     } match {
       case Success(value) =>
         value match {
           case 1 =>
-            MainLogic.startMatch()
-            init = false
-            initial
+            ControlThread.runLater {
+              MainLogic.startMatch()
+            }
           case 2 =>
             println("Exiting the game.")
-            true
+            System.exit(0)
           case _ =>
-            ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-            init = false
-            initial
+            showerrstatmet(ShowErrorStatus(INVALID_NUMBER))
+            ControlThread.runLater {
+              ControlHandler.invoke(DelayEvent(500))
+              ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+            }
+            mainMenu()
         }
       case Failure(_) =>
-        ControlHandler.invoke(ShowErrorStatus(NOT_A_NUMBER))
-        init = false
-        initial
+        showerrstatmet(ShowErrorStatus(NOT_A_NUMBER))
+        ControlThread.runLater {
+          ControlHandler.invoke(DelayEvent(500))
+          ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+        }
     }
   }
+
   private def renderhandmethod(event: RenderHandEvent): Option[Boolean] = {
     TUICards.renderHandEvent(event.hand, event.showNumbers).foreach(println)
     Some(true)
@@ -303,7 +328,12 @@ object TUIMain extends EventListener with UI {
       }
       number
     }
-    
+    if(tryTie.isFailure && tryTie.failed.get.isInstanceOf[UndoneException]) {
+      return Some(true)
+    }
+    ControlThread.runLater {
+      PlayerLogic.selectedTie(event.winner, event.matchImpl, event.round, event.playersout, event.cut, tryTie, event.currentStep, event.remaining, event.currentIndex)
+    }
     Some(true)
   }
 
@@ -316,7 +346,12 @@ object TUIMain extends EventListener with UI {
         event.hand.cards(card)
       }
     }
-    TrickLogic.controlSuitplayed(tryCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+    if (tryCard.isFailure && tryCard.failed.get.isInstanceOf[UndoneException]) {
+      return Some(true)
+    }
+    ControlThread.runLater {
+      TrickLogic.controlSuitplayed(tryCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+    }
     Some(true)
   }
 
@@ -331,26 +366,33 @@ object TUIMain extends EventListener with UI {
         throw new IllegalArgumentException("Didn't want to play card but had to")
       }
     }
-    TrickLogic.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+    ControlThread.runLater {
+      TrickLogic.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+    }
     Some(true)
   }
 
   private def reqplayersevent(): Option[Boolean] = {
-    ControlHandler.invoke(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
-    val names = input().split(",")
-    if (names.length < 2) {
-      ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
+    showglobalstatusmethod(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
+    val names = Try {input().split(",")}
+    if (names.isFailure && names.failed.get.isInstanceOf[UndoneException]) {
+      return Some(true)
+    }
+    if (names.get.length < 2) {
+      showerrstatmet(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
       return reqplayersevent()
     }
-    if (names.distinct.length != names.length) {
-      ControlHandler.invoke(ShowErrorStatus(IDENTICAL_NAMES))
+    if (names.get.distinct.length != names.get.length) {
+      showerrstatmet(ShowErrorStatus(IDENTICAL_NAMES))
       return reqplayersevent()
     }
-    if (names.count(_.trim.isBlank) > 0 || names.count(_.trim.length <= 2) > 0 || names.count(_.trim.length > 10) > 0) {
-      ControlHandler.invoke(ShowErrorStatus(INVALID_NAME_FORMAT))
+    if (names.get.count(_.trim.isBlank) > 0 || names.get.count(_.trim.length <= 2) > 0 || names.get.count(_.trim.length > 10) > 0) {
+      showerrstatmet(ShowErrorStatus(INVALID_NAME_FORMAT))
       return reqplayersevent()
     }
-    MainLogic.enteredPlayers(names.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList)
+    ControlThread.runLater {
+      MainLogic.enteredPlayers(names.get.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList)
+    }
     Some(true)
   }
 
@@ -365,7 +407,12 @@ object TUIMain extends EventListener with UI {
         case _ => throw IllegalArgumentException("Didn't enter a number between 1 and 4")
       }
     }
-    PlayerLogic.trumpSuitSelected(event.matchImpl, trySuit, event.remaining_players, event.firstRound, event.player)
+    if (trySuit.isFailure && trySuit.failed.get.isInstanceOf[UndoneException]) {
+      return Some(true)
+    }
+    ControlThread.runLater {
+      PlayerLogic.trumpSuitSelected(event.matchImpl, trySuit, event.remaining_players, event.firstRound, event.player)
+    }
     Some(true)
   }
   private def showcurtrevmet(event: ShowCurrentTrickEvent): Option[Boolean] = {
@@ -387,10 +434,10 @@ object TUIMain extends EventListener with UI {
     val in = readLine()
     if (in.equals("undo")) {
       UndoManager.undoStep()
-      return ""
+      throw new UndoneException("Undo")
     } else if (in.equals("redo")) {
       UndoManager.redoStep()
-      return ""
+      throw new UndoneException("Redo")
     }
     in
   }

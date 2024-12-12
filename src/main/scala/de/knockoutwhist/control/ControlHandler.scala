@@ -13,4 +13,12 @@ object ControlHandler extends EventHandler {
 
 }
 
-object ControlThread extends CustomThread {}
+object ControlThread extends CustomThread {
+  
+  setName("ControlThread")
+  
+  def isControlThread: Boolean = Thread.currentThread().equals(ControlThread)
+
+  override def instance: CustomThread = ControlThread
+  
+}

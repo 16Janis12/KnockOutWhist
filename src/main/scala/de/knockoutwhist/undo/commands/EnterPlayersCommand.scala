@@ -1,6 +1,6 @@
 package de.knockoutwhist.undo.commands
 
-import de.knockoutwhist.control.MainLogic
+import de.knockoutwhist.control.{ControlThread, MainLogic}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.Match
 import de.knockoutwhist.undo.Command

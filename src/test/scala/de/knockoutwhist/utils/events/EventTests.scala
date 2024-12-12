@@ -23,7 +23,7 @@ class EventTests extends AnyWordSpec with Matchers {
     "add a listener" in {
       val eventHandler = new EventHandler() {}
       val listener = new EventListener {
-        override def listen[R](event: ReturnableEvent[R]): Option[R] = None
+        override def listen(event: SimpleEvent): Unit = {}
       }
       eventHandler.addListener(listener)
       eventHandler.listeners should contain(listener)
@@ -31,7 +31,7 @@ class EventTests extends AnyWordSpec with Matchers {
     "remove a listener" in {
       val eventHandler = new EventHandler() {}
       val listener = new EventListener {
-        override def listen[R](event: ReturnableEvent[R]): Option[R] = None
+        override def listen(event: SimpleEvent): Unit = {}
       }
       eventHandler.addListener(listener)
       eventHandler.removeListener(listener)
@@ -40,11 +40,10 @@ class EventTests extends AnyWordSpec with Matchers {
     "throw an exception if an event is sent without anyone to listen" in {
       val eventHandler = new EventHandler() {}
       assertThrows[IllegalStateException] {
-        eventHandler.invoke(new ReturnableEvent[String] {
+        eventHandler.invoke(new SimpleEvent {
           override def id: String = "testEvent"
         })
       }
-
     }
   }
 
