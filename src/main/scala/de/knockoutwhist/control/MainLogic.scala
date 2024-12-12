@@ -6,6 +6,8 @@ import de.knockoutwhist.events.PLAYER_STATUS.SHOW_WON_PLAYER_TRICK
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, WON_ROUND}
 import de.knockoutwhist.events.directional.RequestPlayersEvent
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
+import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
+import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.player.AbstractPlayer
@@ -27,6 +29,7 @@ object MainLogic {
   def controlMatch(matchImpl: Match): Unit = {
     if(MatchLogic.isOver(matchImpl)) {
       ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, RoundLogic.remainingPlayers(matchImpl.roundlist.last).head))
+      ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
     } else {
       val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: RoundLogic.remainingPlayers(matchImpl.roundlist.last)
       val newMatch = RoundLogic.provideCards(matchImpl, remainingPlayer)

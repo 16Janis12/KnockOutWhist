@@ -7,7 +7,7 @@ import de.knockoutwhist.utils.events.EventHandler
 
 object ControlHandler extends EventHandler {
 
-  //addListener(GUIMain)
+  addListener(GUIMain)
   addListener(TUIMain)
   addListener(DelayHandler)
 

@@ -5,6 +5,7 @@ import de.knockoutwhist.events.directional.RequestPlayersEvent
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.CustomThread
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
+import javafx.application as jfxa
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.beans.property.ObjectProperty
@@ -13,13 +14,21 @@ import scalafx.scene.{Parent, Scene}
 import scala.compiletime.uninitialized
 
 object GUIMain extends JFXApp3 with EventListener with UI {
+
+  private var platformReady: Boolean = false
+
   private var currentRoot: Parent = uninitialized
 
   override def listen(event: SimpleEvent): Unit = {
-    GUIThread.runLater {
+    while (!platformReady) {
+      Thread.sleep(100)
+    }
+    Platform.runLater {
       event match {
         case event: RequestPlayersEvent => 
           MainMenu.createPlayeramountmenu()
+        case event: SimpleEvent =>
+          println(s"Event ${event.id} not handled")
       }
     }
   }
@@ -45,6 +54,7 @@ object GUIMain extends JFXApp3 with EventListener with UI {
       }
     }
     stage.show()
+    platformReady = true
   }
 }
 
