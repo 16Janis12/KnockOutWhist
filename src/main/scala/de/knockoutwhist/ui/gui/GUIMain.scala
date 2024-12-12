@@ -19,8 +19,12 @@ import scala.compiletime.uninitialized
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
-object GUIMain extends JFXApp3 with UI with EventListener {
+object GUIMain extends Thread with JFXApp3 with UI with EventListener {
   private var currentRoot: Parent = uninitialized
+  
+  override def run(): Unit  = {
+    initial
+  }
 
   override def initial: Boolean = {
     main(new Array[String](_length = 0))
@@ -48,15 +52,6 @@ object GUIMain extends JFXApp3 with UI with EventListener {
   override def listen[R](event: ReturnableEvent[R]): Option[R] = {
       event match {
         case event: RequestPlayersEvent =>
-
-          val result: Future[Unit] = Future.unit.map {_ =>
-            Platform.runLater {
-              MainMenu.createPlayeramountmenu()
-            }
-            "None"
-          }
-          
-          Await.ready(result, Duration.Inf)
           EventHandler.handleRequestEvent(event)
       }
     }

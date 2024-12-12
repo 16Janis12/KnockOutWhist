@@ -20,8 +20,13 @@ import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.util.{Failure, Success, Try}
 
-object TUIMain extends EventListener with UI {
+object TUIMain with EventListener with UI {
 
+  override def run(): Unit = {
+    initial
+  }
+  
+  
   var init = false
 
   override def listen[R](event: ReturnableEvent[R]): Option[R] = {

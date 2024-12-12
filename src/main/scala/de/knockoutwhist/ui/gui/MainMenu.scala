@@ -91,7 +91,7 @@ object MainMenu {
           maxWidth = 450
           maxHeight = 30
           value.onChange((_, _, newValue) => {
-            
+
           })
         }
       )
