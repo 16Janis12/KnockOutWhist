@@ -4,17 +4,17 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.utils.gui.Animations
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
-import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
+import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft}
 import scalafx.scene.control.{Button, Label, Slider, TextField}
-import scalafx.geometry.Pos.{BottomCenter, TopCenter}
 import scalafx.scene.Parent
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
-import scalafx.scene.layout.{StackPane, VBox}
+import scalafx.scene.layout.{HBox, StackPane, VBox}
 import scalafx.scene.text.Font
 import scalafx.util.Duration
 
+import java.awt.Taskbar.Feature
 import scala.collection.mutable.ListBuffer
 
 object MainMenu {
@@ -78,6 +78,42 @@ object MainMenu {
         margin = Insets(0, 0, 50, 0)
       }
       children = Seq(
+        new VBox {
+          alignment = TopCenter
+          children = Seq(
+            new HBox {
+              alignment = TopCenter
+              spacing = 500
+              children = Seq(
+                new Button {
+                  styleClass += Styles.BUTTON_CIRCLE
+                  styleClass += Styles.ACCENT
+                  graphic = new ImageView {
+                    image = new Image("return-icon.png")
+                    fitWidth = 20
+                    fitHeight = 20
+                }
+                  onMouseClicked = _ => {
+                    createMainMenu
+                  }
+            },
+                new Button {
+                  styleClass += Styles.SUCCESS
+                  styleClass += Styles.BUTTON_CIRCLE
+                  graphic = new ImageView {
+                    image = new Image("checkmark.png")
+                    fitWidth = 20
+                    fitHeight = 20
+                  }
+                  onMouseClicked = _ => {
+                    //startgame()
+                  }
+                  
+                }
+              )
+            }
+          )
+        },
         new Label {
           alignment = TopCenter
           text = "Select Playeramount below:"
@@ -107,6 +143,7 @@ object MainMenu {
 
         },
         players
+
 //        new VBox {
 //          alignment = BottomCenter
 //          spacing = 20
