@@ -1,6 +1,8 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
+import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TURN
+import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.events.directional.RequestPlayersEvent
 import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
@@ -35,6 +37,10 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           } else if (event.gameState == MAIN_MENU) {
             MainMenu.createMainMenu
           }
+        case event: ShowPlayerStatus =>
+          event.status match
+            case SHOW_TURN =>
+              UIData.currentPlayer = event.player
         case event: SimpleEvent =>
           println(s"Event ${event.id} not handled")
       }

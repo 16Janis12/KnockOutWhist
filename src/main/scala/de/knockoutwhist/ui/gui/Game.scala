@@ -4,9 +4,11 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
+import de.knockoutwhist.rounds.{Round, Trick}
 import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.undo.commands.EnterPlayersCommand
 import de.knockoutwhist.utils.gui.Animations
+import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, BottomLeft, Center, TopCenter, TopLeft}
 import scalafx.scene.control.{Button, Label}
@@ -22,7 +24,10 @@ import scala.compiletime.uninitialized
 
 
 object Game {
+  
+  
   def createGame(): Unit = {
+    val uiData = ObjectProperty(UIData)
     MainMenu.changeChild(new StackPane {
       children = Seq(
         new VBox {
@@ -108,4 +113,10 @@ object Game {
   def matchcard(card: Card): Boolean = {
     true
   }
+}
+
+object UIData {
+  var currentPlayer: AbstractPlayer = uninitialized
+  var currentTrick: Trick = uninitialized
+  var currentRound: Round = uninitialized
 }
