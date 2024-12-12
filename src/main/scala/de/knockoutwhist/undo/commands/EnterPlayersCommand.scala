@@ -11,9 +11,9 @@ case class EnterPlayersCommand(players: List[AbstractPlayer]) extends Command {
 
   override def doStep(): Unit = {
     val matchImpl = Match(players)
-    MainLogic.controlMatch(matchImpl)
     ControlThread.runLater {
       ControlHandler.invoke(GameStateUpdateEvent(INGAME))
+      MainLogic.controlMatch(matchImpl)
     }
   }
 

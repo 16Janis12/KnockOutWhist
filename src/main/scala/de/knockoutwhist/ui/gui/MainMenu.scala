@@ -4,6 +4,7 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.control.{ControlThread, MainLogic}
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
+import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils.gui.Animations
 import javafx.scene.{Node, control}
 import scalafx.animation.Timeline
@@ -118,6 +119,7 @@ object MainMenu {
                         playerNamesList += PlayerFactory.createPlayer(field.getText, HUMAN)
                       case _ =>
                     }
+
                     ControlThread.runLater {
                       MainLogic.enteredPlayers(playerNamesList.toList)
                     }

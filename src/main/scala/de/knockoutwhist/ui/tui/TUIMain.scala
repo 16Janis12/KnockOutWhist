@@ -20,6 +20,8 @@ import de.knockoutwhist.undo.{UndoManager, UndoneException}
 import de.knockoutwhist.utils.CustomThread
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 
+import java.io.{BufferedReader, InputStreamReader}
+import java.util.concurrent.atomic.AtomicBoolean
 import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.util.{Failure, Success, Try}
@@ -31,6 +33,11 @@ object TUIMain extends CustomThread with EventListener with UI {
   var init = false
 
   override def instance: CustomThread = TUIMain
+
+  override def runLater[R](op: => R): Unit = {
+    interrupted.set(true)
+    super.runLater(op)
+  }
 
   override def listen(event: SimpleEvent): Unit = {
     runLater {
@@ -140,7 +147,7 @@ object TUIMain extends CustomThread with EventListener with UI {
     println("1. Start a new match")
     println("2. Exit")
     Try {
-      readLine().toInt
+      input().toInt
     } match {
       case Success(value) =>
         value match {
@@ -159,12 +166,15 @@ object TUIMain extends CustomThread with EventListener with UI {
             }
             mainMenu()
         }
-      case Failure(_) =>
-        showerrstatmet(ShowErrorStatus(NOT_A_NUMBER))
-        ControlThread.runLater {
-          ControlHandler.invoke(DelayEvent(500))
-          ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
-        }
+      case Failure(exception) =>
+        exception match
+          case undo: UndoneException =>
+          case _ =>
+            showerrstatmet(ShowErrorStatus(NOT_A_NUMBER))
+            ControlThread.runLater {
+              ControlHandler.invoke(DelayEvent(500))
+              ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+            }
     }
   }
 
@@ -430,16 +440,30 @@ object TUIMain extends CustomThread with EventListener with UI {
     Some(true)
   }
 
+  private val isInIO: AtomicBoolean = new AtomicBoolean(false)
+  private val interrupted: AtomicBoolean = new AtomicBoolean(false)
+
   private def input(): String = {
-    val in = readLine()
-    if (in.equals("undo")) {
-      UndoManager.undoStep()
-      throw new UndoneException("Undo")
-    } else if (in.equals("redo")) {
-      UndoManager.redoStep()
-      throw new UndoneException("Redo")
+    interrupted.set(false)
+    val reader = new BufferedReader(new InputStreamReader(System.in))
+
+    while (!interrupted.get()) {
+      if (reader.ready()) {
+        val in = reader.readLine()
+        if (in.equals("undo")) {
+          UndoManager.undoStep()
+          throw new UndoneException("Undo")
+        } else if (in.equals("redo")) {
+          UndoManager.redoStep()
+          throw new UndoneException("Redo")
+        }
+        return in
+      }
+      Thread.sleep(50)
     }
-    in
+    throw new UndoneException("Skipped")
   }
+
+
 
 }

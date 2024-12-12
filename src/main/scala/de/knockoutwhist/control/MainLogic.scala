@@ -12,6 +12,7 @@ import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
+import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.undo.commands.{EnterPlayersCommand, PlayerPlayCommand, PlayerPlayDogCommand}
 import de.knockoutwhist.utils.Implicits.*
@@ -65,12 +66,12 @@ object MainLogic {
   def controlTrick(matchImpl: Match, round: Round, trick: Trick, currentIndex: Int = 0): Unit = {
     if(currentIndex < round.playersin.size) {
       val player = round.playerQueue.nextPlayer()
-      ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
+      //ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
       controlPlayer(matchImpl, round, trick, player, currentIndex)
     }else {
       val result = TrickLogic.wonTrick(trick, round)
       val newRound = round.addTrick(result._2)
-      ControlHandler.invoke(ShowCurrentTrickEvent(newRound, result._2))
+      //ControlHandler.invoke(ShowCurrentTrickEvent(newRound, result._2))
       ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, result._1))
       newRound.playerQueue.resetAndSetStart(result._1)
       ControlHandler.invoke(DelayEvent(3000L))
