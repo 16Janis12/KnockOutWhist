@@ -299,8 +299,8 @@ object Game {
     suitLabel.visible = false
     nextPlayers.visible = false
     val wontricks = round.tricklist.count(trick => trick.winner == round.winner)
-    statusLabel.text = s"${playerwon.name} won the round with $wontricks Trick!"
-
+    if (wontricks == 1) statusLabel.text = s"${playerwon.name} won the round with $wontricks trick!"
+    else statusLabel.text = s"${playerwon.name} won the round with $wontricks tricks!"
   }
   def showFinishedTrick(event: ShowPlayerStatus): Unit = {
     nextPlayers.visible = false

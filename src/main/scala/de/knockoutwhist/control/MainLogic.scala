@@ -56,7 +56,7 @@ object MainLogic {
     val finalRound = Round(round.trumpSuit, round.tricklist, round.playersin, playersOut, round.startingPlayer, winner, firstRound = round.firstRound)
     val newMatch = matchImpl.addRound(finalRound)
     ControlHandler.invoke(ShowRoundStatus(WON_ROUND, finalRound, winner))
-    ControlHandler.invoke(DelayEvent(1000L))
+    ControlHandler.invoke(DelayEvent(2000L))
     if (finalRound.playersout.nonEmpty) {
       ControlHandler.invoke(ShowRoundStatus(PLAYERS_OUT, finalRound))
     }
