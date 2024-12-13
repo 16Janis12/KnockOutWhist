@@ -191,8 +191,8 @@ object Game {
 
   private[gui] var requestCard: Option[RequestCardEvent] = None
 
-  
-  def matchcard(card: Card): Boolean = {
-    true
+  def showWon(round: Round): Unit = {
+    val playerwon = round.winner
+    statusLabel.text = s"${playerwon.name} won the round!"
   }
 }
