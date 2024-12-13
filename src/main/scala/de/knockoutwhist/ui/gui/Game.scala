@@ -1,7 +1,7 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
-import de.knockoutwhist.cards.Card
+import de.knockoutwhist.cards.{Card, Hand}
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Round, Trick}
@@ -11,6 +11,7 @@ import de.knockoutwhist.utils.gui.Animations
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, BottomLeft, Center, TopCenter, TopLeft}
+import scalafx.scene.Node
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
@@ -122,6 +123,25 @@ object Game {
   
   def updateTurn(player: AbstractPlayer): Unit = {
     playersTurnLabel.text = s"It's ${player.name}s turn:"
+  }
+  def updatePlayerCards(hand: Hand): Unit = {
+    val cards = ListBuffer[Node]()
+    for (card <- hand.cards) {
+      cards += new ImageView {
+        alignmentInParent = BottomCenter
+        image = CardUtils.cardtoImage(card)
+        fitWidth = 170
+        fitHeight = 250
+        onMouseClicked = _ => {
+          val slideOut = Animations.slideOutUp(this, Duration(400), -350)
+          slideOut.onFinished = _ => {
+            visible = false
+          }
+          slideOut.play()
+        }
+      }
+    }
+    playerCards.children = cards
   }
   
   def matchcard(card: Card): Boolean = {

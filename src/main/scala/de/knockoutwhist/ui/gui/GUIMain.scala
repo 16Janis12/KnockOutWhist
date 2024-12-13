@@ -41,7 +41,9 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           event.status match
             case SHOW_TURN =>
               Game.updateTurn(event.player)
+              Game.updatePlayerCards(event.player.hand.get)
             case _ =>
+              
         case event: SimpleEvent =>
           println(s"Event ${event.id} not handled")
       }
