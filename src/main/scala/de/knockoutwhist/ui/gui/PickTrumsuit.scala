@@ -33,17 +33,18 @@ object PickTrumsuit {
                 alignment = TopCenter
                 text = "Pick your trumpsuit"
                 font = Font.font(30)
+                margin = Insets(20, 0, 0, 0)
               },
               new HBox {
                 alignment = BottomCenter
                 spacing = 10
-                margin = Insets(200, 0, 20, 0)
+                margin = Insets(40, 0, 20, 0)
                 children = Seq(
                   new ImageView {
                     alignment = BottomCenter
                     image = new Image("cards/AS.png")
-                    fitWidth = 170
-                    fitHeight = 250
+                    fitWidth = 102
+                    fitHeight = 150
                     onMouseClicked = _ => {
                       val slideOut = Animations.slideOutUp(children.head.asInstanceOf[javafx.scene.image.ImageView], Duration(400), -350)
                       slideOut.onFinished = _ => {
@@ -61,10 +62,10 @@ object PickTrumsuit {
                   new ImageView {
                     alignment = BottomCenter
                     image = new Image("cards/AC.png")
-                    fitWidth = 170
-                    fitHeight = 250
+                    fitWidth = 102
+                    fitHeight = 150
                     onMouseClicked = _ => {
-                      val slideOut = Animations.slideOutUp(children.head.asInstanceOf[javafx.scene.image.ImageView], Duration(400), -350)
+                      val slideOut = Animations.slideOutUp(this, Duration(400), -350)
                       slideOut.onFinished = _ => {
                         visible = false
                       }
@@ -79,10 +80,10 @@ object PickTrumsuit {
                   },new ImageView {
                     alignment = BottomCenter
                     image = new Image("cards/AH.png")
-                    fitWidth = 170
-                    fitHeight = 250
+                    fitWidth = 102
+                    fitHeight = 150
                     onMouseClicked = _ => {
-                      val slideOut = Animations.slideOutUp(children.head.asInstanceOf[javafx.scene.image.ImageView], Duration(400), -350)
+                      val slideOut = Animations.slideOutUp(this, Duration(400), -350)
                       slideOut.onFinished = _ => {
                         visible = false
                       }
@@ -99,10 +100,10 @@ object PickTrumsuit {
                   new ImageView {
                     alignment = BottomCenter
                     image = new Image("cards/AD.png")
-                    fitWidth = 170
-                    fitHeight = 250
+                    fitWidth = 102
+                    fitHeight = 150
                     onMouseClicked = _ => {
-                      val slideOut = Animations.slideOutUp(children.head.asInstanceOf[javafx.scene.image.ImageView], Duration(400), -350)
+                      val slideOut = Animations.slideOutUp(this, Duration(400), -350)
                       slideOut.onFinished = _ => {
                         visible = false
                       }
@@ -116,7 +117,7 @@ object PickTrumsuit {
                 )
               },
               new Label {
-                alignment = TopCenter
+                alignment = BottomCenter
                 text = "Your Cards"
                 font = Font.font(20)
               },
@@ -124,7 +125,7 @@ object PickTrumsuit {
                 alignment = TopCenter
                 alignment = BottomCenter
                 spacing = 10
-                margin = Insets(200, 0, 20, 0)
+                margin = Insets(100, 0, 20, 0)
                 children = event.player.currentHand().get.cards.map( i => new ImageView {
                   image = CardUtils.cardtoImage(i)
                   fitWidth = 170

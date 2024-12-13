@@ -6,6 +6,8 @@ import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS
 import de.knockoutwhist.events.cards.ShowTieCardsEvent
+import de.knockoutwhist.events.ui.GameState.INGAME
+import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
@@ -36,6 +38,7 @@ object PlayerLogic {
       PlayerControl.pickNextTrumpsuit(matchImpl, remaining_players, firstRound, decided)
       return
     }
+    ControlHandler.invoke(GameStateUpdateEvent(INGAME))
     UndoManager.doStep(TrumpSuitSelectedCommand(matchImpl, suit.get, remaining_players, false, decided))
   }
 
