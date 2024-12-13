@@ -10,6 +10,7 @@ import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Round, Trick}
 import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.undo.commands.EnterPlayersCommand
+import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.gui.Animations
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.Insets
@@ -27,6 +28,8 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.compiletime.uninitialized
 import scala.util.Try
+
+import de.knockoutwhist.utils.Implicits.*
 
 
 object Game {
@@ -50,18 +53,9 @@ object Game {
     hgrow = Always
   }
   
-  private val nextPlayers: HBox = new HBox {
+  private val nextPlayers: VBox = new VBox {
     alignment = TopCenter
-    minWidth = 300
-    maxWidth = 300
-    margin = Insets(30, 0, 0, 20)
-    children = Seq(
-      new Label {
-        alignment = TopLeft
-        text = "Next Players turn:"
-        font = Font.font(20)
-      }
-    )
+    spacing = 10
   }
   private val yourCardslabel: Label = new Label {
     alignment = Center
@@ -77,7 +71,7 @@ object Game {
     font = Font.font(20)
   }
   private val firstCardlabel: Label = new Label {
-    alignment = Center
+    alignment = TopCenter
     textAlignment = TextAlignment.Center
     text = "First Card: "
     vgrow = Always
@@ -104,6 +98,8 @@ object Game {
   }
 
   def createGame(): Unit = {
+    GUIMain.stage.maximized = true
+    GUIMain.stage.resizable = false
     MainMenu.changeChild(new BorderPane {
       padding = Insets(10, 10, 10, 10)
       top = new HBox {
@@ -149,9 +145,25 @@ object Game {
           playedCards,
         )
       }
-      left = nextPlayers
+      left = new VBox {
+        margin = Insets(30, 0, 0, 30)
+        alignment = TopCenter
+        minWidth = 300
+        maxWidth = 300
+        children = Seq(
+          new Label {
+            alignment = TopCenter
+            textAlignment = TextAlignment.Center
+            text = "Next Players: "
+            vgrow = Always
+            font = Font.font(24)
+          },
+          nextPlayers
+        )
+      }
       right = new VBox {
-        alignment = Center
+        margin = Insets(30, 0, 0, 30)
+        alignment = TopCenter
         minWidth = 300
         maxWidth = 300
         children = Seq(
@@ -170,7 +182,8 @@ object Game {
   }
   
   def updateStatus(player: AbstractPlayer): Unit = {
-    statusLabel.text = s"It's ${player.name}s turn:"
+    val s = player.name.endsWith("s") ? "" |: "s"
+    statusLabel.text = s"It's ${player.name}$s turn:"
     nextPlayers.visible = true
     playerCards.visible = true
     yourCardslabel.visible = true
@@ -263,6 +276,14 @@ object Game {
       }
     }
     playedCards.children = cards
+  }
+
+  def updateNextPlayer(queue: CustomPlayerQueue[AbstractPlayer], currendIndx: Int): Unit = {
+    val queueDupli = queue.clone()
+    nextPlayers.children = queueDupli.iteratorWithStart(currendIndx).map(player => new Label {
+      text = !player.doglife ? player.name |: s"${player.name} (Doglife)"
+      font = Font.font(20)
+    }).toSeq
   }
 
   private[gui] var requestCard: Option[RequestCardEvent] = None

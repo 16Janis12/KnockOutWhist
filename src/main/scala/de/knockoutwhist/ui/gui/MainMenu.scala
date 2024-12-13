@@ -32,6 +32,8 @@ object MainMenu {
   def current_root: Parent = mainMenu
 
   def createMainMenu: StackPane = {
+    GUIMain.stage.maximized = false
+    GUIMain.stage.resizable = true
     changeChild(new VBox {
       alignment = Center
       spacing = 10
@@ -82,6 +84,8 @@ object MainMenu {
     }
   }
   def createPlayeramountmenu(): Unit = {
+    GUIMain.stage.maximized = true
+    GUIMain.stage.resizable = false
     changeChild(new BorderPane {
       margin = Insets(50, 50, 50, 50)
       val players: VBox = new VBox {
