@@ -1,7 +1,9 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
-import de.knockoutwhist.control.{ControlThread, MainLogic}
+import de.knockoutwhist.control.{ControlHandler, ControlThread, MainLogic}
+import de.knockoutwhist.events.ui.GameState.MAIN_MENU
+import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.tui.TUIMain
@@ -103,7 +105,9 @@ object MainMenu {
                     fitHeight = 20
                 }
                   onMouseClicked = _ => {
-                    createMainMenu
+                    ControlThread.runLater {
+                      ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+                    }
                   }
             },
                 new Button {
@@ -147,8 +151,12 @@ object MainMenu {
           maxWidth = 450
           maxHeight = 30
           value.onChange((_, oldvalue, newvalue) => {
-            players.children.clear()
-              for (i <- 1 to newvalue.intValue()) {
+            if(oldvalue.intValue() > newvalue.intValue()) {
+              for (i <- oldvalue.intValue()-1 to(newvalue.intValue(), -1)) {
+                players.children.remove(i)
+              }
+            }else if(oldvalue.intValue() < newvalue.intValue()) {
+              for (i <- oldvalue.intValue() + 1 to newvalue.intValue()) {
                 players.children.add(new TextField {
                   promptText = s"Enter Player $i"
                   visible = true
@@ -156,23 +164,20 @@ object MainMenu {
                   maxHeight = 30
                 })
               }
+            }
           })
 
         },
         players
-
-//        new VBox {
-//          alignment = BottomCenter
-//          spacing = 20
-//          margin = Insets(0, 0, 50, 0)
-//          for (i <- 1 to 5) {
-//              children.add(new TextField {
-//                promptText = "Enter Player 1"
-//                visible = true
-//              })
-//          }
-//        }
       )
+      for (i <- 1 to 2) {
+        players.children.add(new TextField {
+          promptText = s"Enter Player $i"
+          visible = true
+          maxWidth = 450
+          maxHeight = 30
+        })
+      }
     })
   }
 

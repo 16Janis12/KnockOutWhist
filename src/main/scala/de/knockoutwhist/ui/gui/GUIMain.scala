@@ -73,6 +73,11 @@ object GUIMain extends JFXApp3 with EventListener with UI {
     stage.show()
     platformReady = true
   }
+
+  override def stopApp(): Unit = {
+    System.exit(0)
+  }
+
 }
 
 object GUIThread extends CustomThread {
