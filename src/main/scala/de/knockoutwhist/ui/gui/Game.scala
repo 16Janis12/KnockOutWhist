@@ -3,6 +3,7 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.control.{ControlHandler, ControlThread, TrickLogic}
+import de.knockoutwhist.events.ShowPlayerStatus
 import de.knockoutwhist.events.directional.RequestCardEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
@@ -61,6 +62,26 @@ object Game {
         font = Font.font(20)
       }
     )
+  }
+  private val yourCardslabel: Label = new Label {
+    alignment = Center
+    text = "Your Cards"
+    vgrow = Always
+    font = Font.font(20)
+    margin = Insets(50,0,0,0)
+  }
+  private val playedCardslabel: Label = new Label {
+    alignment = Center
+    text = "Played Cards"
+    vgrow = Always
+    font = Font.font(20)
+  }
+  private val firstCardlabel: Label = new Label {
+    alignment = Center
+    textAlignment = TextAlignment.Center
+    text = "First Card: "
+    vgrow = Always
+    font = Font.font(24)
   }
 
   private val firstCard: ImageView = new ImageView {
@@ -124,12 +145,7 @@ object Game {
       center = new VBox {
         alignment = TopCenter
         children = Seq(
-          new Label {
-            alignment = Center
-            text = "Played Cards"
-            vgrow = Always
-            font = Font.font(20)
-          },
+          playedCardslabel,
           playedCards,
         )
       }
@@ -139,26 +155,14 @@ object Game {
         minWidth = 300
         maxWidth = 300
         children = Seq(
-          new Label {
-            alignment = Center
-            textAlignment = TextAlignment.Center
-            text = "First Card: "
-            vgrow = Always
-            font = Font.font(24)
-          },
+          firstCardlabel,
           firstCard
         )
       }
       bottom = new VBox {
         alignment = BottomCenter
         children = Seq(
-          new Label {
-            alignment = Center
-            text = "Your Cards"
-            vgrow = Always
-            font = Font.font(20)
-            margin = Insets(50,0,0,0)
-          },
+          yourCardslabel,
           playerCards,
         )
       }
@@ -167,6 +171,14 @@ object Game {
   
   def updateStatus(player: AbstractPlayer): Unit = {
     statusLabel.text = s"It's ${player.name}s turn:"
+    nextPlayers.visible = true
+    playerCards.visible = true
+    yourCardslabel.visible = true
+    playedCardslabel.visible = true
+    firstCardlabel.visible = true
+    firstCard.visible = true
+    suitLabel.visible = true
+    nextPlayers.visible = true
   }
 
   def updateTrumpSuit(suit: Suit): Unit = {
@@ -257,6 +269,24 @@ object Game {
 
   def showWon(round: Round): Unit = {
     val playerwon = round.winner
-    statusLabel.text = s"${playerwon.name} won the round!"
+    nextPlayers.visible = false
+    playerCards.visible = false
+    yourCardslabel.visible = false
+    playedCardslabel.visible = false
+    firstCardlabel.visible = false
+    firstCard.visible = false
+    suitLabel.visible = false
+    nextPlayers.visible = false
+    val wontricks = round.tricklist.count(trick => trick.winner == round.winner)
+    statusLabel.text = s"${playerwon.name} won the round with $wontricks Trick!"
+
+  }
+  def showFinishedTrick(event: ShowPlayerStatus): Unit = {
+    nextPlayers.visible = false
+    playerCards.visible = false
+    yourCardslabel.visible = false
+    playedCardslabel.visible = false
+    statusLabel.text = s"${event.player} won the trick"
+    Game.updatePlayedCards(event.objects.head.asInstanceOf[Trick])
   }
 }

@@ -1,7 +1,7 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
-import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TURN
+import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TURN, SHOW_WON_PLAYER_TRICK}
 import de.knockoutwhist.events.ROUND_STATUS.WON_ROUND
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestPickTrumpsuitEvent, RequestPlayersEvent}
@@ -44,6 +44,8 @@ object GUIMain extends JFXApp3 with EventListener with UI {
             case SHOW_TURN =>
               Game.updateStatus(event.player)
               Game.updatePlayerCards(event.player.hand.get)
+            case SHOW_WON_PLAYER_TRICK =>
+              Game.showFinishedTrick(event)
             case _ =>
         case event: ShowCurrentTrickEvent =>
           Game.updatePlayedCards(event.trick)
