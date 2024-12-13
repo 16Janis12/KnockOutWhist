@@ -2,6 +2,8 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.cards.{Card, Hand}
+import de.knockoutwhist.control.{ControlHandler, ControlThread, TrickLogic}
+import de.knockoutwhist.events.directional.RequestCardEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Round, Trick}
@@ -22,6 +24,7 @@ import scalafx.util.Duration
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.compiletime.uninitialized
+import scala.util.Try
 
 
 object Game {
@@ -138,11 +141,20 @@ object Game {
         fitWidth = 170
         fitHeight = 250
         onMouseClicked = _ => {
-          val slideOut = Animations.slideOutUp(this, Duration(400), -350)
-          slideOut.onFinished = _ => {
-            visible = false
+          if(requestCard.isDefined) {
+            val event = requestCard.get
+            val slideOut = Animations.slideOutUp(this, Duration(400), -350)
+            slideOut.onFinished = _ => {
+              visible = false
+              ControlThread.runLater {
+                TrickLogic.controlSuitplayed(Try {
+                  card
+                }, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+              }
+              requestCard = None
+            }
+            slideOut.play()
           }
-          slideOut.play()
         }
       }
     }
@@ -154,6 +166,7 @@ object Game {
   }
 
   def updatePlayedCards(trick: Trick): Unit = {
+    visibilityPlayedCards(true)
     val cards = ListBuffer[Node]()
     for (card <- trick.cards) {
 
@@ -176,6 +189,7 @@ object Game {
     playedCards.children = cards
   }
 
+  private[gui] var requestCard: Option[RequestCardEvent] = None
 
   
   def matchcard(card: Card): Boolean = {
