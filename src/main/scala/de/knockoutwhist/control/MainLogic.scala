@@ -56,7 +56,7 @@ object MainLogic {
     val finalRound = Round(round.trumpSuit, round.tricklist, round.playersin, playersOut, round.startingPlayer, winner, firstRound = round.firstRound)
     val newMatch = matchImpl.addRound(finalRound)
     ControlHandler.invoke(ShowRoundStatus(WON_ROUND, finalRound, winner))
-    ControlHandler.invoke(DelayEvent(5000L))
+    ControlHandler.invoke(DelayEvent(1000L))
     if (finalRound.playersout.nonEmpty) {
       ControlHandler.invoke(ShowRoundStatus(PLAYERS_OUT, finalRound))
     }
@@ -71,10 +71,9 @@ object MainLogic {
     }else {
       val result = TrickLogic.wonTrick(trick, round)
       val newRound = round.addTrick(result._2)
-      //ControlHandler.invoke(ShowCurrentTrickEvent(newRound, result._2))
-      ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, result._1))
+      ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, result._1, result._2))
       newRound.playerQueue.resetAndSetStart(result._1)
-      ControlHandler.invoke(DelayEvent(3000L))
+      ControlHandler.invoke(DelayEvent(1000L))
       controlRound(matchImpl, newRound)
     }
   }

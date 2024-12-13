@@ -54,6 +54,9 @@ object GUIMain extends JFXApp3 with EventListener with UI {
             case _ =>
         case event: RequestCardEvent =>
           Game.requestCard = Some(event)
+          Game.updateTrumpSuit(event.round.trumpSuit)
+          if(event.trick.firstCard.isDefined) Game.updateFirstCard(event.trick.firstCard.get)
+          else Game.resetFirstCard()
         case event: RequestPickTrumpsuitEvent => 
           PickTrumsuit.showPickTrumpsuit(event)
         case event: SimpleEvent =>

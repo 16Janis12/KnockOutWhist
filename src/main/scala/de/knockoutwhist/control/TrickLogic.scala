@@ -54,6 +54,9 @@ object TrickLogic {
         val alternatives: List[Card] = for cardInHand <- player.currentHand().get.cards
           if cardInHand.suit == firstCard.suit
             yield cardInHand
+        if(round.trumpSuit == card.suit && alternatives.isEmpty) {
+          return Nil
+        }
         if (alternatives.nonEmpty) {
           return alternatives
         }

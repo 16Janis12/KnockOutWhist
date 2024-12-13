@@ -21,7 +21,7 @@ object PlayerControl {
   
   def playCard(matchImpl: Match, player: AbstractPlayer, round: Round, trick: Trick, currentIndex: Int): Unit = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
-    ControlHandler.invoke(DelayEvent(3000L))
+    ControlHandler.invoke(DelayEvent(500))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_PLAY_CARD, player))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, true))
     player.handlePlayCard(player.currentHand().get, matchImpl, round, trick, currentIndex)
@@ -29,7 +29,7 @@ object PlayerControl {
   
   def dogplayCard(matchImpl: Match, player: AbstractPlayer, round: Round, trick: Trick, currentIndex: Int): Unit = {
     ControlHandler.invoke(ShowPlayerStatus(SHOW_TURN, player))
-    ControlHandler.invoke(DelayEvent(3000L))
+    ControlHandler.invoke(DelayEvent(500))
     ControlHandler.invoke(ShowPlayerStatus(SHOW_DOG_PLAY_CARD, player, RoundLogic.dogNeedsToPlay(round)))
     ControlHandler.invoke(RenderHandEvent(player.currentHand().get, false))
     player.handleDogPlayCard(player.currentHand().get, matchImpl, round, trick, currentIndex, RoundLogic.dogNeedsToPlay(round))
