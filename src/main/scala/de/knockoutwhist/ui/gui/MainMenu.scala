@@ -11,14 +11,14 @@ import de.knockoutwhist.utils.gui.Animations
 import javafx.scene.{Node, control}
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
-import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft}
+import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft, TopRight}
 import scalafx.scene.control.{Button, Label, Slider, TextField}
 import scalafx.scene.Parent
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
-import scalafx.scene.layout.{HBox, StackPane, VBox}
-import scalafx.scene.text.Font
+import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
+import scalafx.scene.text.{Font, TextAlignment}
 import scalafx.util.Duration
 
 import java.awt.Taskbar.Feature
@@ -33,7 +33,7 @@ object MainMenu {
 
   def createMainMenu: StackPane = {
     changeChild(new VBox {
-      alignment = BottomCenter
+      alignment = Center
       spacing = 10
       margin = Insets(0, 0, 150, 0)
       children = Seq(
@@ -69,7 +69,10 @@ object MainMenu {
 
   def changeChild(child: Parent, duration: Duration = Duration(500)): Unit = {
     val times = ListBuffer[Timeline]()
-    mainMenu.children.foreach(node => times += Animations.fadeOutLeft(node, duration))
+    mainMenu.children.foreach(node => {
+      times += Animations.fadeOutLeft(node, duration)
+      node.setDisable(true)
+    })
     val fadeIn = Animations.fadeInRight(child, duration)
     mainMenu.children += child
     times.foreach(_.play())
@@ -79,97 +82,103 @@ object MainMenu {
     }
   }
   def createPlayeramountmenu(): Unit = {
-    changeChild(new VBox {
-      alignment = TopCenter
-      spacing = 20
-      margin = Insets(100, 0, 0, 0)
+    changeChild(new BorderPane {
+      margin = Insets(50, 50, 50, 50)
       val players: VBox = new VBox {
-        alignment = BottomCenter
+        vgrow = Always
+        alignment = TopCenter
         spacing = 20
         margin = Insets(0, 0, 50, 0)
       }
-      children = Seq(
-        new VBox {
-          alignment = TopCenter
-          children = Seq(
-            new HBox {
-              alignment = TopCenter
-              spacing = 500
-              children = Seq(
-                new Button {
-                  styleClass += Styles.BUTTON_CIRCLE
-                  styleClass += Styles.ACCENT
-                  graphic = new ImageView {
-                    image = new Image("return-icon.png")
-                    fitWidth = 20
-                    fitHeight = 20
-                }
-                  onMouseClicked = _ => {
-                    ControlThread.runLater {
-                      ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
-                    }
-                  }
-            },
-                new Button {
-                  styleClass += Styles.SUCCESS
-                  styleClass += Styles.BUTTON_CIRCLE
-                  graphic = new ImageView {
-                    image = new Image("checkmark.png")
-                    fitWidth = 20
-                    fitHeight = 20
-                  }
-                  onMouseClicked = _ => {
-                    val playerNamesList = ListBuffer[AbstractPlayer]()
-                    players.children.foreach {
-                      case field: control.TextField =>
-                        playerNamesList += PlayerFactory.createPlayer(field.getText, HUMAN)
-                      case _ =>
-                    }
-
-                    ControlThread.runLater {
-                      MainLogic.enteredPlayers(playerNamesList.toList)
-                    }
-                  }
-                }
-              )
+      top = new HBox() {
+        alignment = TopCenter
+        children = new ImageView {
+          image = new Image("/KnockOutLogo.png")
+          fitWidth = 200
+          fitHeight = 200
+        }
+      }
+      left =  new HBox {
+        alignment = TopCenter
+        children = new Button {
+          alignment = TopRight
+          styleClass += Styles.BUTTON_CIRCLE
+          styleClass += Styles.ACCENT
+          graphic = new ImageView {
+            image = new Image("return-icon.png")
+            fitWidth = 20
+            fitHeight = 20
+          }
+          onMouseClicked = _ => {
+            ControlThread.runLater {
+              ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
             }
-          )
-        },
-        new Label {
-          alignment = TopCenter
-          text = "Select Playeramount below:"
-          font = Font.font(30)
-        },
-        new Slider {
-          min = 2
-          max = 7
-          showTickLabels = true
-          showTickMarks = true
-          majorTickUnit = 1
-          minorTickCount = 0
-          snapToTicks = true
-          maxWidth = 450
-          maxHeight = 30
-          value.onChange((_, oldvalue, newvalue) => {
-            if(oldvalue.intValue() > newvalue.intValue()) {
-              for (i <- oldvalue.intValue()-1 to(newvalue.intValue(), -1)) {
-                players.children.remove(i)
-              }
-            }else if(oldvalue.intValue() < newvalue.intValue()) {
-              for (i <- oldvalue.intValue() + 1 to newvalue.intValue()) {
-                players.children.add(new TextField {
-                  promptText = s"Enter Player $i"
-                  visible = true
-                  maxWidth = 450
-                  maxHeight = 30
-                })
-              }
+          }
+        }
+      }
+      right = new HBox {
+        alignment = TopCenter
+        children = new Button {
+          styleClass += Styles.SUCCESS
+          styleClass += Styles.BUTTON_CIRCLE
+          graphic = new ImageView {
+            image = new Image("checkmark.png")
+            fitWidth = 20
+            fitHeight = 20
+          }
+          onMouseClicked = _ => {
+            val playerNamesList = ListBuffer[AbstractPlayer]()
+            players.children.foreach {
+              case field: control.TextField =>
+                playerNamesList += PlayerFactory.createPlayer(field.getText, HUMAN)
+              case _ =>
             }
-          })
 
-        },
-        players
-      )
+            ControlThread.runLater {
+              MainLogic.enteredPlayers(playerNamesList.toList)
+            }
+          }
+        }
+      }
+      center = new VBox{
+        alignment = TopCenter
+        children = Seq(
+          new Label {
+            alignment = TopCenter
+            textAlignment = TextAlignment.Center
+            text = "Select Playeramount below:"
+            font = Font.font(30)
+          },
+          new Slider {
+            min = 2
+            max = 7
+            showTickLabels = true
+            showTickMarks = true
+            majorTickUnit = 1
+            minorTickCount = 0
+            snapToTicks = true
+            maxWidth = 450
+            maxHeight = 30
+            value.onChange((_, oldvalue, newvalue) => {
+              if(oldvalue.intValue() > newvalue.intValue()) {
+                for (i <- oldvalue.intValue()-1 to(newvalue.intValue(), -1)) {
+                  players.children.remove(i)
+                }
+              }else if(oldvalue.intValue() < newvalue.intValue()) {
+                for (i <- oldvalue.intValue() + 1 to newvalue.intValue()) {
+                  players.children.add(new TextField {
+                    promptText = s"Enter Player $i"
+                    visible = true
+                    maxWidth = 450
+                    maxHeight = 30
+                  })
+                }
+              }
+            })
+          },
+          players
+        )
+      }
       for (i <- 1 to 2) {
         players.children.add(new TextField {
           promptText = s"Enter Player $i"
