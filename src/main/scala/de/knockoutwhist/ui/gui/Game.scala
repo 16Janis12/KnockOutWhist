@@ -26,7 +26,7 @@ import scala.compiletime.uninitialized
 
 object Game {
 
-  private val playersTurnLabel: Label = new Label {
+  private val statusLabel: Label = new Label {
     alignment = TopCenter
     text = "It's {Player?}s turn:"
     font = Font.font(35)
@@ -98,7 +98,7 @@ object Game {
           hgrow = Always
 
           children = Seq(
-            playersTurnLabel,
+            statusLabel,
             nextPlayers,
             new Label {
               alignment = Center
@@ -121,9 +121,14 @@ object Game {
     })
   }
   
-  def updateTurn(player: AbstractPlayer): Unit = {
-    playersTurnLabel.text = s"It's ${player.name}s turn:"
+  def updateStatus(player: AbstractPlayer): Unit = {
+    statusLabel.text = s"It's ${player.name}s turn:"
   }
+  
+  def visibilityPlayerCards(visible: Boolean): Unit = {
+    playerCards.visible = visible
+  }
+  
   def updatePlayerCards(hand: Hand): Unit = {
     val cards = ListBuffer[Node]()
     for (card <- hand.cards) {
@@ -143,6 +148,29 @@ object Game {
     }
     playerCards.children = cards
   }
+  
+  def visibilityPlayedCards(visible: Boolean): Unit = {
+    playedCards.visible = visible
+  }
+  
+  def updatePlayedCards(trick: Trick): Unit = {
+    val cards = ListBuffer[Node]()
+    for (card <- trick.cards) {
+      
+      cards += new VBox {
+        children = new ImageView {
+          alignmentInParent = BottomCenter
+          image = CardUtils.cardtoImage(card._1)
+          fitWidth = 102
+          fitHeight = 150
+          onMouseClicked = _ => System.exit(0)
+        }
+      }
+    }
+    playedCards.children = cards
+  }
+  
+  
   
   def matchcard(card: Card): Boolean = {
     true
