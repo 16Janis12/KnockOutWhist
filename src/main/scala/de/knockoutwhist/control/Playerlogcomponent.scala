@@ -43,34 +43,35 @@ trait Playerlogcomponent {
    * @param winners The players that won the previous round and are now cutting to determine the trumpsuit caller.
    * @param matchImpl The current match.
    * @param round The current round.
-   * @param playersout The players that are out of the game
+   * @param playersout The players that are out of the game.
    * @param cut A HashMap that stores the selected cut cards.
-   * @param currentStep
+   * @param currentStep The cards that are unavailable due to the card picks from other players.
    * @param remaining The remaining cards in the deck for the cut.
    * @param currentIndex The index of the player that is allowed to pick a card.
    */
   def selectTie(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit
 
   /**
-   *
-   * @param winner
-   * @param matchImpl
-   * @param round
-   * @param playersout
-   * @param cut
-   * @param value
-   * @param currentStep
-   * @param remaining
-   * @param currentIndex
+   * Checks if the selected number is in the range of valid numbers and calls the UndoManager to add the card to the cut etc.
+   * @param winner The players that won the previous round and are now cutting to determine the trumpsuit caller. 
+   * @param matchImpl The current match.
+   * @param round The current round.
+   * @param playersout The players that are out of the game.
+   * @param cut A HashMap that stores the selected cut cards. 
+   * @param value Selected Number and whether it is valid.
+   * @param currentStep The cards that are unavailable due to the card picks from other players.
+   * @param remaining The remaining cards in the deck for the cut.
+   * @param currentIndex The index of the player that is allowed to pick a card.
    */
   def selectedTie(winner: List[AbstractPlayer],matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], value: Try[Int], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit
 
   /**
-   *
-   * @param matchImpl
-   * @param round
-   * @param playersout
-   * @param cut
+   * This method looks for the winner of the finished cut. If it finds two or more winners, it calls preselect to restart the 
+   * cut.
+   * @param matchImpl The current match.
+   * @param round The current round.
+   * @param playersout The players that are out of the game.
+   * @param cut A HashMap that stores the selected cut cards.
    */
   def evaluateTieWinner(matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card]): Unit
 }
