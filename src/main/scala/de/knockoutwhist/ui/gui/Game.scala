@@ -2,7 +2,8 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.cards.{Card, Hand, Suit}
-import de.knockoutwhist.control.{ControlHandler, ControlThread, TrickLogic}
+import de.knockoutwhist.control.controllerBaseImpl.TrickLogic
+import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ShowPlayerStatus
 import de.knockoutwhist.events.directional.RequestCardEvent
 import de.knockoutwhist.player.Playertype.HUMAN
@@ -275,7 +276,6 @@ object Game {
           image = CardUtils.cardtoImage(card._1)
           fitWidth = 102
           fitHeight = 150
-          onMouseClicked = _ => System.exit(0)
         })
       }
     }

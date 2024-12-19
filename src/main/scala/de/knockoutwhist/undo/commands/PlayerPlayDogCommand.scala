@@ -1,8 +1,9 @@
 package de.knockoutwhist.undo.commands
 
 import de.knockoutwhist.cards.Card
-import de.knockoutwhist.control.{ControlHandler, MainLogic}
-import de.knockoutwhist.control.MainLogic.controlTrick
+import de.knockoutwhist.control.ControlHandler
+import de.knockoutwhist.control.controllerBaseImpl.MainLogic
+import de.knockoutwhist.control.controllerBaseImpl.MainLogic.controlTrick
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_NOT_PLAYED
 import de.knockoutwhist.events.ShowPlayerStatus
 import de.knockoutwhist.player.AbstractPlayer

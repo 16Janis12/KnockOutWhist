@@ -1,6 +1,7 @@
 package de.knockoutwhist.undo.commands
 
-import de.knockoutwhist.control.{ControlHandler, ControlThread, MainLogic}
+import de.knockoutwhist.control.controllerBaseImpl.MainLogic
+import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ui.GameState.INGAME
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.player.AbstractPlayer

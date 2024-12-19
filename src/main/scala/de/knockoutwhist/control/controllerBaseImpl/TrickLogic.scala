@@ -1,6 +1,8 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.cards.{Card, Hand}
+import de.knockoutwhist.control.{ControlHandler, Tricklogcomponent}
+import de.knockoutwhist.control.controllerBaseImpl.PlayerControl
 import de.knockoutwhist.events.ERROR_STATUS.{INVALID_INPUT, INVALID_NUMBER, WRONG_CARD}
 import de.knockoutwhist.events.ShowErrorStatus
 import de.knockoutwhist.player.AbstractPlayer
@@ -10,7 +12,7 @@ import de.knockoutwhist.undo.commands.{PlayerPlayCommand, PlayerPlayDogCommand}
 
 import scala.util.Try
 
-object TrickLogic {
+object TrickLogic extends Tricklogcomponent {
   
   def controlSuitplayed(card: Try[Card], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
     if (card.isFailure) {

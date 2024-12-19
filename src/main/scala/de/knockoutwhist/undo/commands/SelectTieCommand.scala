@@ -1,7 +1,7 @@
 package de.knockoutwhist.undo.commands
 
 import de.knockoutwhist.cards.Card
-import de.knockoutwhist.control.PlayerLogic
+import de.knockoutwhist.control.controllerBaseImpl.PlayerLogic
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.undo.Command

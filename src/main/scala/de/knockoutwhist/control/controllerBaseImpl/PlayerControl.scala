@@ -1,5 +1,6 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.control.controllerBaseImpl
 
+import de.knockoutwhist.control.{ControlHandler, Playeractrcomponent}
 import de.knockoutwhist.events.PLAYER_STATUS.*
 import de.knockoutwhist.events.ShowPlayerStatus
 import de.knockoutwhist.events.cards.RenderHandEvent

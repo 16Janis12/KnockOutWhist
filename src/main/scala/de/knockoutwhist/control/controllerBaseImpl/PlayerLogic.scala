@@ -1,7 +1,9 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Suit}
+import de.knockoutwhist.control.controllerBaseImpl.{MainLogic, PlayerControl}
+import de.knockoutwhist.control.{ControlHandler, Playerlogcomponent}
 import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS

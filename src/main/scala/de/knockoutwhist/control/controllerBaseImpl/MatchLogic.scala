@@ -1,5 +1,6 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.control.controllerBaseImpl
 
+import de.knockoutwhist.control.Matchcomponent
 import de.knockoutwhist.rounds.Match
 
 object MatchLogic extends Matchcomponent {

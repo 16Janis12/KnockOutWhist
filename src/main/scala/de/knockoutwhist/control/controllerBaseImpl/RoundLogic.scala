@@ -1,14 +1,15 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardManager
+import de.knockoutwhist.control.Roundlogcomponent
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.Implicits.*
 
 import scala.collection.mutable.ListBuffer
 
-object RoundLogic {
+object RoundLogic extends Roundlogcomponent{
 
   def isOver(round: Round): Boolean = {
     round.playersin.map(_.currentHand()).count(_.get.cards.isEmpty) == round.playersin.size

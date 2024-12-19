@@ -1,7 +1,8 @@
 package de.knockoutwhist.ui.gui
 
 import de.knockoutwhist.cards.Suit
-import de.knockoutwhist.control.{ControlHandler, ControlThread, PlayerLogic}
+import de.knockoutwhist.control.controllerBaseImpl.PlayerLogic
+import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.directional.RequestPickTrumpsuitEvent
 import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent

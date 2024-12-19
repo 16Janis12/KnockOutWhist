@@ -1,6 +1,7 @@
-package de.knockoutwhist.control
+package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.cards.Card
+import de.knockoutwhist.control.*
 import de.knockoutwhist.events.GLOBAL_STATUS.SHOW_FINISHED_MATCH
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_WON_PLAYER_TRICK
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, WON_ROUND}

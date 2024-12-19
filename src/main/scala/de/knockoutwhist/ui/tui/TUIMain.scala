@@ -1,7 +1,8 @@
 package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.{ControlHandler, ControlThread, MainLogic, PlayerLogic, TrickLogic}
+import de.knockoutwhist.control.controllerBaseImpl.{MainLogic, PlayerLogic, TrickLogic}
+import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
@@ -23,7 +24,6 @@ import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 import java.io.{BufferedReader, InputStreamReader}
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.annotation.tailrec
-import scala.io.StdIn.readLine
 import scala.util.{Failure, Success, Try}
 
 object TUIMain extends CustomThread with EventListener with UI {

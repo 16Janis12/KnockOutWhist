@@ -1,8 +1,9 @@
-package de.knockoutwhist.player
+package de.knockoutwhist.player.baseImpl
 
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 import scala.collection.immutable
