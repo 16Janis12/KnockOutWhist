@@ -18,7 +18,7 @@ import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
 import scala.util.{Failure, Success, Try}
 
-object PlayerLogic {
+object PlayerLogic extends Playerlogcomponent {
   
   def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Unit = {
     if (matchImpl.roundlist.isEmpty) {
@@ -68,7 +68,7 @@ object PlayerLogic {
     UndoManager.doStep(SelectTieCommand(winner, matchImpl, round, playersout, cut, value.get, selCard, currentStep, remaining, currentIndex))
   }
 
-  private def evaluateTieWinner(matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card]): Unit = {
+  def evaluateTieWinner(matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card]): Unit = {
     ControlHandler.invoke(ShowTieCardsEvent(cut.toList))
     val winner: ListBuffer[AbstractPlayer] = ListBuffer()
     var currentHighest: Card = null
