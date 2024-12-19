@@ -6,18 +6,17 @@ import de.knockoutwhist.events.PLAYER_STATUS.SHOW_WON_PLAYER_TRICK
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, WON_ROUND}
 import de.knockoutwhist.events.directional.RequestPlayersEvent
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
+import de.knockoutwhist.events.ui.GameState.MAIN_MENU
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
-import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.undo.UndoManager
-import de.knockoutwhist.undo.commands.{EnterPlayersCommand, PlayerPlayCommand, PlayerPlayDogCommand}
+import de.knockoutwhist.undo.commands.EnterPlayersCommand
 import de.knockoutwhist.utils.Implicits.*
 
-object MainLogic {
+object MainLogic extends Maincomponent {
 
   def startMatch(): Unit = {
     ControlHandler.invoke(RequestPlayersEvent())
