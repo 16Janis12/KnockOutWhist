@@ -1,7 +1,7 @@
 package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.controllerBaseImpl.{MainLogic, PlayerLogic, TrickLogic}
+import de.knockoutwhist.control.controllerBaseImpl.{PlayerLogic, TrickLogic}
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
@@ -153,7 +153,7 @@ object TUIMain extends CustomThread with EventListener with UI {
         value match {
           case 1 =>
             ControlThread.runLater {
-              MainLogic.startMatch()
+              ControlHandler.maincomponent.startMatch()
             }
           case 2 =>
             println("Exiting the game.")
@@ -342,7 +342,7 @@ object TUIMain extends CustomThread with EventListener with UI {
       return Some(true)
     }
     ControlThread.runLater {
-      PlayerLogic.selectedTie(event.winner, event.matchImpl, event.round, event.playersout, event.cut, tryTie, event.currentStep, event.remaining, event.currentIndex)
+      ControlHandler.playerlogcomponent.selectedTie(event.winner, event.matchImpl, event.round, event.playersout, event.cut, tryTie, event.currentStep, event.remaining, event.currentIndex)
     }
     Some(true)
   }
@@ -360,7 +360,7 @@ object TUIMain extends CustomThread with EventListener with UI {
       return Some(true)
     }
     ControlThread.runLater {
-      TrickLogic.controlSuitplayed(tryCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+      ControlHandler.trickcomponent.controlSuitplayed(tryCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
     }
     Some(true)
   }
@@ -377,7 +377,7 @@ object TUIMain extends CustomThread with EventListener with UI {
       }
     }
     ControlThread.runLater {
-      TrickLogic.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+      ControlHandler.trickcomponent.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
     }
     Some(true)
   }
@@ -401,7 +401,7 @@ object TUIMain extends CustomThread with EventListener with UI {
       return reqplayersevent()
     }
     ControlThread.runLater {
-      MainLogic.enteredPlayers(names.get.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList)
+      ControlHandler.maincomponent.enteredPlayers(names.get.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList)
     }
     Some(true)
   }
@@ -421,7 +421,7 @@ object TUIMain extends CustomThread with EventListener with UI {
       return Some(true)
     }
     ControlThread.runLater {
-      PlayerLogic.trumpSuitSelected(event.matchImpl, trySuit, event.remaining_players, event.firstRound, event.player)
+      ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, trySuit, event.remaining_players, event.firstRound, event.player)
     }
     Some(true)
   }

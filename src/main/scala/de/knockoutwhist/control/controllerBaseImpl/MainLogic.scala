@@ -28,27 +28,27 @@ object MainLogic extends Maincomponent {
   }
 
   def controlMatch(matchImpl: Match): Unit = {
-    if(MatchLogic.isOver(matchImpl)) {
-      ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, RoundLogic.remainingPlayers(matchImpl.roundlist.last).head))
+    if(ControlHandler.matchcomponent.isOver(matchImpl)) {
+      ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, ControlHandler.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).head))
       ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
     } else {
-      val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: RoundLogic.remainingPlayers(matchImpl.roundlist.last)
-      val newMatch = RoundLogic.provideCards(matchImpl, remainingPlayer)
-      PlayerLogic.trumpsuitStep(newMatch._1, newMatch._2)
+      val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: ControlHandler.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last)
+      val newMatch = ControlHandler.roundlogcomponent.provideCards(matchImpl, remainingPlayer)
+      ControlHandler.playerlogcomponent.trumpsuitStep(newMatch._1, newMatch._2)
     }
   }
 
   def controlRound(matchImpl: Match, round: Round): Unit = {
-    if(!RoundLogic.isOver(round)) {
+    if(!ControlHandler.roundlogcomponent.isOver(round)) {
       val trick = Trick()
       controlTrick(matchImpl, round, trick)
       return
     }
-    val result = RoundLogic.finalizeRound(RoundLogic.smashResults(round), matchImpl)
+    val result = ControlHandler.roundlogcomponent.finalizeRound(ControlHandler.roundlogcomponent.smashResults(round), matchImpl)
     if(result._3.size == 1) {
       endRound(result._1, result._2, result._3.head, result._4)
     } else {
-      PlayerLogic.preSelect(result._3, result._1, result._2, result._4)
+      ControlHandler.playerlogcomponent.preSelect(result._3, result._1, result._2, result._4)
     }
   }
 
@@ -69,7 +69,7 @@ object MainLogic extends Maincomponent {
       //ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
       controlPlayer(matchImpl, round, trick, player, currentIndex)
     }else {
-      val result = TrickLogic.wonTrick(trick, round)
+      val result = ControlHandler.trickcomponent.wonTrick(trick, round)
       val newRound = round.addTrick(result._2)
       ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, result._1, result._2))
       newRound.playerQueue.resetAndSetStart(result._1)
@@ -81,9 +81,9 @@ object MainLogic extends Maincomponent {
   def controlPlayer(matchImpl: Match, round: Round, trick: Trick, player: AbstractPlayer, currentIndex: Int): Unit = {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
     if (!player.doglife) {
-      PlayerControl.playCard(matchImpl, player, round, trick, currentIndex)
+      ControlHandler.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
     } else if (player.currentHand().exists(_.cards.nonEmpty)) {
-      PlayerControl.dogplayCard(matchImpl, player, round, trick, currentIndex)
+      ControlHandler.playeractrcomponent.dogplayCard(matchImpl, player, round, trick, currentIndex)
     }else {
       controlTrick(matchImpl, round, trick, currentIndex+1)
     }

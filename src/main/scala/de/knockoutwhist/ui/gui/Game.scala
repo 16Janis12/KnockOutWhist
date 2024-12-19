@@ -232,7 +232,7 @@ object Game {
           if(requestCard.isDefined) {
 
             val event = requestCard.get
-            if (TrickLogic.alternativeCards(card, event.round, event.trick, event.player).nonEmpty) {
+            if (ControlHandler.trickcomponent.alternativeCards(card, event.round, event.trick, event.player).nonEmpty) {
               val pulse = Animations.pulse(this, Duration(400))
               pulse.play()
             } else {
@@ -240,7 +240,7 @@ object Game {
               slideOut.onFinished = _ => {
                 visible = false
                 ControlThread.runLater {
-                  TrickLogic.controlSuitplayed(Try {
+                  ControlHandler.trickcomponent.controlSuitplayed(Try {
                     card
                   }, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
                 }
