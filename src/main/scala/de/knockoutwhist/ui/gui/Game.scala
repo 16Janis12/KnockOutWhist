@@ -28,8 +28,8 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.compiletime.uninitialized
 import scala.util.Try
-
 import de.knockoutwhist.utils.Implicits.*
+import javafx.scene.layout.{BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize}
 
 
 object Game {
@@ -101,6 +101,10 @@ object Game {
     GUIMain.stage.maximized = true
     GUIMain.stage.resizable = false
     MainMenu.changeChild(new BorderPane {
+      val myBI = new BackgroundImage(new Image("/background.png", 32, 32, false, true),
+        BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+        BackgroundSize.DEFAULT)
+      background = Background(Array(new layout.BackgroundImage(myBI)))
       padding = Insets(10, 10, 10, 10)
       top = new HBox {
         alignment = Center
