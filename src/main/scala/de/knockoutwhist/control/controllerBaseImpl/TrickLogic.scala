@@ -17,7 +17,7 @@ object TrickLogic extends Tricklogcomponent {
   def controlSuitplayed(card: Try[Card], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
     if (card.isFailure) {
       ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-      PlayerControl.playCard(matchImpl, player, round, trick, currentIndex)
+      ControlHandler.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
       return
     }
     val realCard = card.get
@@ -32,7 +32,7 @@ object TrickLogic extends Tricklogcomponent {
         }
         if (hasSuit) {
           ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
-          PlayerControl.playCard(matchImpl, player, round, trick, currentIndex)
+          ControlHandler.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
           return
         }
       }
@@ -43,7 +43,7 @@ object TrickLogic extends Tricklogcomponent {
   def controlDogPlayed(card: Try[Option[Card]], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
     if (card.isFailure) {
       ControlHandler.invoke(ShowErrorStatus(INVALID_INPUT))
-      PlayerControl.dogplayCard(matchImpl, player, round, trick, currentIndex)
+      ControlHandler.playeractrcomponent.dogplayCard(matchImpl, player, round, trick, currentIndex)
       return
     }
     UndoManager.doStep(PlayerPlayDogCommand(matchImpl, round, trick, player, card.get, currentIndex))

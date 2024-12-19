@@ -53,7 +53,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        PlayerLogic.trumpSuitSelected(event.matchImpl, Try {
+                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
                           Suit.Spades
                         }, event.remaining_players, event.firstRound, event.player)
                       }
@@ -72,7 +72,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        PlayerLogic.trumpSuitSelected(event.matchImpl, Try {
+                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
                           Suit.Clubs
                         }, event.remaining_players, event.firstRound, event.player)
                       }
@@ -90,7 +90,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        PlayerLogic.trumpSuitSelected(event.matchImpl, Try {
+                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
                           Suit.Hearts
                         }, event.remaining_players, event.firstRound, event.player)
                       }
@@ -110,7 +110,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        PlayerLogic.trumpSuitSelected(event.matchImpl, Try{Suit.Diamonds}, event.remaining_players, event.firstRound, event.player)
+                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try{Suit.Diamonds}, event.remaining_players, event.firstRound, event.player)
                       }
                     }
                   },

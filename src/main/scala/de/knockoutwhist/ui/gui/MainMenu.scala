@@ -1,7 +1,6 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
-import de.knockoutwhist.control.controllerBaseImpl.MainLogic
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ui.GameState.MAIN_MENU
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
@@ -53,7 +52,7 @@ object MainMenu {
           styleClass += Styles.SUCCESS
           onMouseClicked = _ => {
             ControlThread.runLater {
-              MainLogic.startMatch()
+              ControlHandler.maincomponent.startMatch()
             }
           }
         },
@@ -140,7 +139,7 @@ object MainMenu {
             }
 
             ControlThread.runLater {
-              MainLogic.enteredPlayers(playerNamesList.toList)
+              ControlHandler.maincomponent.enteredPlayers(playerNamesList.toList)
             }
           }
         }

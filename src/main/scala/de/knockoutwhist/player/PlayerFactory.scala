@@ -1,22 +1,23 @@
 package de.knockoutwhist.player
 
-import de.knockoutwhist.player.Playertype.{AI, HUMAN}
-import de.knockoutwhist.player.builder.{AIPlayerBuilder, Director, HumanoidBuilder, PlayerBuilder}
+import de.knockoutwhist.player.Playertype.{AI, HUMAN, MOCK}
+import de.knockoutwhist.player.builder.{AIPlayerBuilder, Director, HumanoidBuilder, MockPlayerBuilder, PlayerBuilder}
 
 enum Playertype:
   case HUMAN
   case AI
+  case MOCK
 end Playertype
 
 object PlayerFactory {
   def createPlayer(name: String = null, playertype: Playertype): AbstractPlayer = {
     val buildType: PlayerBuilder = playertype match {
-      case HUMAN => {
+      case HUMAN =>
         new HumanoidBuilder()
-      }
-      case AI => {
+      case AI =>
         new AIPlayerBuilder()
-      }
+      case MOCK =>
+        new MockPlayerBuilder
     }
     if (name == null) {
       Director.constructWithRandomNames(buildType)

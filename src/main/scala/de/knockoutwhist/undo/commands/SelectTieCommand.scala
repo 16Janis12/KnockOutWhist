@@ -1,6 +1,7 @@
 package de.knockoutwhist.undo.commands
 
 import de.knockoutwhist.cards.Card
+import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.control.controllerBaseImpl.PlayerLogic
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
@@ -15,15 +16,15 @@ case class SelectTieCommand(winner: List[AbstractPlayer],matchImpl: Match, round
     val newCut = cut + (player -> selCard)
     val newCurrentStep = currentStep + value
     val newRemaining = remaining - (value - 1)
-    PlayerLogic.selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex + 1)
+    ControlHandler.playerlogcomponent.selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex + 1)
   }
 
   override def undoStep(): Unit = {
     if (currentIndex == 0) {
-      PlayerLogic.preSelect(winner, matchImpl, round, playersout)
+      ControlHandler.playerlogcomponent.preSelect(winner, matchImpl, round, playersout)
     }
     else {
-      PlayerLogic.selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
+      ControlHandler.playerlogcomponent.selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
     }
   }
 }

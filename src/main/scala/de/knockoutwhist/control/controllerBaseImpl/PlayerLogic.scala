@@ -2,7 +2,6 @@ package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager, Suit}
-import de.knockoutwhist.control.controllerBaseImpl.{MainLogic, PlayerControl}
 import de.knockoutwhist.control.{ControlHandler, Playerlogcomponent}
 import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
@@ -18,7 +17,7 @@ import de.knockoutwhist.undo.commands.{SelectTieCommand, TrumpSuitSelectedComman
 
 import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 object PlayerLogic extends Playerlogcomponent {
   
@@ -27,17 +26,17 @@ object PlayerLogic extends Playerlogcomponent {
       val randomTrumpsuit = CardManager.nextCard().suit
       val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
       val round = new Round(randomTrumpsuit, remaining_players, true)
-      MainLogic.controlRound(newMatchImpl, round)
+      ControlHandler.maincomponent.controlRound(newMatchImpl, round)
     } else {
       val winner = matchImpl.totalplayers.filter(matchImpl.roundlist.last.winner.name == _.name).head
-      PlayerControl.pickNextTrumpsuit(matchImpl, remaining_players, false, winner)
+      ControlHandler.playeractrcomponent.pickNextTrumpsuit(matchImpl, remaining_players, false, winner)
     }
   }
 
   def trumpSuitSelected(matchImpl: Match, suit: Try[Suit], remaining_players: List[AbstractPlayer], firstRound: Boolean, decided: AbstractPlayer): Unit = {
     if (suit.isFailure) {
       ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-      PlayerControl.pickNextTrumpsuit(matchImpl, remaining_players, firstRound, decided)
+      ControlHandler.playeractrcomponent.pickNextTrumpsuit(matchImpl, remaining_players, firstRound, decided)
       return
     }
     ControlHandler.invoke(GameStateUpdateEvent(INGAME))
@@ -91,7 +90,7 @@ object PlayerLogic extends Playerlogcomponent {
     }
     if (winner.size == 1) {
       ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE_WINNER, winner.head))
-      MainLogic.endRound(matchImpl, round, winner.head, playersout)
+      ControlHandler.maincomponent.endRound(matchImpl, round, winner.head, playersout)
       return
     }
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE_TIE))

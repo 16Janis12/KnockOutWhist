@@ -1,6 +1,5 @@
 package de.knockoutwhist.undo.commands
 
-import de.knockoutwhist.control.controllerBaseImpl.MainLogic
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ui.GameState.INGAME
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
@@ -14,11 +13,11 @@ case class EnterPlayersCommand(players: List[AbstractPlayer]) extends Command {
     val matchImpl = Match(players)
     ControlThread.runLater {
       ControlHandler.invoke(GameStateUpdateEvent(INGAME))
-      MainLogic.controlMatch(matchImpl)
+      ControlHandler.maincomponent.controlMatch(matchImpl)
     }
   }
 
   override def undoStep(): Unit = {
-    MainLogic.startMatch()
+    ControlHandler.maincomponent.startMatch()
   }
 }
