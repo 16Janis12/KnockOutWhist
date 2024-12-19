@@ -79,5 +79,4 @@ object RoundLogic extends Roundlogcomponent{
     val newTricks = round.tricklist.map(t => Trick(t.cards, correctPlayers.getOrElse(t.winner.name, t.winner), t.finished, t.firstCard))
     Round(round.trumpSuit, newTricks, round.playersin, round.playersout, round.startingPlayer, round.winner, round.firstRound)
   }
-
 }
