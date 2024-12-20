@@ -1,5 +1,6 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand}
 import de.knockoutwhist.control.{ControlHandler, Tricklogcomponent}
 import de.knockoutwhist.control.controllerBaseImpl.PlayerControl
@@ -17,7 +18,7 @@ object TrickLogic extends Tricklogcomponent {
   def controlSuitplayed(card: Try[Card], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
     if (card.isFailure) {
       ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-      ControlHandler.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
+      KnockOutWhist.config.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
       return
     }
     val realCard = card.get
@@ -32,7 +33,7 @@ object TrickLogic extends Tricklogcomponent {
         }
         if (hasSuit) {
           ControlHandler.invoke(ShowErrorStatus(WRONG_CARD, firstCard))
-          ControlHandler.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
+          KnockOutWhist.config.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
           return
         }
       }
@@ -43,7 +44,7 @@ object TrickLogic extends Tricklogcomponent {
   def controlDogPlayed(card: Try[Option[Card]], matchImpl: Match, round: Round, trick: Trick, currentIndex: Int, player: AbstractPlayer): Unit = {
     if (card.isFailure) {
       ControlHandler.invoke(ShowErrorStatus(INVALID_INPUT))
-      ControlHandler.playeractrcomponent.dogplayCard(matchImpl, player, round, trick, currentIndex)
+      KnockOutWhist.config.playeractrcomponent.dogplayCard(matchImpl, player, round, trick, currentIndex)
       return
     }
     UndoManager.doStep(PlayerPlayDogCommand(matchImpl, round, trick, player, card.get, currentIndex))

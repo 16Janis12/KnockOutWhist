@@ -1,5 +1,6 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.{ControlHandler, Matchcomponent}
 import de.knockoutwhist.rounds.Match
 
@@ -8,7 +9,7 @@ object MatchLogic extends Matchcomponent {
     if (matchImpl.roundlist.isEmpty) {
       false
     } else {
-      ControlHandler.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).size == 1
+      KnockOutWhist.config.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).size == 1
     }
   }
 }

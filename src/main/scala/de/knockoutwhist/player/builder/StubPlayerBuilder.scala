@@ -1,13 +1,13 @@
 package de.knockoutwhist.player.builder
 
-import de.knockoutwhist.player.{MockPlayer, AbstractPlayer}
+import de.knockoutwhist.player.{StubPlayer, AbstractPlayer}
 
-class MockPlayerBuilder extends PlayerBuilder {
-  private var unfinished: Option[MockPlayer] = None
+class StubPlayerBuilder extends PlayerBuilder {
+  private var unfinished: Option[StubPlayer] = None
 
   override def setName(name: String): PlayerBuilder = {
     if (unfinished.isEmpty) {
-      unfinished = Some(MockPlayer(name, None))
+      unfinished = Some(StubPlayer(name, None))
     } else {
       unfinished.get.name = name
     }

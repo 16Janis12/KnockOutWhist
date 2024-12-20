@@ -4,6 +4,7 @@ import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
+import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
 
 import scala.collection.immutable
 import scala.collection.immutable.List
@@ -14,7 +15,7 @@ case class Round (trumpSuit: Suit, tricklist: List[Trick], playersin: List[Abstr
     this(trumpSuit, List[Trick](), playersin, firstRound = firstRound)
   }
 
-  val playerQueue: CustomPlayerQueue[AbstractPlayer] = CustomPlayerQueue[AbstractPlayer](
+  val playerQueue: CustomPlayerQueue[AbstractPlayer] = CustomPlayerBaseQueue[AbstractPlayer](
     playersin.toArray,
     (startingPlayer == -1) ? Random.nextInt(playersin.length) |: startingPlayer
   )

@@ -1,36 +1,32 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand, Suit}
-import de.knockoutwhist.control.controllerBaseImpl.TrickLogic
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ShowPlayerStatus
 import de.knockoutwhist.events.directional.RequestCardEvent
-import de.knockoutwhist.player.Playertype.HUMAN
-import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
+import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Round, Trick}
 import de.knockoutwhist.undo.UndoManager
-import de.knockoutwhist.undo.commands.EnterPlayersCommand
 import de.knockoutwhist.utils.CustomPlayerQueue
+import de.knockoutwhist.utils.Implicits.*
+import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
 import de.knockoutwhist.utils.gui.Animations
-import scalafx.beans.property.ObjectProperty
+import javafx.scene.layout.{BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize}
 import scalafx.geometry.Insets
-import scalafx.geometry.Pos.{BottomCenter, BottomLeft, Center, CenterLeft, CenterRight, TopCenter, TopLeft, TopRight}
-import scalafx.scene.{Node, layout}
+import scalafx.geometry.Pos.{BottomCenter, Center, CenterRight, TopCenter}
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.{Always, Never}
-import scalafx.scene.layout.{Background, BorderPane, HBox, StackPane, VBox}
-import scalafx.scene.paint.{Color, Paint}
+import scalafx.scene.layout.{Background, BorderPane, HBox, VBox}
 import scalafx.scene.text.{Font, TextAlignment}
+import scalafx.scene.{Node, layout}
 import scalafx.util.Duration
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import scala.compiletime.uninitialized
 import scala.util.Try
-import de.knockoutwhist.utils.Implicits.*
-import javafx.scene.layout.{BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize}
 
 
 object Game {
@@ -232,7 +228,7 @@ object Game {
           if(requestCard.isDefined) {
 
             val event = requestCard.get
-            if (ControlHandler.trickcomponent.alternativeCards(card, event.round, event.trick, event.player).nonEmpty) {
+            if (KnockOutWhist.config.trickcomponent.alternativeCards(card, event.round, event.trick, event.player).nonEmpty) {
               val pulse = Animations.pulse(this, Duration(400))
               pulse.play()
             } else {
@@ -240,7 +236,7 @@ object Game {
               slideOut.onFinished = _ => {
                 visible = false
                 ControlThread.runLater {
-                  ControlHandler.trickcomponent.controlSuitplayed(Try {
+                  KnockOutWhist.config.trickcomponent.controlSuitplayed(Try {
                     card
                   }, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
                 }
@@ -283,7 +279,7 @@ object Game {
   }
 
   def updateNextPlayer(queue: CustomPlayerQueue[AbstractPlayer], currendIndx: Int): Unit = {
-    val queueDupli = queue.clone()
+    val queueDupli = queue.duplicate()
     nextPlayers.children = queueDupli.iteratorWithStart(currendIndx).map(player => new Label {
       text = !player.doglife ? player.name |: s"${player.name} (Doglife)"
       font = Font.font(20)

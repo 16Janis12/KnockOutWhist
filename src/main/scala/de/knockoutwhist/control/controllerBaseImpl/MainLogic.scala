@@ -1,5 +1,6 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.*
 import de.knockoutwhist.events.GLOBAL_STATUS.SHOW_FINISHED_MATCH
@@ -28,27 +29,27 @@ object MainLogic extends Maincomponent {
   }
 
   def controlMatch(matchImpl: Match): Unit = {
-    if(ControlHandler.matchcomponent.isOver(matchImpl)) {
-      ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, ControlHandler.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).head))
+    if(KnockOutWhist.config.matchcomponent.isOver(matchImpl)) {
+      ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, KnockOutWhist.config.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).head))
       ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
     } else {
-      val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: ControlHandler.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last)
-      val newMatch = ControlHandler.roundlogcomponent.provideCards(matchImpl, remainingPlayer)
-      ControlHandler.playerlogcomponent.trumpsuitStep(newMatch._1, newMatch._2)
+      val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: KnockOutWhist.config.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last)
+      val newMatch = KnockOutWhist.config.roundlogcomponent.provideCards(matchImpl, remainingPlayer)
+      KnockOutWhist.config.playerlogcomponent.trumpsuitStep(newMatch._1, newMatch._2)
     }
   }
 
   def controlRound(matchImpl: Match, round: Round): Unit = {
-    if(!ControlHandler.roundlogcomponent.isOver(round)) {
+    if(!KnockOutWhist.config.roundlogcomponent.isOver(round)) {
       val trick = Trick()
       controlTrick(matchImpl, round, trick)
       return
     }
-    val result = ControlHandler.roundlogcomponent.finalizeRound(ControlHandler.roundlogcomponent.smashResults(round), matchImpl)
+    val result = KnockOutWhist.config.roundlogcomponent.finalizeRound(KnockOutWhist.config.roundlogcomponent.smashResults(round), matchImpl)
     if(result._3.size == 1) {
       endRound(result._1, result._2, result._3.head, result._4)
     } else {
-      ControlHandler.playerlogcomponent.preSelect(result._3, result._1, result._2, result._4)
+      KnockOutWhist.config.playerlogcomponent.preSelect(result._3, result._1, result._2, result._4)
     }
   }
 
@@ -69,7 +70,7 @@ object MainLogic extends Maincomponent {
       //ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
       controlPlayer(matchImpl, round, trick, player, currentIndex)
     }else {
-      val result = ControlHandler.trickcomponent.wonTrick(trick, round)
+      val result = KnockOutWhist.config.trickcomponent.wonTrick(trick, round)
       val newRound = round.addTrick(result._2)
       ControlHandler.invoke(ShowPlayerStatus(SHOW_WON_PLAYER_TRICK, result._1, result._2))
       newRound.playerQueue.resetAndSetStart(result._1)
@@ -81,9 +82,9 @@ object MainLogic extends Maincomponent {
   def controlPlayer(matchImpl: Match, round: Round, trick: Trick, player: AbstractPlayer, currentIndex: Int): Unit = {
     ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
     if (!player.doglife) {
-      ControlHandler.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
+      KnockOutWhist.config.playeractrcomponent.playCard(matchImpl, player, round, trick, currentIndex)
     } else if (player.currentHand().exists(_.cards.nonEmpty)) {
-      ControlHandler.playeractrcomponent.dogplayCard(matchImpl, player, round, trick, currentIndex)
+      KnockOutWhist.config.playeractrcomponent.dogplayCard(matchImpl, player, round, trick, currentIndex)
     }else {
       controlTrick(matchImpl, round, trick, currentIndex+1)
     }

@@ -1,6 +1,7 @@
 package de.knockoutwhist
 
 
+import de.knockoutwhist.components.{Configuration, DefaultConfiguration}
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ui.GameState.MAIN_MENU
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
@@ -15,6 +16,7 @@ object KnockOutWhist {
 
   - Disables the random shuffle of the cards
    */
+  val config: Configuration = DefaultConfiguration
   private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = false
 
   def debugmode: Boolean = DEBUG_MODE_VAR

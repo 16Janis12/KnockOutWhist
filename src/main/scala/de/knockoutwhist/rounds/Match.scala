@@ -1,11 +1,9 @@
 package de.knockoutwhist.rounds
 
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
 
 import scala.collection.immutable.List
-import scala.util.Random
 
 case class Match(totalplayers: List[AbstractPlayer],numberofcards: Int = 7, dogLife: Boolean = false, roundlist: List[Round] = List[Round]()) {
   
