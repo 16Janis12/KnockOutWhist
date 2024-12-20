@@ -1,7 +1,7 @@
 package de.knockoutwhist.utils
 
 
-class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0) extends Iterable[A] {
+class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0) extends Iterable[A], CustomPlayerQueueComponent[A] {
 
   private var current = start
   
@@ -37,11 +37,13 @@ class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0)
   def iteratorWithStart(start: Int = 0): Iterator[A] = new QueueIterator[A](this, start)
 
   //Useful if start is not important
-  def fromFirstIterator: Iterator[A] = new Iterator[A]:
+  def fromFirstIterator: Iterator[A] = new Iterator[A] {
     private val it: Iterator[A] = players.iterator
+
     override def hasNext: Boolean = it.hasNext
 
     override def next(): A = it.next()
+  }
 }
 
 class QueueIterator[A](queue: CustomPlayerQueue[A], startingIndex: Int = 0) extends Iterator[A] {
