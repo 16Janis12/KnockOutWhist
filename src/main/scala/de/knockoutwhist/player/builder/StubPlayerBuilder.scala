@@ -1,6 +1,6 @@
 package de.knockoutwhist.player.builder
 
-import de.knockoutwhist.player.{StubPlayer, AbstractPlayer}
+import de.knockoutwhist.player.{AbstractPlayer, StubPlayer}
 
 class StubPlayerBuilder extends PlayerBuilder {
   private var unfinished: Option[StubPlayer] = None

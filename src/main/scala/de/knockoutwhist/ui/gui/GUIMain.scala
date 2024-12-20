@@ -3,11 +3,11 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TURN, SHOW_WON_PLAYER_TRICK}
 import de.knockoutwhist.events.ROUND_STATUS.WON_ROUND
-import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestPickTrumpsuitEvent, RequestPlayersEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
 import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.CustomThread
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}

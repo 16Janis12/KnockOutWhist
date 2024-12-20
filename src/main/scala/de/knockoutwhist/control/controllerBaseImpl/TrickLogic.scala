@@ -2,8 +2,8 @@ package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand}
-import de.knockoutwhist.control.{ControlHandler, Tricklogcomponent}
 import de.knockoutwhist.control.controllerBaseImpl.PlayerControl
+import de.knockoutwhist.control.{ControlHandler, Tricklogcomponent}
 import de.knockoutwhist.events.ERROR_STATUS.{INVALID_INPUT, INVALID_NUMBER, WRONG_CARD}
 import de.knockoutwhist.events.ShowErrorStatus
 import de.knockoutwhist.player.AbstractPlayer

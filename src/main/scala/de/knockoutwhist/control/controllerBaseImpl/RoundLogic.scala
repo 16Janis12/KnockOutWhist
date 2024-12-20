@@ -1,7 +1,6 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.control.{ControlHandler, Roundlogcomponent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}

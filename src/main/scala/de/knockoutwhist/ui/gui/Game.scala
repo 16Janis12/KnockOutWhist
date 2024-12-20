@@ -11,7 +11,6 @@ import de.knockoutwhist.rounds.{Round, Trick}
 import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
-import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
 import de.knockoutwhist.utils.gui.Animations
 import javafx.scene.layout.{BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize}
 import scalafx.geometry.Insets

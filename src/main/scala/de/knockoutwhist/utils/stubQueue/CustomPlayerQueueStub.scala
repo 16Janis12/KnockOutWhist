@@ -2,8 +2,6 @@ package de.knockoutwhist.utils.stubQueue
 
 import de.knockoutwhist.utils.CustomPlayerQueue
 
-import scala.compiletime.uninitialized
-
 class CustomPlayerQueueStub[A](protected var players: Array[A], val start: Int = 0) extends CustomPlayerQueue[A] {
 
   private var current = start

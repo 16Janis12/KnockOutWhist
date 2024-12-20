@@ -1,7 +1,6 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.cards.{Card, Suit}
 import de.knockoutwhist.control.{ControlHandler, Playerlogcomponent}
 import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}

@@ -1,8 +1,8 @@
-package de.knockoutwhist.cards.mock
+package de.knockoutwhist.cards.stub
 
-import de.knockoutwhist.cards.{Card, CardManager, CardValue, Hand, Suit}
+import de.knockoutwhist.cards.*
 
-object MockCardManager extends CardManager {
+object StubCardManager extends CardManager {
   override def cardContainer: List[Card] = List()
 
   override def shuffleAndReset(): Unit = {}

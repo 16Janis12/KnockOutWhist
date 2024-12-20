@@ -1,7 +1,7 @@
 package de.knockoutwhist.player
 
 import de.knockoutwhist.player.Playertype.{AI, HUMAN, STUB}
-import de.knockoutwhist.player.builder.{AIPlayerBuilder, Director, HumanoidBuilder, StubPlayerBuilder, PlayerBuilder}
+import de.knockoutwhist.player.builder.*
 
 enum Playertype:
   case HUMAN

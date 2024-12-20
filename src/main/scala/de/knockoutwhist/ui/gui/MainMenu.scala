@@ -13,9 +13,8 @@ import javafx.scene.{Node, control}
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft, TopRight}
-import scalafx.scene.control.{Button, Label, Slider, TextField}
 import scalafx.scene.Parent
-import scalafx.scene.control.{Button, Label}
+import scalafx.scene.control.{Button, Label, Slider, TextField}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
