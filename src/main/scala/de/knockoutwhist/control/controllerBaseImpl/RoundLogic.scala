@@ -59,14 +59,14 @@ object RoundLogic extends Roundlogcomponent{
   }
 
   def provideCards(matchImpl: Match, players: List[AbstractPlayer]): (Match,List[AbstractPlayer]) = {
-    if (!KnockOutWhist.debugmode) ControlHandler.cardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) KnockOutWhist.config.cardManager.shuffleAndReset()
     val listbuff = new ListBuffer[AbstractPlayer]()
     for (player <- players) {
       if (!player.doglife) {
-        val newPlayer = player.provideHand(ControlHandler.cardManager.createHand(matchImpl.numberofcards))
+        val newPlayer = player.provideHand(KnockOutWhist.config.cardManager.createHand(matchImpl.numberofcards))
         listbuff.addOne(newPlayer)
       } else {
-        val newPlayer = player.provideHand(ControlHandler.cardManager.createHand(1))
+        val newPlayer = player.provideHand(KnockOutWhist.config.cardManager.createHand(1))
         listbuff.addOne(newPlayer)
       }
     }

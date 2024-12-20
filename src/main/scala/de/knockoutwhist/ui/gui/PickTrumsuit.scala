@@ -1,5 +1,6 @@
 package de.knockoutwhist.ui.gui
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.control.controllerBaseImpl.PlayerLogic
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
@@ -53,7 +54,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
+                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
                           Suit.Spades
                         }, event.remaining_players, event.firstRound, event.player)
                       }
@@ -72,7 +73,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
+                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
                           Suit.Clubs
                         }, event.remaining_players, event.firstRound, event.player)
                       }
@@ -90,7 +91,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
+                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
                           Suit.Hearts
                         }, event.remaining_players, event.firstRound, event.player)
                       }
@@ -110,7 +111,7 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        ControlHandler.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try{Suit.Diamonds}, event.remaining_players, event.firstRound, event.player)
+                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try{Suit.Diamonds}, event.remaining_players, event.firstRound, event.player)
                       }
                     }
                   },

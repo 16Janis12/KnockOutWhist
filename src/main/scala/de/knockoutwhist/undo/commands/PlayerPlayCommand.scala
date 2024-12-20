@@ -1,5 +1,6 @@
 package de.knockoutwhist.undo.commands
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.player.AbstractPlayer
@@ -10,13 +11,13 @@ case class PlayerPlayCommand(matchImpl: Match, round: Round, trick: Trick, playe
 
   override def doStep(): Unit = {
     val newPlayer = player.removeCard(rightCard)
-    val newTrick = ControlHandler.maincomponent.playCard(trick, rightCard, newPlayer)
+    val newTrick = KnockOutWhist.config.maincomponent.playCard(trick, rightCard, newPlayer)
     val newRound = round.updatePlayersIn(round.playersin.updated(round.playersin.indexOf(player), newPlayer))
     val newMatch = matchImpl.updatePlayers(matchImpl.totalplayers.updated(matchImpl.totalplayers.indexOf(player), newPlayer))
-    ControlHandler.maincomponent.controlTrick(newMatch, newRound, newTrick, currentIndex+1)
+    KnockOutWhist.config.maincomponent.controlTrick(newMatch, newRound, newTrick, currentIndex+1)
   }
 
   override def undoStep(): Unit = {
-    ControlHandler.maincomponent.controlPlayer(matchImpl, round, trick, player, currentIndex)
+    KnockOutWhist.config.maincomponent.controlPlayer(matchImpl, round, trick, player, currentIndex)
   }
 }

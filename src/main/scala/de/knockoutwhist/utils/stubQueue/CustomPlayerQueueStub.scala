@@ -1,8 +1,10 @@
-package de.knockoutwhist.utils
+package de.knockoutwhist.utils.stubQueue
+
+import de.knockoutwhist.utils.CustomPlayerQueue
 
 import scala.compiletime.uninitialized
 
-class CustomPlayerQueueMock[A] (protected var players: Array[A], val start: Int = 0) extends Iterable[A], CustomPlayerQueueComponent[A] {
+class CustomPlayerQueueStub[A](protected var players: Array[A], val start: Int = 0) extends CustomPlayerQueue[A] {
 
   private var current = start
 
@@ -24,7 +26,7 @@ class CustomPlayerQueueMock[A] (protected var players: Array[A], val start: Int 
 
   override def size: Int = 1
 
-  override def clone(): CustomPlayerQueue[A] = new CustomPlayerQueue(players, 0)
+  override def duplicate(): CustomPlayerQueue[A] = new CustomPlayerQueueStub(players, 0)
 
   def iterator: Iterator[A] = new Iterator[A] {
     override def hasNext: Boolean = true

@@ -1,56 +1,48 @@
 package de.knockoutwhist.utils
 
+trait CustomPlayerQueue[A] extends Iterable[A] {
+  /**
+   * Returns the current index of the player queue.
+   * @return the current index of the player queue.
+   */
+  def currentIndex: Int
 
-class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0) extends Iterable[A], CustomPlayerQueueComponent[A] {
+  /**
+   * Returns the current player of the player queue.
+   * @return the current player of the player queue.
+   */
+  def nextPlayer(): A
 
-  private var current = start
-  
-  def currentIndex: Int = current
-  
-  def nextPlayer(): A = {
-    val player = players(current)
-    current = (current + 1) % players.length
-    player
-  }
+  /**
+   * Removes the player from the player queue.
+   * @param player the player to remove.
+   * @return the player object
+   */
+  def remove(player: A): Int
 
-  def remove(player: A): Int = {
-    players = players.filter(_ != player)
-    players.size
-  }
+  /**
+   * Resets the current index and sets the player as the start.
+   * @param player the player to set as the start.
+   * @return true if the player was found and set as the start, false otherwise.
+   */
+  def resetAndSetStart(player: A): Boolean
 
-  def resetAndSetStart(player: A): Boolean = {
-    if(players.contains(player)) {
-      current = players.indexOf(player)
-      true
-    } else {
-      false
-    }
-  }
-  
-  override def toList: List[A] = players.toList
-  override def isEmpty: Boolean = players.isEmpty
-  override def size: Int = players.length
-  override def clone(): CustomPlayerQueue[A] = new CustomPlayerQueue(players.clone(), current)
-  
+  /**
+   * Let's the iterator start at a specific index.
+   * @param start the index to start at.
+   * @return the iterator.
+   */
+  def iteratorWithStart(start: Int = 0): Iterator[A]
 
-  def iterator: Iterator[A] = new QueueIterator[A](this)
-  def iteratorWithStart(start: Int = 0): Iterator[A] = new QueueIterator[A](this, start)
+  /**
+   * Returns an iterator that starts from the beginning.
+   * @return the iterator.
+   */
+  def fromFirstIterator: Iterator[A]
 
-  //Useful if start is not important
-  def fromFirstIterator: Iterator[A] = new Iterator[A] {
-    private val it: Iterator[A] = players.iterator
-
-    override def hasNext: Boolean = it.hasNext
-
-    override def next(): A = it.next()
-  }
-}
-
-class QueueIterator[A](queue: CustomPlayerQueue[A], startingIndex: Int = 0) extends Iterator[A] {
-  var index: Int = startingIndex
-  def hasNext: Boolean = index + (queue.size-startingIndex-1) < queue.size
-  def next(): A = {
-    index += 1
-    queue.nextPlayer()
-  }
+  /**
+   * Duplicates the player queue.
+   * @return the duplicated player queue.
+   */
+  def duplicate(): CustomPlayerQueue[A]
 }

@@ -1,12 +1,12 @@
 package de.knockoutwhist.player
 
-import de.knockoutwhist.player.Playertype.{AI, HUMAN, MOCK}
-import de.knockoutwhist.player.builder.{AIPlayerBuilder, Director, HumanoidBuilder, MockPlayerBuilder, PlayerBuilder}
+import de.knockoutwhist.player.Playertype.{AI, HUMAN, STUB}
+import de.knockoutwhist.player.builder.{AIPlayerBuilder, Director, HumanoidBuilder, StubPlayerBuilder, PlayerBuilder}
 
 enum Playertype:
   case HUMAN
   case AI
-  case MOCK
+  case STUB
 end Playertype
 
 object PlayerFactory {
@@ -16,8 +16,8 @@ object PlayerFactory {
         new HumanoidBuilder()
       case AI =>
         new AIPlayerBuilder()
-      case MOCK =>
-        new MockPlayerBuilder
+      case STUB =>
+        new StubPlayerBuilder
     }
     if (name == null) {
       Director.constructWithRandomNames(buildType)

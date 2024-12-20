@@ -1,8 +1,8 @@
-package de.knockoutwhist.control.controllerBaseImpl
+package de.knockoutwhist.components
 
 import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.cards.base.CardBaseManager
-import de.knockoutwhist.control.{Maincomponent, Matchcomponent, Playeractrcomponent, Playerlogcomponent, Roundlogcomponent, Tricklogcomponent}
+import de.knockoutwhist.control.*
 
 trait Configuration {
   def maincomponent: Maincomponent
@@ -11,5 +11,8 @@ trait Configuration {
   def playerlogcomponent: Playerlogcomponent 
   def roundlogcomponent: Roundlogcomponent 
   def trickcomponent: Tricklogcomponent 
-  def cardManager: CardManager 
+  def cardManager: CardManager
+  
+  
+  
 }

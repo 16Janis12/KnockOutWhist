@@ -1,5 +1,6 @@
 package de.knockoutwhist.undo.commands
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_NOT_PLAYED
@@ -13,17 +14,17 @@ case class PlayerPlayDogCommand(matchImpl: Match, round: Round, trick: Trick, pl
   override def doStep(): Unit = {
     if (rightCard.isEmpty) {
       ControlHandler.invoke(ShowPlayerStatus(SHOW_NOT_PLAYED, player))
-      ControlHandler.maincomponent.controlTrick(matchImpl, round, trick, currentIndex + 1)
+      KnockOutWhist.config.maincomponent.controlTrick(matchImpl, round, trick, currentIndex + 1)
     } else {
       val newPlayer = player.removeCard(rightCard.get)
-      val newTrick = ControlHandler.maincomponent.playCard(trick, rightCard.get, newPlayer)
+      val newTrick = KnockOutWhist.config.maincomponent.playCard(trick, rightCard.get, newPlayer)
       val newRound = round.updatePlayersIn(round.playersin.updated(round.playersin.indexOf(player), newPlayer))
       val newMatch = matchImpl.updatePlayers(matchImpl.totalplayers.updated(matchImpl.totalplayers.indexOf(player), newPlayer))
-      ControlHandler.maincomponent.controlTrick(newMatch, newRound, newTrick, currentIndex + 1)
+      KnockOutWhist.config.maincomponent.controlTrick(newMatch, newRound, newTrick, currentIndex + 1)
     }
   }
 
   override def undoStep(): Unit = {
-    ControlHandler.maincomponent.controlPlayer(matchImpl, round, trick, player, currentIndex)
+    KnockOutWhist.config.maincomponent.controlPlayer(matchImpl, round, trick, player, currentIndex)
   }
 }

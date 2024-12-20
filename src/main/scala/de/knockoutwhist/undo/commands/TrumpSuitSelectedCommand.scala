@@ -1,5 +1,6 @@
 package de.knockoutwhist.undo.commands
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.player.AbstractPlayer
@@ -12,10 +13,10 @@ case class TrumpSuitSelectedCommand(matchImpl: Match, suit: Suit, remaining_play
     val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
     val round = new Round(suit, remaining_players, firstRound)
     round.playerQueue.resetAndSetStart(decided)
-    ControlHandler.maincomponent.controlRound(newMatchImpl, round)
+    KnockOutWhist.config.maincomponent.controlRound(newMatchImpl, round)
   }
 
   override def undoStep(): Unit = {
-    ControlHandler.playerlogcomponent.trumpsuitStep(matchImpl, remaining_players)
+    KnockOutWhist.config.playerlogcomponent.trumpsuitStep(matchImpl, remaining_players)
   }
 }

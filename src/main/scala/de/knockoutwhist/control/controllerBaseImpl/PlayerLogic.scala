@@ -24,20 +24,20 @@ object PlayerLogic extends Playerlogcomponent {
   
   def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Unit = {
     if (matchImpl.roundlist.isEmpty) {
-      val randomTrumpsuit = ControlHandler.cardManager.nextCard().suit
+      val randomTrumpsuit = KnockOutWhist.config.cardManager.nextCard().suit
       val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
       val round = new Round(randomTrumpsuit, remaining_players, true)
-      ControlHandler.maincomponent.controlRound(newMatchImpl, round)
+      KnockOutWhist.config.maincomponent.controlRound(newMatchImpl, round)
     } else {
       val winner = matchImpl.totalplayers.filter(matchImpl.roundlist.last.winner.name == _.name).head
-      ControlHandler.playeractrcomponent.pickNextTrumpsuit(matchImpl, remaining_players, false, winner)
+      KnockOutWhist.config.playeractrcomponent.pickNextTrumpsuit(matchImpl, remaining_players, false, winner)
     }
   }
 
   def trumpSuitSelected(matchImpl: Match, suit: Try[Suit], remaining_players: List[AbstractPlayer], firstRound: Boolean, decided: AbstractPlayer): Unit = {
     if (suit.isFailure) {
       ControlHandler.invoke(ShowErrorStatus(INVALID_NUMBER))
-      ControlHandler.playeractrcomponent.pickNextTrumpsuit(matchImpl, remaining_players, firstRound, decided)
+      KnockOutWhist.config.playeractrcomponent.pickNextTrumpsuit(matchImpl, remaining_players, firstRound, decided)
       return
     }
     ControlHandler.invoke(GameStateUpdateEvent(INGAME))
@@ -45,9 +45,9 @@ object PlayerLogic extends Playerlogcomponent {
   }
 
   def preSelect(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer]): Unit = {
-    if (!KnockOutWhist.debugmode) ControlHandler.cardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) KnockOutWhist.config.cardManager.shuffleAndReset()
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
-    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, ControlHandler.cardManager.cardContainer.size - (winners.length - 1))
+    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, KnockOutWhist.config.cardManager.cardContainer.size - (winners.length - 1))
   }
 
   def selectTie(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
@@ -66,7 +66,7 @@ object PlayerLogic extends Playerlogcomponent {
       selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
       return
     }
-    val selCard = ControlHandler.cardManager.cardContainer(currentStep + (value.get - 1))
+    val selCard = KnockOutWhist.config.cardManager.cardContainer(currentStep + (value.get - 1))
     UndoManager.doStep(SelectTieCommand(winner, matchImpl, round, playersout, cut, value.get, selCard, currentStep, remaining, currentIndex))
   }
 
@@ -91,7 +91,7 @@ object PlayerLogic extends Playerlogcomponent {
     }
     if (winner.size == 1) {
       ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE_WINNER, winner.head))
-      ControlHandler.maincomponent.endRound(matchImpl, round, winner.head, playersout)
+      KnockOutWhist.config.maincomponent.endRound(matchImpl, round, winner.head, playersout)
       return
     }
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE_TIE))
