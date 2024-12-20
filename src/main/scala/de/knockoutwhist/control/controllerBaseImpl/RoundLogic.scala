@@ -1,8 +1,8 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.CardManager
-import de.knockoutwhist.control.Roundlogcomponent
+import de.knockoutwhist.cards.base.CardBaseManager
+import de.knockoutwhist.control.{ControlHandler, Roundlogcomponent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.Implicits.*
@@ -59,14 +59,14 @@ object RoundLogic extends Roundlogcomponent{
   }
 
   def provideCards(matchImpl: Match, players: List[AbstractPlayer]): (Match,List[AbstractPlayer]) = {
-    if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) ControlHandler.cardManager.shuffleAndReset()
     val listbuff = new ListBuffer[AbstractPlayer]()
     for (player <- players) {
       if (!player.doglife) {
-        val newPlayer = player.provideHand(CardManager.createHand(matchImpl.numberofcards))
+        val newPlayer = player.provideHand(ControlHandler.cardManager.createHand(matchImpl.numberofcards))
         listbuff.addOne(newPlayer)
       } else {
-        val newPlayer = player.provideHand(CardManager.createHand(1))
+        val newPlayer = player.provideHand(ControlHandler.cardManager.createHand(1))
         listbuff.addOne(newPlayer)
       }
     }

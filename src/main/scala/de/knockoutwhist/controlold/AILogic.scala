@@ -1,6 +1,8 @@
 package de.knockoutwhist.controlold
 
-import de.knockoutwhist.cards.{Card, CardManager, Hand, Suit}
+import de.knockoutwhist.cards.base.CardBaseManager
+import de.knockoutwhist.cards.{Card, Hand, Suit}
+import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Round, Trick}
 
@@ -25,7 +27,7 @@ case object AILogic {
       if(trumpsInGame.nonEmpty) cardsOfSuit.minBy(_.cardValue.ordinal)
       else cardsOfSuit.maxBy(_.cardValue.ordinal)
     }
-    CardManager.nextCard()
+    ControlHandler.cardManager.nextCard()
   }
 
   
