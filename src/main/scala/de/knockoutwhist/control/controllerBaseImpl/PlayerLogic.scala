@@ -1,7 +1,8 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.cards.{Card, CardManager, Suit}
+import de.knockoutwhist.cards.base.CardBaseManager
+import de.knockoutwhist.cards.{Card, Suit}
 import de.knockoutwhist.control.{ControlHandler, Playerlogcomponent}
 import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
@@ -23,7 +24,7 @@ object PlayerLogic extends Playerlogcomponent {
   
   def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Unit = {
     if (matchImpl.roundlist.isEmpty) {
-      val randomTrumpsuit = CardManager.nextCard().suit
+      val randomTrumpsuit = ControlHandler.cardManager.nextCard().suit
       val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
       val round = new Round(randomTrumpsuit, remaining_players, true)
       ControlHandler.maincomponent.controlRound(newMatchImpl, round)
@@ -44,9 +45,9 @@ object PlayerLogic extends Playerlogcomponent {
   }
 
   def preSelect(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer]): Unit = {
-    if (!KnockOutWhist.debugmode) CardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) ControlHandler.cardManager.shuffleAndReset()
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
-    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, CardManager.cardContainer.size - (winners.length - 1))
+    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, ControlHandler.cardManager.cardContainer.size - (winners.length - 1))
   }
 
   def selectTie(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
@@ -65,7 +66,7 @@ object PlayerLogic extends Playerlogcomponent {
       selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
       return
     }
-    val selCard = CardManager.cardContainer(currentStep + (value.get - 1))
+    val selCard = ControlHandler.cardManager.cardContainer(currentStep + (value.get - 1))
     UndoManager.doStep(SelectTieCommand(winner, matchImpl, round, playersout, cut, value.get, selCard, currentStep, remaining, currentIndex))
   }
 

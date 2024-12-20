@@ -1,5 +1,7 @@
 package de.knockoutwhist.control
 
+import de.knockoutwhist.cards.CardManager
+import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.control.controllerBaseImpl.{MainLogic, MatchLogic, PlayerControl, PlayerLogic, RoundLogic, TrickLogic}
 import de.knockoutwhist.ui.gui.GUIMain
 import de.knockoutwhist.ui.tui.TUIMain
@@ -19,6 +21,7 @@ object ControlHandler extends EventHandler {
   val playerlogcomponent: Playerlogcomponent = PlayerLogic
   val roundlogcomponent: Roundlogcomponent = RoundLogic
   val trickcomponent: Tricklogcomponent = TrickLogic
+  val cardManager: CardManager = CardBaseManager
 }
 
 object ControlThread extends CustomThread {
