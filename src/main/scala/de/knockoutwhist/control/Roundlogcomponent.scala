@@ -45,6 +45,7 @@ trait Roundlogcomponent {
 
   /**
    * Immutable broke us. If you don't know why, increase this counter: 1
+   * ...
    * @param round The current round.
    * @return Returns the current round.
    */
