@@ -1,8 +1,10 @@
 package de.knockoutwhist
 
 
+import com.google.inject.{Guice, Inject, Injector}
 import de.knockoutwhist.components.{Configuration, DefaultConfiguration}
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
+import de.knockoutwhist.di.KnockOutConfigurationModule
 import de.knockoutwhist.events.ui.GameState.MAIN_MENU
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.ui.gui.GUIMain
@@ -16,7 +18,8 @@ object KnockOutWhist {
 
   - Disables the random shuffle of the cards
    */
-  val config: Configuration = DefaultConfiguration
+  private val injector: Injector = Guice.createInjector(KnockOutConfigurationModule())
+  val config: Configuration = injector.getInstance(classOf[Configuration])
   private[knockoutwhist] var DEBUG_MODE_VAR: Boolean = false
 
   def debugmode: Boolean = DEBUG_MODE_VAR

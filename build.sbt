@@ -43,6 +43,8 @@ libraryDependencies ++= {
     .map(m => "org.openjfx" % s"javafx-$m" % "21" classifier osName)
 }
 
+libraryDependencies += "net.codingwell" %% "scala-guice" % "7.0.0"
+
 Test / testOptions += Tests.Filter(_.equals("de.knockoutwhist.TestSequence"))
 
 coverageEnabled := true
