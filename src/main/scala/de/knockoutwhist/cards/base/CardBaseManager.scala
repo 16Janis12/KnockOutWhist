@@ -48,4 +48,17 @@ object CardBaseManager extends CardManager {
     Hand(hand.toList)
   }
 
+  class CardManagerSnapshot(val cc: List[Card], val currentIdx: Int) {
+
+    def restore(): Unit = {
+      CardBaseManager.cc = cc
+      CardBaseManager.currentIdx = currentIdx
+    }
+
+  }
+
+  object CardManagerSnapshot {
+    def apply(): CardManagerSnapshot = new CardManagerSnapshot(CardBaseManager.cc, CardBaseManager.currentIdx)
+  }
+
 }
