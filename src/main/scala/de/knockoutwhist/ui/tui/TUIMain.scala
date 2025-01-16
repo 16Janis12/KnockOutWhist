@@ -462,10 +462,10 @@ object TUIMain extends CustomThread with EventListener with UI {
           UndoManager.redoStep()
           throw new UndoneException("Redo")
         }else if(in.equals("load")) {
-          KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot.xml")
+          KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot.json")
           throw new UndoneException("Load")
         }else if(in.equals("save")) {
-          KnockOutWhist.config.persistenceManager.saveFile("currentSnapshot.xml")
+          KnockOutWhist.config.persistenceManager.saveFile("currentSnapshot.json")
         }
         return in
       }

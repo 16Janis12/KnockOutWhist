@@ -7,6 +7,7 @@ import de.knockoutwhist.control.*
 import de.knockoutwhist.control.controllerBaseImpl.*
 import de.knockoutwhist.di.KnockOutLogicModule
 import de.knockoutwhist.persistence.PersistenceManager
+import de.knockoutwhist.persistence.formats.FileFormatter
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.baseQueue.{CustomPlayerBaseQueue, CustomPlayerQueueBuilder, QueueBuilder}
@@ -23,6 +24,7 @@ object DefaultConfiguration extends Configuration {
   def trickcomponent: Tricklogcomponent = injector.getInstance(classOf[Tricklogcomponent])
   def cardManager: CardManager = injector.getInstance(classOf[CardManager])
   def persistenceManager: PersistenceManager = injector.getInstance(classOf[PersistenceManager])
+  def fileFormatter: FileFormatter = injector.getInstance(classOf[FileFormatter])
 
   override def createRightQueue(players: Array[AbstractPlayer], start: Int): CustomPlayerQueue[AbstractPlayer] = {
     val builder = injector.getInstance(classOf[QueueBuilder])
