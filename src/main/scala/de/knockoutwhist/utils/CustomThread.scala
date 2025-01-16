@@ -10,13 +10,15 @@ abstract class CustomThread extends Thread {
 
   override def run(): Unit = {
     while (true) {
+      var process: Option[Runnable] = None
       this.synchronized {
         if (processesToRunLater.nonEmpty) {
-          val process = processesToRunLater.removeHead()
-          process.run()
-        } else {
-          this.wait()
+          process = Some(processesToRunLater.removeHead())
         }
+      }
+      process match {
+        case Some(p) => p.run()
+        case None => this.wait()
       }
     }
   }
