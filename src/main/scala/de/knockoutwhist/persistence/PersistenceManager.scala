@@ -14,7 +14,6 @@ trait PersistenceManager extends EventListener {
     def updateMatch(matchImpl: Match): MatchSnapshot
     def updateRound(round: Round): MatchSnapshot
     def updateTrick(trick: Trick): MatchSnapshot
-    def updateCurrentPlayer(currentPlayer: AbstractPlayer): MatchSnapshot
     def updateCurrentIndex(currentIndex: Int): MatchSnapshot
     def updateMethodEntryPoint(methodEntryPoint: MethodEntryPoint): MatchSnapshot
     
