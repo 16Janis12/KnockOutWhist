@@ -16,7 +16,7 @@ class KnockOutLogicModule extends AbstractModule {
     bind(classOf[Playerlogcomponent]).toInstance(PlayerLogic)
     bind(classOf[Roundlogcomponent]).toInstance(RoundLogic)
     bind(classOf[Tricklogcomponent]).toInstance(TrickLogic)
-    bind(classOf[CardManager]).toInstance(CardBaseManager)
+    bind(classOf[CardManager]).to(classOf[CardBaseManager])
     bind(classOf[QueueBuilder]).to(classOf[CustomPlayerQueueBuilder])
   }
 }

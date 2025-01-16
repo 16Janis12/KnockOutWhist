@@ -6,12 +6,12 @@ import de.knockoutwhist.control.*
 import de.knockoutwhist.events.GLOBAL_STATUS.SHOW_FINISHED_MATCH
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_WON_PLAYER_TRICK
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, WON_ROUND}
-import de.knockoutwhist.events.directional.RequestPlayersEvent
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
+import de.knockoutwhist.events.ui.GameState.{MAIN_MENU, PLAYERS}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
+import de.knockoutwhist.persistence.MethodEntryPoint.{ControlMatch, ControlRound, ControlTrick}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.undo.UndoManager
@@ -21,7 +21,7 @@ import de.knockoutwhist.utils.Implicits.*
 object MainLogic extends Maincomponent {
 
   def startMatch(): Unit = {
-    ControlHandler.invoke(RequestPlayersEvent())
+    ControlHandler.invoke(GameStateUpdateEvent(PLAYERS))
   }
   
   def enteredPlayers(players: List[AbstractPlayer]): Unit = {
@@ -29,6 +29,8 @@ object MainLogic extends Maincomponent {
   }
 
   def controlMatch(matchImpl: Match): Unit = {
+    KnockOutWhist.config.persistenceManager.updateMatch(matchImpl)
+    KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(ControlMatch)
     if(KnockOutWhist.config.matchcomponent.isOver(matchImpl)) {
       ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, KnockOutWhist.config.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).head))
       ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
@@ -40,6 +42,9 @@ object MainLogic extends Maincomponent {
   }
 
   def controlRound(matchImpl: Match, round: Round): Unit = {
+    KnockOutWhist.config.persistenceManager.updateMatch(matchImpl)
+    KnockOutWhist.config.persistenceManager.updateRound(round)
+    KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(ControlRound)
     if(!KnockOutWhist.config.roundlogcomponent.isOver(round)) {
       val trick = Trick()
       controlTrick(matchImpl, round, trick)
@@ -65,6 +70,11 @@ object MainLogic extends Maincomponent {
   }
 
   def controlTrick(matchImpl: Match, round: Round, trick: Trick, currentIndex: Int = 0): Unit = {
+    KnockOutWhist.config.persistenceManager.updateMatch(matchImpl)
+    KnockOutWhist.config.persistenceManager.updateRound(round)
+    KnockOutWhist.config.persistenceManager.updateTrick(trick)
+    KnockOutWhist.config.persistenceManager.updateCurrentIndex(currentIndex)
+    KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(ControlTrick)
     if(currentIndex < round.playersin.size) {
       val player = round.playerQueue.nextPlayer()
       //ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))

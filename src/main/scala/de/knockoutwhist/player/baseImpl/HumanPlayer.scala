@@ -3,6 +3,8 @@ package de.knockoutwhist.player.baseImpl
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
+import de.knockoutwhist.events.ui.GameState.TRUMPSUIT
+import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
@@ -30,6 +32,7 @@ class HumanPlayer private[player](name: String, hand: Option[Hand], doglife: Boo
   }
 
   override def handlePickTrumpsuit(matchImpl: Match, remaining_players: List[AbstractPlayer], firstRound: Boolean): Unit = {
+    ControlHandler.invoke(GameStateUpdateEvent(TRUMPSUIT))
     ControlHandler.invoke(RequestPickTrumpsuitEvent(matchImpl, remaining_players, firstRound, this))
   }
 

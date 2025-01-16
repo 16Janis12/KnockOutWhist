@@ -14,8 +14,7 @@ import de.knockoutwhist.ui.tui.TUIMain
 object KnockOutWhist {
   
   /*
-  Debug mode:
-
+  Debug mode
   - Disables the random shuffle of the cards
    */
   private val injector: Injector = Guice.createInjector(KnockOutConfigurationModule())

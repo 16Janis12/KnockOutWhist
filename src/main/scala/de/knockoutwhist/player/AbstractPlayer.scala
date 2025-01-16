@@ -3,10 +3,14 @@ package de.knockoutwhist.player
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
+import java.util.UUID
 import scala.collection.immutable
 import scala.util.Try
 
 abstract case class AbstractPlayer private[player](var name: String, hand: Option[Hand], doglife: Boolean = false) {
+  
+  //If you get an uuid conflict, go play the lottery!!! 
+  val id: UUID = UUID.randomUUID()
   def currentHand(): Option[Hand] = hand
   
   def provideHand(hand: Hand): AbstractPlayer

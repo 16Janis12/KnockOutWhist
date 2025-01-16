@@ -23,7 +23,7 @@ object PlayerLogic extends Playerlogcomponent {
   
   def trumpsuitStep(matchImpl: Match, remaining_players: List[AbstractPlayer]): Unit = {
     if (matchImpl.roundlist.isEmpty) {
-      val randomTrumpsuit = KnockOutWhist.config.cardManager.nextCard().suit
+      val randomTrumpsuit = matchImpl.cardManager.nextCard().suit
       val newMatchImpl = matchImpl.setNumberOfCards(matchImpl.numberofcards - 1)
       val round = new Round(randomTrumpsuit, remaining_players, true)
       KnockOutWhist.config.maincomponent.controlRound(newMatchImpl, round)
@@ -44,9 +44,9 @@ object PlayerLogic extends Playerlogcomponent {
   }
 
   def preSelect(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer]): Unit = {
-    if (!KnockOutWhist.debugmode) KnockOutWhist.config.cardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) matchImpl.cardManager.shuffleAndReset()
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
-    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, KnockOutWhist.config.cardManager.cardContainer.size - (winners.length - 1))
+    selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, matchImpl.cardManager.cardContainer.size - (winners.length - 1))
   }
 
   def selectTie(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
@@ -65,7 +65,7 @@ object PlayerLogic extends Playerlogcomponent {
       selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
       return
     }
-    val selCard = KnockOutWhist.config.cardManager.cardContainer(currentStep + (value.get - 1))
+    val selCard = matchImpl.cardManager.cardContainer(currentStep + (value.get - 1))
     UndoManager.doStep(SelectTieCommand(winner, matchImpl, round, playersout, cut, value.get, selCard, currentStep, remaining, currentIndex))
   }
 

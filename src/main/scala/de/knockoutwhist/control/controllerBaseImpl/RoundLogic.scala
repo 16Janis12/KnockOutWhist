@@ -58,14 +58,14 @@ object RoundLogic extends Roundlogcomponent{
   }
 
   def provideCards(matchImpl: Match, players: List[AbstractPlayer]): (Match,List[AbstractPlayer]) = {
-    if (!KnockOutWhist.debugmode) KnockOutWhist.config.cardManager.shuffleAndReset()
+    if (!KnockOutWhist.debugmode) matchImpl.cardManager.shuffleAndReset()
     val listbuff = new ListBuffer[AbstractPlayer]()
     for (player <- players) {
       if (!player.doglife) {
-        val newPlayer = player.provideHand(KnockOutWhist.config.cardManager.createHand(matchImpl.numberofcards))
+        val newPlayer = player.provideHand(matchImpl.cardManager.createHand(matchImpl.numberofcards))
         listbuff.addOne(newPlayer)
       } else {
-        val newPlayer = player.provideHand(KnockOutWhist.config.cardManager.createHand(1))
+        val newPlayer = player.provideHand(matchImpl.cardManager.createHand(1))
         listbuff.addOne(newPlayer)
       }
     }
@@ -74,8 +74,8 @@ object RoundLogic extends Roundlogcomponent{
   }
 
   def smashResults(round: Round): Round = {
-    val correctPlayers = round.playersin.groupMapReduce(_.name)(identity)((a, b) => a)
-    val newTricks = round.tricklist.map(t => Trick(t.cards, correctPlayers.getOrElse(t.winner.name, t.winner), t.finished, t.firstCard))
+    val correctPlayers = round.playersin.groupMapReduce(_.id)(identity)((a, *) => a)
+    val newTricks = round.tricklist.map(t => Trick(t.cards, correctPlayers.getOrElse(t.winner.id, t.winner), t.finished, t.firstCard))
     Round(round.trumpSuit, newTricks, round.playersin, round.playersout, round.startingPlayer, round.winner, round.firstRound)
   }
 }

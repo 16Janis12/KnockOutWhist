@@ -3,10 +3,10 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TURN, SHOW_WON_PLAYER_TRICK}
 import de.knockoutwhist.events.ROUND_STATUS.WON_ROUND
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestPickTrumpsuitEvent, RequestPlayersEvent}
+import de.knockoutwhist.events.directional.{RequestCardEvent, RequestPickTrumpsuitEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU, NO_SET, PLAYERS, TRUMPSUIT}
+import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.CustomThread
@@ -22,7 +22,7 @@ import scala.compiletime.uninitialized
 object GUIMain extends JFXApp3 with EventListener with UI {
 
   private var platformReady: Boolean = false
-
+  private var internState: GameState = NO_SET
   private var currentRoot: Parent = uninitialized
 
   override def listen(event: SimpleEvent): Unit = {
@@ -31,13 +31,16 @@ object GUIMain extends JFXApp3 with EventListener with UI {
     }
     Platform.runLater {
       event match {
-        case event: RequestPlayersEvent => 
-          MainMenu.createPlayeramountmenu()
-        case event: GameStateUpdateEvent => 
-          if (event.gameState == INGAME) {
-            Game.createGame()
-          } else if (event.gameState == MAIN_MENU) {
-            MainMenu.createMainMenu
+        case event: GameStateUpdateEvent =>
+          if (internState != event.gameState) {
+            internState = event.gameState
+            if (event.gameState == INGAME || event.gameState == TRUMPSUIT) {
+              Game.createGame()
+            } else if (event.gameState == MAIN_MENU) {
+              MainMenu.createMainMenu
+            } else if (event.gameState == PLAYERS) {
+              MainMenu.createPlayeramountmenu()
+            }
           }
         case event: ShowPlayerStatus =>
           event.status match
@@ -62,8 +65,6 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           else Game.resetFirstCard()
         case event: RequestPickTrumpsuitEvent => 
           PickTrumsuit.showPickTrumpsuit(event)
-        case event: SimpleEvent =>
-          println(s"Event ${event.id} not handled")
       }
     }
   }

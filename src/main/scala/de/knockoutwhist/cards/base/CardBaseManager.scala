@@ -5,7 +5,7 @@ import de.knockoutwhist.cards.*
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
-object CardBaseManager extends CardManager {
+class CardBaseManager extends CardManager {
   
   
   override def cardContainer: List[Card] = cc
@@ -46,19 +46,6 @@ object CardBaseManager extends CardManager {
       hand += nextCard()
     }
     Hand(hand.toList)
-  }
-
-  class CardManagerSnapshot(val cc: List[Card], val currentIdx: Int) {
-
-    def restore(): Unit = {
-      CardBaseManager.cc = cc
-      CardBaseManager.currentIdx = currentIdx
-    }
-
-  }
-
-  object CardManagerSnapshot {
-    def apply(): CardManagerSnapshot = new CardManagerSnapshot(CardBaseManager.cc, CardBaseManager.currentIdx)
   }
 
 }

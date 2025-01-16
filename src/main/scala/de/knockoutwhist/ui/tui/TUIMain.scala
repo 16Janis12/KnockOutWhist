@@ -31,7 +31,8 @@ object TUIMain extends CustomThread with EventListener with UI {
 
   setName("TUI")
   
-  var init = false
+  private var init = false
+  private var internState: GameState = GameState.NO_SET
 
   override def instance: CustomThread = TUIMain
 
@@ -65,13 +66,16 @@ object TUIMain extends CustomThread with EventListener with UI {
           reqpicktevmet(event)
         case event: ShowCurrentTrickEvent =>
           showcurtrevmet(event)
-        case event: RequestPlayersEvent =>
-          reqplayersevent()
         case event: GameStateUpdateEvent =>
-          if (event.gameState == GameState.MAIN_MENU) {
-            mainMenu()
+          if (internState != event.gameState) {
+            internState = event.gameState
+            if (event.gameState == GameState.MAIN_MENU) {
+              mainMenu()
+            } else if (event.gameState == GameState.PLAYERS) {
+              reqplayersevent()
+            }
+            Some(true)
           }
-          Some(true)
         case _ => None
       }
     }
