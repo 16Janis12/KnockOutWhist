@@ -48,4 +48,7 @@ class CardBaseManager extends CardManager {
     Hand(hand.toList)
   }
 
+  override def grabSpecificCard(card: Card): Card = {
+    cc.filter(c => c.suit == card.suit && c.cardValue == card.cardValue).head
+  }
 }

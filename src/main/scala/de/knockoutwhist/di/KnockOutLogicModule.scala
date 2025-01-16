@@ -6,6 +6,8 @@ import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.components.{Configuration, DefaultConfiguration}
 import de.knockoutwhist.control.controllerBaseImpl.*
 import de.knockoutwhist.control.*
+import de.knockoutwhist.persistence.PersistenceManager
+import de.knockoutwhist.persistence.stub.PersistenceBaseManager
 import de.knockoutwhist.utils.baseQueue.{CustomPlayerQueueBuilder, QueueBuilder}
 
 class KnockOutLogicModule extends AbstractModule {
@@ -18,6 +20,7 @@ class KnockOutLogicModule extends AbstractModule {
     bind(classOf[Tricklogcomponent]).toInstance(TrickLogic)
     bind(classOf[CardManager]).to(classOf[CardBaseManager])
     bind(classOf[QueueBuilder]).to(classOf[CustomPlayerQueueBuilder])
+    bind(classOf[PersistenceManager]).toInstance(PersistenceBaseManager)
   }
 }
 

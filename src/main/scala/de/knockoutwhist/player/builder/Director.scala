@@ -19,5 +19,19 @@ object Director {
     playerBuilder.setName(name)
     playerBuilder.build()
   }
+  
+  def constructWithRandomNamesAndID(playerBuilder: PlayerBuilder, id: java.util.UUID): AbstractPlayer = {
+    playerBuilder.reset()
+    playerBuilder.setName(playernames(Random.nextInt(playernames.length)))
+    playerBuilder.setID(id)
+    playerBuilder.build()
+  }
+  
+  def constructWithNameAndID(playerBuilder: PlayerBuilder, name: String, id: java.util.UUID): AbstractPlayer = {
+    playerBuilder.reset()
+    playerBuilder.setName(name)
+    playerBuilder.setID(id)
+    playerBuilder.build()
+  }
 
 }

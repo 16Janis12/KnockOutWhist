@@ -1,6 +1,7 @@
 package de.knockoutwhist.player
 
 import de.knockoutwhist.player.Playertype.{AI, HUMAN, STUB}
+import de.knockoutwhist.player.baseImpl.HumanPlayer
 import de.knockoutwhist.player.builder.*
 
 enum Playertype:
@@ -23,6 +24,17 @@ object PlayerFactory {
       Director.constructWithRandomNames(buildType)
     } else {
       Director.constructWithName(buildType, name)
+    }
+  }
+  
+  def parsePlayerType(player: AbstractPlayer): Playertype = {
+    player match {
+      case _: HumanPlayer =>
+        HUMAN
+      case _: AIPlayer =>
+        AI
+      case _: StubPlayer =>
+        STUB
     }
   }
 

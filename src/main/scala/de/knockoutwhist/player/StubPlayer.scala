@@ -8,20 +8,21 @@ import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.control.controllerBaseImpl.{PlayerLogic, TrickLogic}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
+import java.util.UUID
 import scala.collection.immutable
 import scala.util.Try
 
-class StubPlayer private[player](name: String, hand: Option[Hand], doglife: Boolean = false) extends AbstractPlayer(name, hand, doglife) {
+class StubPlayer private[player](name: String, hand: Option[Hand], id: UUID = UUID.randomUUID(), doglife: Boolean = false) extends AbstractPlayer(name, hand, id, doglife) {
   
   override def provideHand(hand: Hand): AbstractPlayer = {
-    StubPlayer(name, Some(hand), doglife)
+    StubPlayer(name, Some(hand), id, doglife)
   }
 
   override def removeCard(card: Card): AbstractPlayer = {
-    StubPlayer(name, Some(hand.get.removeCard(card)), doglife)
+    StubPlayer(name, Some(hand.get.removeCard(card)), id, doglife)
   }
 
-  override def setDogLife(): AbstractPlayer = StubPlayer(name, hand, true)
+  override def setDogLife(): AbstractPlayer = StubPlayer(name, hand, id, true)
 
   override def handlePlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int): Unit = {
     KnockOutWhist.config.trickcomponent.controlSuitplayed(Try{Card(Ten, Spades)}, matchImpl, round, trick, currentIndex, this)

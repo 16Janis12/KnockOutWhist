@@ -2,7 +2,6 @@ package de.knockoutwhist.persistence.stub
 
 import de.knockoutwhist.events.ui.GameState
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint, PersistenceManager}
-import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 object PersistenceBaseManager extends PersistenceManager {

@@ -12,4 +12,6 @@ trait CardManager {
 
   def createHand(amount: Int = 7): Hand
   
+  def grabSpecificCard(card: Card): Card
+  
 }

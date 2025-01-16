@@ -8,19 +8,20 @@ import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
+import java.util.UUID
 import scala.collection.immutable
 import scala.util.Try
 
 
-class HumanPlayer private[player](name: String, hand: Option[Hand], doglife: Boolean = false) extends AbstractPlayer(name, hand, doglife) {
+class HumanPlayer private[player](name: String, hand: Option[Hand], id: UUID = UUID.randomUUID(), doglife: Boolean = false) extends AbstractPlayer(name, hand, id, doglife) {
   override def provideHand(hand: Hand): AbstractPlayer = {
-    HumanPlayer(name, Some(hand), doglife)
+    HumanPlayer(name, Some(hand), id, doglife)
   }
 
-  override def setDogLife(): AbstractPlayer = HumanPlayer(name, hand, true)
+  override def setDogLife(): AbstractPlayer = HumanPlayer(name, hand, id, true)
 
   override def removeCard(card: Card): AbstractPlayer = {
-    HumanPlayer(name, Some(hand.get.removeCard(card)), doglife)
+    HumanPlayer(name, Some(hand.get.removeCard(card)), id, doglife)
   }
   
   override def handlePlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int): Unit = {
