@@ -65,6 +65,7 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           else Game.resetFirstCard()
         case event: RequestPickTrumpsuitEvent => 
           PickTrumsuit.showPickTrumpsuit(event)
+        case _ => None
       }
     }
   }
