@@ -14,11 +14,13 @@ abstract class CustomThread extends Thread {
       this.synchronized {
         if (processesToRunLater.nonEmpty) {
           process = Some(processesToRunLater.removeHead())
+        } else {
+          this.wait()
         }
       }
       process match {
         case Some(p) => p.run()
-        case None => this.wait()
+        case None =>
       }
     }
   }
