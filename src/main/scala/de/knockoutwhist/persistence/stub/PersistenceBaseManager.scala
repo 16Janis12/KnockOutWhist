@@ -1,12 +1,14 @@
 package de.knockoutwhist.persistence.stub
 
 import de.knockoutwhist.events.ui.GameState
+import de.knockoutwhist.persistence.formats.XMLFormatter
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint, PersistenceManager}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 object PersistenceBaseManager extends PersistenceManager {
 
   private var currentSnapshot: MatchSnapshot = MatchSnapshot()
+  private val XMLFormatter = new XMLFormatter()
 
   override def updateGameState(gameState: GameState): MatchSnapshot = {
     currentSnapshot = currentSnapshot.withGameState(gameState)
@@ -36,6 +38,15 @@ object PersistenceBaseManager extends PersistenceManager {
   override def updateMethodEntryPoint(methodEntryPoint: MethodEntryPoint): MatchSnapshot = {
     currentSnapshot = currentSnapshot.withMethodEntryPoint(methodEntryPoint)
     currentSnapshot
+  }
+
+  override def saveFile(path: String): Unit = {
+    XMLFormatter.writeToFile(currentSnapshot, path)
+  }
+
+  override def loadFile(path: String): Unit = {
+    currentSnapshot = XMLFormatter.readFromFile(path)
+    currentSnapshot.restoreSnapshot()
   }
 
 }

@@ -25,6 +25,7 @@ object KnockOutWhist {
 
   def main(args: Array[String]): Unit = {
     ControlThread.start()
+    config.persistenceManager.loadManager()
     if(!TUIMain.initial) throw new IllegalStateException("TUI could not be started.")
     if(!GUIMain.initial) throw new IllegalStateException("GUI could not be started.")
     ControlThread.runLater {

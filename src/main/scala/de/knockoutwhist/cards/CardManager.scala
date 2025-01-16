@@ -14,4 +14,8 @@ trait CardManager {
   
   def grabSpecificCard(card: Card): Card
   
+  def currentIndx: Int
+
+  def setState(cc: List[Card], currentIndex: Int): Unit
+  
 }

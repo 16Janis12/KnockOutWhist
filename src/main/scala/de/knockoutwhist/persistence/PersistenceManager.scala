@@ -17,10 +17,14 @@ trait PersistenceManager extends EventListener {
     def updateCurrentIndex(currentIndex: Int): MatchSnapshot
     def updateMethodEntryPoint(methodEntryPoint: MethodEntryPoint): MatchSnapshot
     
+    def saveFile(path: String): Unit
+    def loadFile(path: String): Unit
+    
     override def listen(event: SimpleEvent): Unit = {
         event match {
             case event: GameStateUpdateEvent =>
                 updateGameState(event.gameState)
+            case _ =>
         }
     }
     

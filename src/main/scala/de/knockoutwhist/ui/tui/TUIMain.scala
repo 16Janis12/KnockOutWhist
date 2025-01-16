@@ -406,7 +406,7 @@ object TUIMain extends CustomThread with EventListener with UI {
       return reqplayersevent()
     }
     ControlThread.runLater {
-      KnockOutWhist.config.maincomponent.enteredPlayers(names.get.map(s => PlayerFactory.createPlayer(s, HUMAN)).toList)
+      KnockOutWhist.config.maincomponent.enteredPlayers(names.get.map(s => PlayerFactory.createPlayer(s, playertype = HUMAN)).toList)
     }
     Some(true)
   }
@@ -461,6 +461,11 @@ object TUIMain extends CustomThread with EventListener with UI {
         } else if (in.equals("redo")) {
           UndoManager.redoStep()
           throw new UndoneException("Redo")
+        }else if(in.equals("load")) {
+          KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot.xml")
+          throw new UndoneException("Load")
+        }else if(in.equals("save")) {
+          KnockOutWhist.config.persistenceManager.saveFile("currentSnapshot.xml")
         }
         return in
       }

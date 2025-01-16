@@ -134,7 +134,7 @@ object MainMenu {
             val playerNamesList = ListBuffer[AbstractPlayer]()
             players.children.foreach {
               case field: control.TextField =>
-                playerNamesList += PlayerFactory.createPlayer(field.getText, HUMAN)
+                playerNamesList += PlayerFactory.createPlayer(field.getText, playertype = HUMAN)
               case _ =>
             }
 

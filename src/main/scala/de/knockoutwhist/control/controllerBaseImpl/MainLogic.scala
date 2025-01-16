@@ -77,7 +77,6 @@ object MainLogic extends Maincomponent {
     KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(ControlTrick)
     if(currentIndex < round.playersin.size) {
       val player = round.playerQueue.nextPlayer()
-      //ControlHandler.invoke(ShowCurrentTrickEvent(round, trick))
       controlPlayer(matchImpl, round, trick, player, currentIndex)
     }else {
       val result = KnockOutWhist.config.trickcomponent.wonTrick(trick, round)

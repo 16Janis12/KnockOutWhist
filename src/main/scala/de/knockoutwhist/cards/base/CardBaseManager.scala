@@ -6,7 +6,11 @@ import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 class CardBaseManager extends CardManager {
-  
+
+  override def setState(cc: List[Card], currentIndex: Int): Unit = {
+    this.cc = cc
+    this.currentIdx = currentIndex
+  }
   
   override def cardContainer: List[Card] = cc
   private var cc: List[Card] = {
@@ -19,6 +23,8 @@ class CardBaseManager extends CardManager {
     cc.toList
   }
   private var currentIdx = 0
+
+  override def currentIndx: Int = currentIdx
 
   override def shuffleAndReset(): Unit = {
     cc = Random.shuffle(cc)

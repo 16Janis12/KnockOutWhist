@@ -34,11 +34,11 @@ trait FileFormatter {
   class PlayerUtil {
     private val players: mutable.HashMap[UUID, AbstractPlayer] = mutable.HashMap()
 
-    private def handlePlayer(id: UUID, name: String, hand: Option[Hand], dog_life: Boolean, player_type: Playertype): AbstractPlayer = {
+    def handlePlayer(id: UUID, name: String, hand: Option[Hand], dog_life: Boolean, player_type: Playertype): AbstractPlayer = {
       players.get(id) match {
         case Some(player) => player
         case None =>
-          var player = PlayerFactory.createPlayer(name, player_type)
+          var player = PlayerFactory.createPlayer(name, id, player_type)
           if(hand.isDefined) player = player.provideHand(hand.get)
           if(dog_life) player = player.setDogLife()
           players.put(id, player)

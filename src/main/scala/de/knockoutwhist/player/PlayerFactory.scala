@@ -4,6 +4,8 @@ import de.knockoutwhist.player.Playertype.{AI, HUMAN, STUB}
 import de.knockoutwhist.player.baseImpl.HumanPlayer
 import de.knockoutwhist.player.builder.*
 
+import java.util.UUID
+
 enum Playertype:
   case HUMAN
   case AI
@@ -11,7 +13,7 @@ enum Playertype:
 end Playertype
 
 object PlayerFactory {
-  def createPlayer(name: String = null, playertype: Playertype): AbstractPlayer = {
+  def createPlayer(name: String = null, id: UUID = null, playertype: Playertype): AbstractPlayer = {
     val buildType: PlayerBuilder = playertype match {
       case HUMAN =>
         new HumanoidBuilder()
@@ -21,9 +23,17 @@ object PlayerFactory {
         new StubPlayerBuilder
     }
     if (name == null) {
-      Director.constructWithRandomNames(buildType)
+      if (id != null) {
+        Director.constructWithRandomNamesAndID(buildType, id)
+      } else {
+        Director.constructWithRandomNames(buildType)
+      }
     } else {
-      Director.constructWithName(buildType, name)
+      if (id != null) {
+        Director.constructWithNameAndID(buildType, name, id)
+      } else {
+        Director.constructWithName(buildType, name)
+      }
     }
   }
   

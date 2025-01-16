@@ -14,4 +14,8 @@ object StubCardManager extends CardManager {
   override def createHand(amount: Int): Hand = Hand(List(Card(CardValue.Ace, Suit.Clubs)))
 
   override def grabSpecificCard(card: Card): Card = card
+
+  override def currentIndx: Int = -1
+
+  override def setState(cc: List[Card], currentIndex: Int): Unit = {}
 }
