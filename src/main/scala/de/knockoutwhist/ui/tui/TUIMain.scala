@@ -461,7 +461,7 @@ object TUIMain extends CustomThread with EventListener with UI {
         } else if (in.equals("redo")) {
           UndoManager.redoStep()
           throw new UndoneException("Redo")
-        }else if(in.equals("load")) {
+        }else if(in.equals("load") && KnockOutWhist.config.persistenceManager.canLoadfile("currentSnapshot")) {
           KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot.json")
           throw new UndoneException("Load")
         }else if(in.equals("save")) {

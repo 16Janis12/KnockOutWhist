@@ -95,7 +95,6 @@ object Game {
 
   def createGame(): Unit = {
     GUIMain.stage.maximized = true
-    GUIMain.stage.resizable = false
     MainMenu.changeChild(new BorderPane {
       val myBI = new BackgroundImage(new Image("/background.png", 32, 32, false, true),
         BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,

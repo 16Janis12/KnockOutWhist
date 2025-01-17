@@ -1,5 +1,6 @@
 package de.knockoutwhist.persistence
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
 import de.knockoutwhist.player.AbstractPlayer
@@ -19,6 +20,11 @@ trait PersistenceManager extends EventListener {
     
     def saveFile(path: String): Unit
     def loadFile(path: String): Unit
+
+    def canLoadfile(path: String): Boolean = {
+        val file = new java.io.File(path + "." + KnockOutWhist.config.fileFormatter.fileEnding)
+        file.exists() && file.isFile && file.canRead
+    }
     
     override def listen(event: SimpleEvent): Unit = {
         event match {
