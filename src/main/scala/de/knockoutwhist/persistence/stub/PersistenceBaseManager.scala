@@ -41,11 +41,11 @@ object PersistenceBaseManager extends PersistenceManager {
   }
 
   override def saveFile(path: String): Unit = {
-    KnockOutWhist.config.fileFormatter.writeToFile(currentSnapshot, path)
+    KnockOutWhist.config.fileFormatter.writeToFile(currentSnapshot, path + "." + KnockOutWhist.config.fileFormatter.fileEnding)
   }
 
   override def loadFile(path: String): Unit = {
-    currentSnapshot = KnockOutWhist.config.fileFormatter.readFromFile(path)
+    currentSnapshot = KnockOutWhist.config.fileFormatter.readFromFile(path + "." + KnockOutWhist.config.fileFormatter.fileEnding)
     currentSnapshot.restoreSnapshot()
   }
 
