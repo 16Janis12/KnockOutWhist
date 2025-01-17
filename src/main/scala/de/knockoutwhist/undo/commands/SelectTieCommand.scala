@@ -15,7 +15,7 @@ case class SelectTieCommand(winner: List[AbstractPlayer],matchImpl: Match, round
     val newCut = cut + (player -> selCard)
     val newCurrentStep = currentStep + value
     val newRemaining = remaining - (value - 1)
-    KnockOutWhist.config.playerlogcomponent.selectTie(winner, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex + 1)
+    KnockOutWhist.config.playerlogcomponent.selectTie(winner, matchImpl, round, playersout, newCut, newCurrentStep, newRemaining, currentIndex + 1)
   }
 
   override def undoStep(): Unit = {
