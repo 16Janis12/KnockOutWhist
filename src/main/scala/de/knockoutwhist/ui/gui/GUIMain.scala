@@ -1,11 +1,11 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
-import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TURN, SHOW_WON_PLAYER_TRICK}
+import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TIE_NUMBERS, SHOW_TURN, SHOW_WON_PLAYER_TRICK}
 import de.knockoutwhist.events.ROUND_STATUS.WON_ROUND
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestPickTrumpsuitEvent}
+import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU, NO_SET, PLAYERS, TRUMPSUIT}
+import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU, NO_SET, PLAYERS, TIE, TRUMPSUIT}
 import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
 import de.knockoutwhist.ui.UI
@@ -40,6 +40,8 @@ object GUIMain extends JFXApp3 with EventListener with UI {
               MainMenu.createMainMenu
             } else if (event.gameState == PLAYERS) {
               MainMenu.createPlayeramountmenu()
+            } else if (event.gameState == TIE) {
+              TieMenu.spawnTieMain()
             }
           }
         case event: ShowPlayerStatus =>
@@ -49,6 +51,9 @@ object GUIMain extends JFXApp3 with EventListener with UI {
               Game.updatePlayerCards(event.player.hand.get)
             case SHOW_WON_PLAYER_TRICK =>
               Game.showFinishedTrick(event)
+            case SHOW_TIE_NUMBERS =>
+              TieMenu.updatePlayerLabel(event.player)
+              TieMenu.changeSlider(event.objects.head.asInstanceOf[Int])
             case _ =>
         case event: ShowCurrentTrickEvent =>
           Game.updatePlayedCards(event.trick)
@@ -65,6 +70,17 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           else Game.resetFirstCard()
         case event: RequestPickTrumpsuitEvent => 
           PickTrumsuit.showPickTrumpsuit(event)
+        case event: RequestDogPlayCardEvent =>
+          Game.requestDogCard = Some(event)
+          Game.updateNextPlayer(event.round.playerQueue, event.currentIndex)
+          Game.updateTrumpSuit(event.round.trumpSuit)
+          if(event.trick.firstCard.isDefined) Game.updateFirstCard(event.trick.firstCard.get)
+          else Game.resetFirstCard()
+          Game.updatePlayerCards(event.hand)
+        case event: RequestTieNumberEvent => 
+          TieMenu.requestInfo = Some(event)
+          
+          
         case _ => None
       }
     }

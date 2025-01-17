@@ -7,11 +7,12 @@ import de.knockoutwhist.events.ERROR_STATUS.{INVALID_NUMBER, NOT_A_NUMBER}
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_TIE, SHOW_TIE_TIE, SHOW_TIE_WINNER}
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS
 import de.knockoutwhist.events.cards.ShowTieCardsEvent
-import de.knockoutwhist.events.ui.GameState.INGAME
+import de.knockoutwhist.events.ui.GameState.{INGAME, TIE}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
+import de.knockoutwhist.ui.gui.TieMenu
 import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.undo.commands.{SelectTieCommand, TrumpSuitSelectedCommand}
 
@@ -46,6 +47,7 @@ object PlayerLogic extends Playerlogcomponent {
   def preSelect(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer]): Unit = {
     if (!KnockOutWhist.debugmode) matchImpl.cardManager.shuffleAndReset()
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE))
+    ControlHandler.invoke(GameStateUpdateEvent(TIE))
     selectTie(winners, matchImpl, round, playersout, immutable.HashMap(), 0, matchImpl.cardManager.cardContainer.size - (winners.length - 1))
   }
 
@@ -55,6 +57,7 @@ object PlayerLogic extends Playerlogcomponent {
     } else {
       val player = winners(currentIndex)
       ControlHandler.invoke(ShowPlayerStatus(SHOW_TIE_NUMBERS, player, remaining))
+      
       player.handlePickTieCard(winners, matchImpl, round, playersout, cut, currentStep, remaining, currentIndex)
     }
   }

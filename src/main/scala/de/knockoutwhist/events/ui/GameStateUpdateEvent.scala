@@ -8,6 +8,7 @@ enum GameState:
   case PLAYERS
   case INGAME
   case TRUMPSUIT
+  case TIE
 end GameState
 
 

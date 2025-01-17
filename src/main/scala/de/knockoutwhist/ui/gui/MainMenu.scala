@@ -5,6 +5,7 @@ import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.ui.GameState.MAIN_MENU
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.persistence.stub.PersistenceBaseManager
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.tui.TUIMain
@@ -63,6 +64,15 @@ object MainMenu {
           font = Font.font(20)
           styleClass += Styles.DANGER
           onMouseClicked = _ => System.exit(0)
+        },
+        new Button {
+          alignment = TopCenter
+          hgrow = Always
+          text = "Load Game"
+          font = Font.font(20)
+          styleClass += Styles.ACCENT
+          disable = !KnockOutWhist.config.persistenceManager.canLoadfile("currentSnapshot")
+          onMouseClicked = _ => KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot")
         }
       )
     }, Duration(1000))

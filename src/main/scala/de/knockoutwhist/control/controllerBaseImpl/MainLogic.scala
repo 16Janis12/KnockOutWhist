@@ -7,7 +7,7 @@ import de.knockoutwhist.events.GLOBAL_STATUS.SHOW_FINISHED_MATCH
 import de.knockoutwhist.events.PLAYER_STATUS.SHOW_WON_PLAYER_TRICK
 import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, WON_ROUND}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.{MAIN_MENU, PLAYERS}
+import de.knockoutwhist.events.ui.GameState.{MAIN_MENU, PLAYERS, TIE}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
