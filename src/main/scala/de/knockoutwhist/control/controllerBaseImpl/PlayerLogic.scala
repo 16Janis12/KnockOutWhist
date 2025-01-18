@@ -9,6 +9,7 @@ import de.knockoutwhist.events.PLAYER_STATUS.SHOW_TIE_NUMBERS
 import de.knockoutwhist.events.cards.ShowTieCardsEvent
 import de.knockoutwhist.events.ui.GameState.{INGAME, TIE}
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.events.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
@@ -52,6 +53,7 @@ object PlayerLogic extends Playerlogcomponent {
   }
 
   def selectTie(winners: List[AbstractPlayer], matchImpl: Match, round: Round, playersout: List[AbstractPlayer], cut: immutable.HashMap[AbstractPlayer, Card], currentStep: Int, remaining: Int, currentIndex: Int = 0): Unit = {
+    ControlHandler.invoke(GameStateUpdateEvent(TIE))
     if(currentIndex == winners.size) {
       evaluateTieWinner(matchImpl, round, playersout, cut)
     } else {
@@ -97,6 +99,7 @@ object PlayerLogic extends Playerlogcomponent {
       return
     }
     ControlHandler.invoke(ShowGlobalStatus(SHOW_TIE_TIE))
+    ControlHandler.invoke(DelayEvent(2000))
     preSelect(winner.toList, matchImpl, round, playersout)
   }
 
