@@ -45,4 +45,10 @@ trait CustomPlayerQueue[A] extends Iterable[A] {
    * @return the duplicated player queue.
    */
   def duplicate(): CustomPlayerQueue[A]
+
+  /**
+   * Returns the players from the queue
+   */
+  def convertToArray(): Array[A]
+  
 }

@@ -381,6 +381,9 @@ object TUIMain extends CustomThread with EventListener with UI {
         throw new IllegalArgumentException("Didn't want to play card but had to")
       }
     }
+    if (tryDogCard.isFailure && tryDogCard.failed.get.isInstanceOf[UndoneException]) {
+      return Some(true)
+    }
     ControlThread.runLater {
       KnockOutWhist.config.trickcomponent.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
     }

@@ -71,6 +71,28 @@ object Animations {
     timeline
   }
 
+  def slideOutDown(node: Node, duration: Duration, endY: Int = 500): Timeline = {
+    val timeline = new Timeline {
+      keyFrames = Seq(
+        KeyFrame(Duration.Zero, values = Set(
+          KeyValue(node.translateYProperty(), 0, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleXProperty(), 1, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleYProperty(), 1, Interpolator.EASE_BOTH),
+        )
+        ),
+        KeyFrame(duration, values = Set(
+          KeyValue(node.translateYProperty(), endY, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleXProperty(), 0.2, Interpolator.EASE_BOTH),
+          KeyValue(node.scaleYProperty(), 0.2, Interpolator.EASE_BOTH),
+        ))
+      )
+    }
+    timeline.onFinished = _ => {
+      node.setTranslateY(endY)
+    }
+    timeline
+  }
+
   def pulse(node: Node, duration: Duration, pulseScale: Double = 1.1): Timeline = {
     val timeline = new Timeline {
       keyFrames = Seq(

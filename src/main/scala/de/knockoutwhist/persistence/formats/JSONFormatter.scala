@@ -186,8 +186,14 @@ class JSONFormatter extends FileFormatter {
               round.playersout.map(player => PlayerJsonFormatter.createPlayerJson(player))
             )
         },
+        "queue" -> Json.obj(
+          "currentIndx" -> round.playerQueue.currentIndex,
+          "players" -> JsArray(
+            round.playerQueue.convertToArray().map(player => PlayerJsonFormatter.createPlayerJson(player))
+          )
+        ),
         "trumpSuit" -> JsNumber(round.trumpSuit.ordinal),
-        "startingPlayer" -> JsNumber(round.startingPlayer),
+        "startingPlayer" -> JsNumber(round.playerQueue.currentIndex),
         "winner" -> (if (round.winner != null) PlayerJsonFormatter.createPlayerJson(round.winner) else JsString("None")),
         "firstRound" -> JsBoolean(round.firstRound)
       )

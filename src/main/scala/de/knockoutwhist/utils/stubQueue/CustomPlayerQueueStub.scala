@@ -44,6 +44,9 @@ class CustomPlayerQueueStub[A](protected var players: Array[A], val start: Int =
 
     override def next(): A = players(0)
   }
+
+  def convertToArray(): Array[A] = players
+  
 }
 
 

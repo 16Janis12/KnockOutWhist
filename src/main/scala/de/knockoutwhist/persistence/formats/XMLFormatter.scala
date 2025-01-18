@@ -168,7 +168,7 @@ class XMLFormatter extends FileFormatter {
           {(round.playersout != null) ? round.playersout.map(player => PlayerXMLFormatter.createPlayerXML(player)) |: ""}
         </playersout>
         <trumpSuit>{round.trumpSuit.ordinal}</trumpSuit>
-        <startingPlayer>{round.startingPlayer}</startingPlayer>
+        <startingPlayer>{round.playerQueue.currentIndex}</startingPlayer>
         <winner>{(round.winner != null) ? PlayerXMLFormatter.createPlayerXML(round.winner) |: ""}</winner>
         <firstRound>{round.firstRound}</firstRound>
       </round>

@@ -43,6 +43,8 @@ class CustomPlayerBaseQueue[A](protected var players: Array[A], val start: Int =
     override def hasNext: Boolean = it.hasNext
 
     override def next(): A = it.next()
+
+  def convertToArray(): Array[A] = players
 }
 
 class QueueIterator[A](queue: CustomPlayerBaseQueue[A], startingIndex: Int = 0) extends Iterator[A] {

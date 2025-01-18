@@ -48,7 +48,6 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           event.status match
             case SHOW_TURN =>
               Game.updateStatus(event.player)
-              Game.updatePlayerCards(event.player.hand.get)
             case SHOW_WON_PLAYER_TRICK =>
               Game.showFinishedTrick(event)
             case SHOW_TIE_NUMBERS =>
@@ -64,19 +63,22 @@ object GUIMain extends JFXApp3 with EventListener with UI {
             case _ =>
         case event: RequestCardEvent =>
           Game.requestCard = Some(event)
+          Game.requestDogCard = None
           Game.updateNextPlayer(event.round.playerQueue, event.currentIndex)
           Game.updateTrumpSuit(event.round.trumpSuit)
           if(event.trick.firstCard.isDefined) Game.updateFirstCard(event.trick.firstCard.get)
           else Game.resetFirstCard()
+          Game.updatePlayerCards(event.player.hand.get)
         case event: RequestPickTrumpsuitEvent => 
           PickTrumsuit.showPickTrumpsuit(event)
         case event: RequestDogPlayCardEvent =>
+          Game.requestCard = None
           Game.requestDogCard = Some(event)
           Game.updateNextPlayer(event.round.playerQueue, event.currentIndex)
           Game.updateTrumpSuit(event.round.trumpSuit)
           if(event.trick.firstCard.isDefined) Game.updateFirstCard(event.trick.firstCard.get)
           else Game.resetFirstCard()
-          Game.updatePlayerCards(event.hand)
+          Game.updatePlayerCards(event.player.hand.get)
         case event: RequestTieNumberEvent => 
           TieMenu.requestInfo = Some(event)
           
