@@ -6,7 +6,7 @@ import de.knockoutwhist.control.ControlThread
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.gui.TieMenu.{nextPlayer, selectButton, selectedCutCards, slider, tiewinner, toplabel}
 import scalafx.geometry.Insets
-import scalafx.geometry.Pos.TopCenter
+import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.{HBox, VBox}
@@ -16,13 +16,18 @@ import scalafx.util.Duration
 object WinnerScreen {
   private val winnerLabel: Label = new Label {
     text = ""
-    alignment = TopCenter
+    alignment = Center
     font = Font.font(25)
   }
   private val actionButtons: HBox = new HBox {
+    alignment = BottomCenter
+    spacing = 10
+    margin = Insets(0, 0, 150, 0)
     children = Seq(
       new Button {
+        alignment = TopCenter
         text = "Yes"
+        font = Font.font(20)
         styleClass += Styles.SUCCESS
         onMouseClicked = _ => {
           ControlThread.runLater {
@@ -49,7 +54,7 @@ object WinnerScreen {
   def spawnWinnerScreen(player: AbstractPlayer): Unit = {
     MainMenu.changeChild(
       new VBox {
-        alignment = TopCenter
+        alignment = Center
         spacing = 10
         margin = Insets(50, 0, 150, 0)
         children = Seq(
