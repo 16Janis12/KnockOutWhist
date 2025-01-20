@@ -15,7 +15,8 @@ import scalafx.animation.Timeline
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft, TopRight}
 import scalafx.scene.Parent
-import scalafx.scene.control.{Button, Label, Slider, TextField}
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.{Alert, Button, Label, Slider, TextField}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
@@ -141,15 +142,30 @@ object MainMenu {
             fitHeight = 20
           }
           onMouseClicked = _ => {
+            val usedNames = ListBuffer[String]()
             val playerNamesList = ListBuffer[AbstractPlayer]()
             players.children.foreach {
               case field: control.TextField =>
-                playerNamesList += PlayerFactory.createPlayer(field.getText, playertype = HUMAN)
+                if (field.getText.nonEmpty && usedNames.contains(field.getText)) {
+                  usedNames += field.getText
+                  playerNamesList += PlayerFactory.createPlayer(field.getText, playertype = HUMAN)
+                }
               case _ =>
             }
-
-            ControlThread.runLater {
-              KnockOutWhist.config.maincomponent.enteredPlayers(playerNamesList.toList)
+            if(playerNamesList.size < 2) {
+              new Alert(AlertType.Error) {
+                title = "Enter Names"
+                headerText = "Enter Names"
+                contentText = "You need to enter at least 2 different names in order to play!"
+              }.showAndWait()
+            } else if(playerNamesList.size == usedNames.size) {
+              ControlThread.runLater {
+                KnockOutWhist.config.maincomponent.enteredPlayers(playerNamesList.toList)
+              }
+            }else {
+              ControlThread.runLater {
+                KnockOutWhist.config.maincomponent.enteredPlayers(playerNamesList.toList)
+              }
             }
           }
         }
