@@ -33,7 +33,7 @@ object MainLogic extends Maincomponent {
     KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(ControlMatch)
     if(KnockOutWhist.config.matchcomponent.isOver(matchImpl)) {
       ControlHandler.invoke(ShowGlobalStatus(SHOW_FINISHED_MATCH, KnockOutWhist.config.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last).head))
-      ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+      //ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
     } else {
       val remainingPlayer = matchImpl.roundlist.isEmpty ? matchImpl.totalplayers |: KnockOutWhist.config.roundlogcomponent.remainingPlayers(matchImpl.roundlist.last)
       val newMatch = KnockOutWhist.config.roundlogcomponent.provideCards(matchImpl, remainingPlayer)
