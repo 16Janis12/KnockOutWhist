@@ -2,26 +2,31 @@ package de.knockoutwhist.player.builder
 
 import de.knockoutwhist.player.{AIPlayer, AbstractPlayer}
 
+import java.util.UUID
+
 class AIPlayerBuilder extends PlayerBuilder {
-  private var unfinished: Option[AIPlayer] = None
+  private var name: Option[String] = None
+  private var id: Option[UUID] = Some(UUID.randomUUID())
 
   override def setName(name: String): PlayerBuilder = {
-    if (unfinished.isEmpty) {
-      unfinished = Some(AIPlayer(name))
-    } else {
-      unfinished.get.name = name
-    }
+    this.name = Some(name)
+    this
+  }
+
+  override def setID(id: UUID): PlayerBuilder = {
+    this.id = Some(id)
     this
   }
 
   override def reset(): PlayerBuilder = {
-    unfinished = None
+    this.name = None
+    this.id = Some(UUID.randomUUID())
     this
   }
 
   override def build(): AbstractPlayer = {
-    if (unfinished.isDefined) {
-      val player = unfinished.get
+    if (this.name.isDefined && this.id.isDefined) {
+      val player = new AIPlayer(this.name.get, None, id.get, false)
       reset()
       return player
     }

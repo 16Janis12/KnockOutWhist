@@ -1,48 +1,21 @@
 package de.knockoutwhist.cards
 
-import scala.collection.mutable.ListBuffer
-import scala.util.Random
+trait CardManager {
 
-object CardManager {
+  def cardContainer: List[Card]
 
+  def shuffleAndReset(): Unit
 
-  var cardContainer: List[Card] = {
-    val cc = ListBuffer[Card]()
-    for (suit <- Suit.values) {
-      for (cardValue <- CardValue.values) {
-        cc += Card(cardValue, suit)
-      }
-    }
-    cc.toList
-  }
-  private var currentIdx = 0
+  def resetOrder(): Unit
 
-  def shuffleAndReset(): Unit = {
-    cardContainer = Random.shuffle(cardContainer)
-    currentIdx = 0
-  }
+  def nextCard(): Card
+
+  def createHand(amount: Int = 7): Hand
   
-  def resetOrder(): Unit = {
-    cardContainer = cardContainer.sortBy(c => (c.suit.ordinal, c.cardValue.ordinal))
-    currentIdx = 0
-  }
-
-  def nextCard(): Card = {
-    val card = cardContainer(currentIdx)
-    if (currentIdx + 1 > 51) {
-      throw new IndexOutOfBoundsException("Trying to access card 53(out of bounds)")
-    } else {
-      currentIdx += 1
-      card
-    }
-  }
+  def grabSpecificCard(card: Card): Card
   
-  def createHand(amount: Int = 7): Hand = {
-    val hand = ListBuffer[Card]()
-    for (_ <- 1 to amount) {
-      hand += nextCard()
-    }
-    Hand(hand.toList)
-  }
+  def currentIndx: Int
 
+  def setState(cc: List[Card], currentIndex: Int): Unit
+  
 }

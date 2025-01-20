@@ -15,7 +15,7 @@ end Priority
 
 trait EventListener extends Ordered[EventListener] {
   def priority: Priority = Priority.Normal
-  def listen[R](event: ReturnableEvent[R]): Option[R]
+  def listen(event: SimpleEvent): Unit
 
   override def compare(that: EventListener): Int = that.priority.compare(priority)
 }

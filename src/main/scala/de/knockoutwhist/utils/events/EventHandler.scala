@@ -1,5 +1,7 @@
 package de.knockoutwhist.utils.events
 
+import de.knockoutwhist.control.ControlThread
+
 import scala.collection.mutable
 
 abstract class EventHandler {
@@ -15,15 +17,13 @@ abstract class EventHandler {
     listeners.size
   }
 
-  def invoke[R](event: ReturnableEvent[R]): R = {
+  def invoke(event: SimpleEvent): Boolean = {
+    if (!ControlThread.isControlThread) {
+      throw new IllegalStateException("Cannot invoke event from a non control thread")
+    }
     event match {
       case simpleEvent: SimpleEvent =>
-        val result = listeners.map(_.listen(simpleEvent)).filter(_.isDefined).map(_.get).toList
-        if(result.isEmpty) return false
-        result.reduce((a,b) => a && b)
-      case returnableEvent: ReturnableEvent[R] =>
-        val result = listeners.view.map(_.listen(returnableEvent)).find(_.isDefined).flatten
-        result.getOrElse(throw new IllegalStateException("No listener returned a result"))
+        listeners.map(_.listen(simpleEvent)).nonEmpty
     }
   }
   

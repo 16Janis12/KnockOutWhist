@@ -1,5 +1,6 @@
 package de.knockoutwhist
 
+import de.knockoutwhist.control.ControlThread
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.utils.DelayHandler
 import de.knockoutwhist.utils.events.EventHandler
@@ -29,7 +30,9 @@ class DelayHandlerTests extends AnyWordSpec with TimeLimits with Matchers {
     "not be longer than 120ms if it's set to 100ms" in {
       DelayHandler.activateDelay = true
       failAfter(200 millis) {
-        eventHandler.invoke(delayEvent)
+        ControlThread.runLater {
+          eventHandler.invoke(delayEvent)
+        }
       }
     }
   }

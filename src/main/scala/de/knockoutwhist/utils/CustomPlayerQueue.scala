@@ -1,50 +1,54 @@
 package de.knockoutwhist.utils
 
+trait CustomPlayerQueue[A] extends Iterable[A] {
+  /**
+   * Returns the current index of the player queue.
+   * @return the current index of the player queue.
+   */
+  def currentIndex: Int
 
-class CustomPlayerQueue[A] (protected var players: Array[A], val start: Int = 0) extends Iterable[A] {
+  /**
+   * Returns the current player of the player queue.
+   * @return the current player of the player queue.
+   */
+  def nextPlayer(): A
 
-  private var current = start
+  /**
+   * Removes the player from the player queue.
+   * @param player the player to remove.
+   * @return the player object
+   */
+  def remove(player: A): Int
+
+  /**
+   * Resets the current index and sets the player as the start.
+   * @param player the player to set as the start.
+   * @return true if the player was found and set as the start, false otherwise.
+   */
+  def resetAndSetStart(player: A): Boolean
+
+  /**
+   * Let's the iterator start at a specific index.
+   * @param start the index to start at.
+   * @return the iterator.
+   */
+  def iteratorWithStart(start: Int = 0): Iterator[A]
+
+  /**
+   * Returns an iterator that starts from the beginning.
+   * @return the iterator.
+   */
+  def fromFirstIterator: Iterator[A]
+
+  /**
+   * Duplicates the player queue.
+   * @return the duplicated player queue.
+   */
+  def duplicate(): CustomPlayerQueue[A]
+
+  /**
+   * Returns the players from the queue
+   */
+  def convertToArray(): Array[A]
   
-  def nextPlayer(): A = {
-    val player = players(current)
-    current = (current + 1) % players.length
-    player
-  }
-
-  def remove(player: A): Int = {
-    players = players.filter(_ != player)
-    players.size
-  }
-
-  def resetAndSetStart(player: A): Boolean = {
-    if(players.contains(player)) {
-      current = players.indexOf(player)
-      true
-    } else {
-      false
-    }
-  }
-  
-  override def toList: List[A] = players.toList
-
-  override def isEmpty: Boolean = players.isEmpty
-  override def size: Int = players.length
-  
-  
-
-  def iterator: Iterator[A] = new Iterator[A] {
-    private var index = 0
-    def hasNext: Boolean = index < players.length
-    def next(): A = {
-      index += 1
-      CustomPlayerQueue.this.nextPlayer()
-    }
-  }
-
-  //Useful if start is not important
-  def fromFirstIterator: Iterator[A] = new Iterator[A]:
-    private val it: Iterator[A] = players.iterator
-    override def hasNext: Boolean = it.hasNext
-
-    override def next(): A = it.next()
 }
