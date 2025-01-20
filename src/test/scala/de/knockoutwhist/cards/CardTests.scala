@@ -1,4 +1,5 @@
 package de.knockoutwhist.cards
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.testutils.TestUtil
 import de.knockoutwhist.ui.tui.TUIMain.TUICards.renderCardAsString
@@ -41,9 +42,10 @@ class CardTests extends AnyWordSpec with Matchers{
       renderCardAsString(Card(CardValue.Ten, Suit.Spades)) shouldBe expectedResult
     }
     "be able to reset the order" in {
-      CardBaseManager.shuffleAndReset()
-      CardBaseManager.resetOrder()
-      val card = CardBaseManager.nextCard()
+      val cardManager = KnockOutWhist.config.cardManager
+      cardManager.shuffleAndReset()
+      cardManager.resetOrder()
+      val card = cardManager.nextCard()
       card.suit shouldBe Suit.Spades
       card.cardValue shouldBe CardValue.Two
     }

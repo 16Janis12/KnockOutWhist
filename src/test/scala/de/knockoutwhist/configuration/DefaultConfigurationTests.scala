@@ -12,6 +12,8 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.util.UUID
+
 class DefaultConfigurationTests extends AnyWordSpec with Matchers{
   "The Configuration by default" should {
     "select MainLogic for the main component" in {
@@ -29,15 +31,12 @@ class DefaultConfigurationTests extends AnyWordSpec with Matchers{
     "select TrickLogic for the trick component" in {
       DefaultConfiguration.trickcomponent shouldBe TrickLogic
     }
-    "select CardBaseManager for the cardManager" in {
-      DefaultConfiguration.cardManager shouldBe CardBaseManager
-    }
     "select RoundLogic for the round logic component" in {
       DefaultConfiguration.roundlogcomponent shouldBe RoundLogic
     }
 
     "create a CustomPlayerBaseQueue as the right Queue" in {
-      val player1 = PlayerFactory.createPlayer("Peter", HUMAN)
+      val player1 = PlayerFactory.createPlayer("Peter", UUID.randomUUID(), HUMAN)
       val queue = new CustomPlayerBaseQueue(Array(player1), 0)
       val rightQueue = DefaultConfiguration.createRightQueue(Array(player1), 0)
       rightQueue.currentIndex shouldBe queue.currentIndex

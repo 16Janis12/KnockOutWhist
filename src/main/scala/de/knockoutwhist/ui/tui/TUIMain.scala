@@ -31,7 +31,7 @@ object TUIMain extends CustomThread with EventListener with UI {
 
   setName("TUI")
   
-  private var init = false
+  var init = false
   private var internState: GameState = GameState.NO_SET
 
   override def instance: CustomThread = TUIMain

@@ -14,6 +14,8 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.util.UUID
+
 class MatchControllerTests extends AnyWordSpec with Matchers {
 
   "The enter players function" should {
@@ -22,7 +24,7 @@ class MatchControllerTests extends AnyWordSpec with Matchers {
           TestUtil.cancelOut() {
             TestUtil.simulateInput("foo,bar\n") {
               ControlThread.runLater {
-                MainLogic.startMatch() should not be(List(PlayerFactory.createPlayer("foo", HUMAN), PlayerFactory.createPlayer("bar", HUMAN)))
+                MainLogic.startMatch() should not be(List(PlayerFactory.createPlayer("foo", UUID.randomUUID(), HUMAN), PlayerFactory.createPlayer("bar", UUID.randomUUID(), HUMAN)))
               }
             }
           }

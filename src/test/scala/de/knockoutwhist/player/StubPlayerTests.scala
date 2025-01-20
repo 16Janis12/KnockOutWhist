@@ -1,5 +1,6 @@
 package de.knockoutwhist.player
 
+import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
 import de.knockoutwhist.control.ControlThread
 import de.knockoutwhist.control.controllerBaseImpl.TrickLogic
@@ -8,6 +9,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import de.knockoutwhist.player.StubPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
+
+import java.util.UUID
 
 class StubPlayerTests extends AnyWordSpec with Matchers {
   "The StubPlayer" should {
@@ -26,14 +29,14 @@ class StubPlayerTests extends AnyWordSpec with Matchers {
     "be able to set the doglife" in {
       val hand1 = Hand(List(Card(CardValue.Two, Suit.Hearts), Card(CardValue.Three, Suit.Hearts)))
       val player1 = StubPlayer("Gunter", Some(hand1))
-      player1.setDogLife() shouldBe StubPlayer("Gunter", Some(hand1), true)
+      player1.setDogLife() shouldBe StubPlayer("Gunter", Some(hand1), UUID.randomUUID(), true)
     }
     "be able to handle a Card played" in {
-      val player1 = PlayerFactory.createPlayer("Gunter", HUMAN)
-      val player2 = PlayerFactory.createPlayer("Peter", HUMAN)
+      val player1 = PlayerFactory.createPlayer("Gunter", UUID.randomUUID(), HUMAN)
+      val player2 = PlayerFactory.createPlayer("Peter", UUID.randomUUID(), HUMAN)
       val round1 = Round(Suit.Spades, List(), List(player1, player2), List(), 0, player1, false)
       val trick1 = Trick()
-      val match1 = Match(List(player1, player2), 5, false, List(round1))
+      val match1 = Match(List(player1, player2), 5, false, List(round1), KnockOutWhist.config.cardManager)
       val hand1 = Hand(List(Card(CardValue.Two, Suit.Hearts), Card(CardValue.Three, Suit.Hearts)))
       val hand2 = Hand(List(Card(CardValue.Four, Suit.Hearts), Card(CardValue.Five, Suit.Hearts)))
       player1.provideHand(hand1)
