@@ -47,21 +47,22 @@ object WinnerScreen {
     )
   }
   private val nextAction: Label = new Label {
-    text = "Do you want to player another match?"
-    alignment = TopCenter
+    text = "Do you want to play another match?"
+    alignment = BottomCenter
     font = Font.font(20)
+    margin = Insets(50,0,0,0)
   }
   def spawnWinnerScreen(player: AbstractPlayer): Unit = {
     MainMenu.changeChild(
       new VBox {
-        alignment = Center
+        alignment = TopCenter
         spacing = 10
         margin = Insets(50, 0, 150, 0)
         children = Seq(
           new Label {
             text = s"Congratulations! $player won this match of Knock-Out-Whist."
             alignment = TopCenter
-            font = Font.font(25)
+            font = Font.font(35)
           },
           nextAction,
           actionButtons
