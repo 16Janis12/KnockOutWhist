@@ -18,6 +18,8 @@ ThisBuild / scalaVersion := "3.5.1"
 lazy val root = (project in file("."))
   .settings(
     name := "Projekt-zu-SE",
+    fork in run := true,
+    javaOptions in run += "-Xmx2G",
     assembly / mainClass := Some("de.knockoutwhist.KnockOutWhist"),
     assembly / assemblyJarName := s"KnockOutWhist-${version.value}.jar",
   )
