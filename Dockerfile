@@ -18,14 +18,18 @@ RUN curl -sL https://dlcdn.apache.org/sbt/debian/sbt-1.9.4.deb -o sbt.deb
 
 RUN dpkg -i sbt.deb || apt-get install -f -y
 
+ENV DEBIAN_FRONTEND=dialog
+
 RUN sbt update
 
+ENV DISPLAY=:99
 ENV SBT_OPTS="-Xms512M -Xmx1536M -Xss2M -XX:MaxMetaspaceSize=512M"
+ENV _JAVA_OPTIONS="-Djava.security.policy=applet.policy -Dprism.order=sw"
+
+VOLUME /tmp/.X11-unix
 
 COPY . /knockout
 
 RUN sbt compile
 
-ENV DEBIAN_FRONTEND=dialog
-
-CMD sbt run
+CMD ["sh", "-c", "sbt run"]
