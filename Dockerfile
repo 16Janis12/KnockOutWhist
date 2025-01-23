@@ -2,6 +2,8 @@ FROM sbtscala/scala-sbt:eclipse-temurin-jammy-22_36_1.10.0_3.4.2
 
 WORKDIR /knockout
 
+ENV DEBIAN_FRONTEND=noninterface
+
 RUN apt-get update && apt-get install -y curl gnupg2 x11-apps
 RUN apt-get update && apt-get install -y \
     libxext6 \
@@ -9,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     libxi6 \
     libxrandr2 \
-    libgtk-3-0
+    libgtk-3-0 \
+    xorg
 
 RUN curl -sL https://dlcdn.apache.org/sbt/debian/sbt-1.9.4.deb -o sbt.deb
 
@@ -22,5 +25,7 @@ ENV SBT_OPTS="-Xms512M -Xmx1536M -Xss2M -XX:MaxMetaspaceSize=512M"
 COPY . /knockout
 
 RUN sbt compile
+
+ENV DEBIAN_FRONTEND=dialog
 
 CMD sbt run
