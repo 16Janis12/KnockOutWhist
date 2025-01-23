@@ -404,12 +404,18 @@ object TUIMain extends CustomThread with EventListener with UI {
       showerrstatmet(ShowErrorStatus(IDENTICAL_NAMES))
       return reqplayersevent()
     }
-    if (names.get.count(_.trim.isBlank) > 0 || names.get.count(_.trim.length <= 2) > 0 || names.get.count(_.trim.length > 10) > 0) {
+    if (names.get.count(_.trim.isBlank) > 0
+      || names.get.count(_.trim.length <= 2) > 0
+      || names.get.count(_.trim.length > 10) > 0) {
       showerrstatmet(ShowErrorStatus(INVALID_NAME_FORMAT))
       return reqplayersevent()
     }
     ControlThread.runLater {
-      KnockOutWhist.config.maincomponent.enteredPlayers(names.get.map(s => PlayerFactory.createPlayer(s, playertype = HUMAN)).toList)
+      KnockOutWhist.config
+        .maincomponent
+        .enteredPlayers(names.get
+          .map(s => PlayerFactory.createPlayer(s, playertype = HUMAN))
+          .toList)
     }
     Some(true)
   }
@@ -464,7 +470,8 @@ object TUIMain extends CustomThread with EventListener with UI {
         } else if (in.equals("redo")) {
           UndoManager.redoStep()
           throw new UndoneException("Redo")
-        }else if(in.equals("load") && KnockOutWhist.config.persistenceManager.canLoadfile("currentSnapshot")) {
+        }else if(in.equals("load")
+          && KnockOutWhist.config.persistenceManager.canLoadfile("currentSnapshot")) {
           KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot.json")
           throw new UndoneException("Load")
         }else if(in.equals("save")) {

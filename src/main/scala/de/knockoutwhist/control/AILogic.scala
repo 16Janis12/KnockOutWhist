@@ -1,4 +1,4 @@
-package de.knockoutwhist.controlold
+package de.knockoutwhist.control
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.base.CardBaseManager

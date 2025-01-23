@@ -1,6 +1,6 @@
 package de.knockoutwhist.player
 import de.knockoutwhist.cards.{Card, Hand, Suit}
-import de.knockoutwhist.controlold.AILogic
+import de.knockoutwhist.control.AILogic
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 import java.util.UUID

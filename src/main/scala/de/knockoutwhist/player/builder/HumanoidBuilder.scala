@@ -32,8 +32,6 @@ class HumanoidBuilder extends PlayerBuilder {
       reset()
       return player
     }
-    println(this.name)
-    println(this.id)
     throw new IllegalStateException("Trying to build non-existing HumanPlayer")
   }
 

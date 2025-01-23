@@ -146,7 +146,7 @@ object MainMenu {
             val playerNamesList = ListBuffer[AbstractPlayer]()
             players.children.foreach {
               case field: control.TextField =>
-                if (field.getText.nonEmpty && usedNames.contains(field.getText)) {
+                if (field.getText.nonEmpty && !usedNames.contains(field.getText)) {
                   usedNames += field.getText
                   playerNamesList += PlayerFactory.createPlayer(field.getText, playertype = HUMAN)
                 }
@@ -155,13 +155,9 @@ object MainMenu {
             if(playerNamesList.size < 2) {
               new Alert(AlertType.Error) {
                 title = "Enter Names"
-                headerText = "Enter Names"
+                headerText = "Enter Names " + playerNamesList.size
                 contentText = "You need to enter at least 2 different names in order to play!"
               }.showAndWait()
-            } else if(playerNamesList.size == usedNames.size) {
-              ControlThread.runLater {
-                KnockOutWhist.config.maincomponent.enteredPlayers(playerNamesList.toList)
-              }
             }else {
               ControlThread.runLater {
                 KnockOutWhist.config.maincomponent.enteredPlayers(playerNamesList.toList)
