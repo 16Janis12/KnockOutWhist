@@ -9,10 +9,17 @@ import de.knockoutwhist.di.KnockOutLogicModule
 import de.knockoutwhist.persistence.PersistenceManager
 import de.knockoutwhist.persistence.formats.FileFormatter
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.utils.CustomPlayerQueue
+import de.knockoutwhist.ui.UI
+import de.knockoutwhist.ui.gui.GUIMain
+import de.knockoutwhist.ui.tui.TUIMain
+import de.knockoutwhist.utils
+import de.knockoutwhist.utils.{CustomPlayerQueue, DelayHandler}
 import de.knockoutwhist.utils.baseQueue.{CustomPlayerBaseQueue, CustomPlayerQueueBuilder, QueueBuilder}
+import de.knockoutwhist.utils.events.EventListener
 
-object DefaultConfiguration extends Configuration {
+import scala.language.postfixOps
+
+class DefaultConfiguration extends Configuration {
 
   private val injector = Guice.createInjector(KnockOutLogicModule())
 
@@ -25,6 +32,15 @@ object DefaultConfiguration extends Configuration {
   def cardManager: CardManager = injector.getInstance(classOf[CardManager])
   def persistenceManager: PersistenceManager = injector.getInstance(classOf[PersistenceManager])
   def fileFormatter: FileFormatter = injector.getInstance(classOf[FileFormatter])
+  def uis: Set[UI] = Set[UI](
+    TUIMain,
+    GUIMain
+  )
+  override def listener: Set[EventListener] = Set[EventListener](
+    TUIMain,
+    GUIMain,
+    utils.DelayHandler
+  )
 
   override def createRightQueue(players: Array[AbstractPlayer], start: Int): CustomPlayerQueue[AbstractPlayer] = {
     val builder = injector.getInstance(classOf[QueueBuilder])

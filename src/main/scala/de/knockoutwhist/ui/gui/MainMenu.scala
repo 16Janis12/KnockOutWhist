@@ -96,7 +96,6 @@ object MainMenu {
   }
   def createPlayeramountmenu(): Unit = {
     GUIMain.stage.maximized = true
-    GUIMain.stage.resizable = false
     changeChild(new BorderPane {
       margin = Insets(50, 50, 50, 50)
       val players: VBox = new VBox {

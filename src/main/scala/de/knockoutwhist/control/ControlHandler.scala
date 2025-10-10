@@ -6,10 +6,6 @@ import de.knockoutwhist.utils.events.EventHandler
 import de.knockoutwhist.utils.{CustomThread, DelayHandler}
 
 object ControlHandler extends EventHandler {
-
-  addListener(GUIMain)
-  addListener(TUIMain)
-  addListener(DelayHandler)
   
 }
 

@@ -29,7 +29,7 @@ class KnockOutLogicModule extends AbstractModule {
 class KnockOutConfigurationModule extends AbstractModule {
 
   override def configure(): Unit = {
-    bind(classOf[Configuration]).toInstance(DefaultConfiguration)
+    bind(classOf[Configuration]).to(classOf[DefaultConfiguration])
   }
   
 }
