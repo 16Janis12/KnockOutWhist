@@ -4,9 +4,10 @@ import de.knockoutwhist.cards.CardManager
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.utils.Implicits.*
 
+import java.util.UUID
 import scala.collection.immutable.List
 
-case class Match(totalplayers: List[AbstractPlayer],numberofcards: Int = 7, dogLife: Boolean = false, roundlist: List[Round] = List[Round](), cardManager: CardManager) {
+case class Match(id: UUID = UUID.randomUUID(), totalplayers: List[AbstractPlayer], numberofcards: Int = 7, dogLife: Boolean = false, roundlist: List[Round] = List[Round](), cardManager: CardManager) {
   
   def addRound(round: Round): Match = {
     this.copy(roundlist = roundlist :+ round)

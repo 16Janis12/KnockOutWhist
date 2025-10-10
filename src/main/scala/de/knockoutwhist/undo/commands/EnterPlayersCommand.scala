@@ -12,7 +12,7 @@ import de.knockoutwhist.undo.Command
 case class EnterPlayersCommand(players: List[AbstractPlayer]) extends Command {
 
   override def doStep(): Unit = {
-    val matchImpl = Match(players, cardManager = KnockOutWhist.config.cardManager)
+    val matchImpl = Match(totalplayers = players, cardManager = KnockOutWhist.config.cardManager)
     KnockOutWhist.config.persistenceManager.updateMatch(matchImpl)
     KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(EnterPlayers)
     ControlThread.runLater {
