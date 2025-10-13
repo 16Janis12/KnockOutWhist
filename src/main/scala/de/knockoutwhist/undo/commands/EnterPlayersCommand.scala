@@ -2,6 +2,8 @@ package de.knockoutwhist.undo.commands
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
+import de.knockoutwhist.events.GLOBAL_STATUS.TECHNICAL_MATCH_STARTED
+import de.knockoutwhist.events.ShowGlobalStatus
 import de.knockoutwhist.events.ui.GameState.INGAME
 import de.knockoutwhist.events.ui.GameStateUpdateEvent
 import de.knockoutwhist.persistence.MethodEntryPoint.EnterPlayers
@@ -17,6 +19,7 @@ case class EnterPlayersCommand(players: List[AbstractPlayer]) extends Command {
     KnockOutWhist.config.persistenceManager.updateMethodEntryPoint(EnterPlayers)
     ControlThread.runLater {
       ControlHandler.invoke(GameStateUpdateEvent(INGAME))
+      ControlHandler.invoke(ShowGlobalStatus(TECHNICAL_MATCH_STARTED, matchImpl))
       KnockOutWhist.config.maincomponent.controlMatch(matchImpl)
     }
   }

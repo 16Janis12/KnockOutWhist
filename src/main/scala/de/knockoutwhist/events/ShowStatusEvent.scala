@@ -5,6 +5,10 @@ import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.events.SimpleEvent
 
 enum GLOBAL_STATUS {
+  //Technical
+  case TECHNICAL_MATCH_STARTED
+  
+  //Visual
   case SHOW_TIE
   case SHOW_TIE_WINNER
   case SHOW_TIE_TIE
@@ -15,7 +19,6 @@ enum GLOBAL_STATUS {
 }
 
 enum PLAYER_STATUS {
-  case SHOW_TURN
   case SHOW_PLAY_CARD
   case SHOW_DOG_PLAY_CARD
   case SHOW_TIE_NUMBERS
@@ -24,6 +27,7 @@ enum PLAYER_STATUS {
   case SHOW_WON_PLAYER_TRICK
 }
 enum ROUND_STATUS {
+  case SHOW_TURN
   case SHOW_START_ROUND
   case WON_ROUND
   case PLAYERS_OUT

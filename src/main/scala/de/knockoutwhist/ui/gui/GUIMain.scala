@@ -2,8 +2,8 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_FINISHED_MATCH, SHOW_TIE_TIE, SHOW_TIE_WINNER}
-import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TIE_NUMBERS, SHOW_TURN, SHOW_WON_PLAYER_TRICK}
-import de.knockoutwhist.events.ROUND_STATUS.WON_ROUND
+import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TIE_NUMBERS, SHOW_WON_PLAYER_TRICK}
+import de.knockoutwhist.events.ROUND_STATUS.{SHOW_TURN, WON_ROUND}
 import de.knockoutwhist.events.cards.ShowTieCardsEvent
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
@@ -58,8 +58,6 @@ object GUIMain extends JFXApp3 with EventListener with UI {
             case _ =>
         case event: ShowPlayerStatus =>
           event.status match
-            case SHOW_TURN =>
-              Game.updateStatus(event.player)
             case SHOW_WON_PLAYER_TRICK =>
               Game.showFinishedTrick(event)
             case SHOW_TIE_NUMBERS =>
@@ -72,6 +70,8 @@ object GUIMain extends JFXApp3 with EventListener with UI {
           event.status match
             case WON_ROUND =>
               Game.showWon(event.currentRound)
+            case SHOW_TURN =>
+              Game.updateStatus(event.objects.head.asInstanceOf[AbstractPlayer])
             case _ =>
         case event: RequestCardEvent =>
           Game.requestCard = Some(event)

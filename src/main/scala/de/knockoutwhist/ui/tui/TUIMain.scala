@@ -8,7 +8,7 @@ import de.knockoutwhist.events.*
 import de.knockoutwhist.events.ERROR_STATUS.*
 import de.knockoutwhist.events.GLOBAL_STATUS.*
 import de.knockoutwhist.events.PLAYER_STATUS.*
-import de.knockoutwhist.events.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
+import de.knockoutwhist.events.ROUND_STATUS.{SHOW_TURN, PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
 import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
 import de.knockoutwhist.events.directional.*
 import de.knockoutwhist.events.round.ShowCurrentTrickEvent
@@ -235,14 +235,12 @@ object TUIMain extends CustomThread with EventListener with UI {
           println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[AbstractPlayer]}")
           Some(true)
         }
+      case _ => None
     }
   }
   private def showplayerstatusmethod(event: ShowPlayerStatus): Option[Boolean] = {
     val player = event.player
     event.status match {
-      case SHOW_TURN =>
-        println("It's your turn, " + player.name + ".")
-        Some(true)
       case SHOW_PLAY_CARD =>
         println("Which card do you want to play?")
         Some(true)
@@ -286,6 +284,13 @@ object TUIMain extends CustomThread with EventListener with UI {
   }
   private def showroundstatusmethod(event: ShowRoundStatus): Option[Boolean] = {
     event.status match {
+      case SHOW_TURN =>
+        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
+          None
+        } else {
+          println(s"It's ${event.objects.head.asInstanceOf[AbstractPlayer].name} turn.")
+          Some(true)
+        }
       case SHOW_START_ROUND =>
         TUIUtil.clearConsole()
         println(s"Starting a new round. The trump suit is ${event.currentRound.trumpSuit}.")
