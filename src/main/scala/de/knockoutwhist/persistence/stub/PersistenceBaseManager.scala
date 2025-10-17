@@ -1,7 +1,7 @@
 package de.knockoutwhist.persistence.stub
 
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.events.ui.GameState
+import de.knockoutwhist.events.old.ui.GameState
 import de.knockoutwhist.persistence.formats.{JSONFormatter, XMLFormatter}
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint, PersistenceManager}
 import de.knockoutwhist.rounds.{Match, Round, Trick}

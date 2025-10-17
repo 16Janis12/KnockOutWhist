@@ -2,7 +2,7 @@ package de.knockoutwhist.persistence.formats
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.events.ui.GameState
+import de.knockoutwhist.events.old.ui.GameState
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory, Playertype}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
@@ -88,7 +88,7 @@ class JSONFormatter extends FileFormatter {
         "id" -> abstractPlayer.id.toString,
         "name" -> abstractPlayer.name,
         "hand" -> createHandJson(abstractPlayer.hand),
-        "doglife" -> abstractPlayer.doglife,
+        "doglife" -> abstractPlayer.dogLife,
         "playerType" -> PlayerFactory.parsePlayerType(abstractPlayer).toString
       )
     }

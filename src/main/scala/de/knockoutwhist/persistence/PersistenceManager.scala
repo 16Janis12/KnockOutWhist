@@ -2,7 +2,7 @@ package de.knockoutwhist.persistence
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.ControlHandler
-import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
+import de.knockoutwhist.events.old.ui.{GameState, GameStateUpdateEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}

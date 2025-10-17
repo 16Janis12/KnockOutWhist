@@ -3,13 +3,13 @@ package de.knockoutwhist.events
 import de.knockoutwhist.cards.*
 import de.knockoutwhist.cards.CardValue.Two
 import de.knockoutwhist.cards.Suit.Hearts
-import de.knockoutwhist.events.ERROR_STATUS.*
-import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.events.PLAYER_STATUS.*
-import de.knockoutwhist.events.ROUND_STATUS.*
-import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent}
-import de.knockoutwhist.events.round.ShowCurrentTrickEvent
+import de.knockoutwhist.events.old.ERROR_STATUS.*
+import de.knockoutwhist.events.old.GLOBAL_STATUS.*
+import de.knockoutwhist.events.old.PLAYER_STATUS.*
+import de.knockoutwhist.events.old.ROUND_STATUS.*
+import de.knockoutwhist.events.old.cards.{RenderHandEvent, ShowTieCardsEvent}
+import de.knockoutwhist.events.old.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent}
+import de.knockoutwhist.events.old.round.ShowCurrentTrickEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.rounds.{Match, Round}

@@ -4,9 +4,9 @@ import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.control.controllerBaseImpl.PlayerLogic
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.directional.RequestPickTrumpsuitEvent
-import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.old.directional.RequestPickTrumpsuitEvent
+import de.knockoutwhist.events.old.ui.GameState.{INGAME, MAIN_MENU}
+import de.knockoutwhist.events.old.ui.GameStateUpdateEvent
 import de.knockoutwhist.utils.gui.Animations
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, TopCenter}

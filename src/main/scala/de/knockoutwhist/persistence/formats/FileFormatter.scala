@@ -38,9 +38,9 @@ trait FileFormatter {
       players.get(id) match {
         case Some(player) => player
         case None =>
-          var player = PlayerFactory.createPlayer(name, id, player_type)
-          if(hand.isDefined) player = player.provideHand(hand.get)
-          if(dog_life) player = player.setDogLife()
+          val player = PlayerFactory.createPlayer(name, id, player_type)
+          if(hand.isDefined) player.provideHand(hand.get)
+          if(dog_life) player.setDogLife()
           players.put(id, player)
           player
       }

@@ -5,8 +5,8 @@ import com.google.inject.{Guice, Inject, Injector}
 import de.knockoutwhist.components.{Configuration, DefaultConfiguration}
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.di.KnockOutConfigurationModule
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.old.ui.GameState.MAIN_MENU
+import de.knockoutwhist.events.old.ui.GameStateUpdateEvent
 import de.knockoutwhist.ui.gui.GUIMain
 import de.knockoutwhist.ui.tui.TUIMain
 

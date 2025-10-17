@@ -2,12 +2,11 @@ package de.knockoutwhist.persistence
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
+import de.knockoutwhist.events.old.ui.{GameState, GameStateUpdateEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 enum MethodEntryPoint:
-  case EnterPlayers
   case ControlMatch
   case ControlRound
   case ControlTrick
@@ -34,7 +33,6 @@ case class MatchSnapshot(
     ControlThread.runLater {
       ControlHandler.invoke(GameStateUpdateEvent(gameState))
       methodEntryPoint match {
-        case Some(MethodEntryPoint.EnterPlayers) => KnockOutWhist.config.maincomponent.enteredPlayers(matchImpl.get.totalplayers)
         case Some(MethodEntryPoint.ControlMatch) => KnockOutWhist.config.maincomponent.controlMatch(matchImpl.get)
         case Some(MethodEntryPoint.ControlRound) => KnockOutWhist.config.maincomponent.controlRound(matchImpl.get, round.get)
         case Some(MethodEntryPoint.ControlTrick) => KnockOutWhist.config.maincomponent.controlTrick(matchImpl.get, round.get, trick.get, currentIndex.get)

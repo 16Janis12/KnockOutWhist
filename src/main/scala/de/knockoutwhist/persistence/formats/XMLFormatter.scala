@@ -3,7 +3,7 @@ package de.knockoutwhist.persistence.formats
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardValue.Ten
 import de.knockoutwhist.cards.{Card, CardManager, CardValue, Hand, Suit}
-import de.knockoutwhist.events.ui.GameState
+import de.knockoutwhist.events.old.ui.GameState
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory, Playertype}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
@@ -77,7 +77,7 @@ class XMLFormatter extends FileFormatter {
         <id>{abstractPlayer.id.toString}</id>
         <name>{abstractPlayer.name}</name>
         {createHandXML(abstractPlayer.hand)}
-        <doglife>{abstractPlayer.doglife}</doglife>
+        <doglife>{abstractPlayer.dogLife}</doglife>
         <playerType>{PlayerFactory.parsePlayerType(abstractPlayer).toString}</playerType>
       </player>
     }

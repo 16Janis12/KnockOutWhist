@@ -3,8 +3,8 @@ package de.knockoutwhist.undo.commands.old
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.ControlHandler
-import de.knockoutwhist.events.PLAYER_STATUS.SHOW_NOT_PLAYED
-import de.knockoutwhist.events.ShowPlayerStatus
+import de.knockoutwhist.events.old.PLAYER_STATUS.SHOW_NOT_PLAYED
+import de.knockoutwhist.events.old.ShowPlayerStatus
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import de.knockoutwhist.undo.Command

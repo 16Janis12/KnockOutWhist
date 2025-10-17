@@ -3,8 +3,8 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.old.ui.GameState.MAIN_MENU
+import de.knockoutwhist.events.old.ui.GameStateUpdateEvent
 import de.knockoutwhist.persistence.stub.PersistenceBaseManager
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}

@@ -4,10 +4,10 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestTieNumberEvent}
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.old.{ShowGlobalStatus, ShowPlayerStatus}
+import de.knockoutwhist.events.old.directional.{RequestCardEvent, RequestTieNumberEvent}
+import de.knockoutwhist.events.old.ui.GameState.MAIN_MENU
+import de.knockoutwhist.events.old.ui.GameStateUpdateEvent
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.utils.gui.Animations

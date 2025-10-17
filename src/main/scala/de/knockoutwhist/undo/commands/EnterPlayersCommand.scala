@@ -2,10 +2,10 @@ package de.knockoutwhist.undo.commands
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.GLOBAL_STATUS.TECHNICAL_MATCH_STARTED
-import de.knockoutwhist.events.ShowGlobalStatus
-import de.knockoutwhist.events.ui.GameState.INGAME
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.events.old.GLOBAL_STATUS.TECHNICAL_MATCH_STARTED
+import de.knockoutwhist.events.old.ShowGlobalStatus
+import de.knockoutwhist.events.old.ui.GameState.INGAME
+import de.knockoutwhist.events.old.ui.GameStateUpdateEvent
 import de.knockoutwhist.persistence.MethodEntryPoint.EnterPlayers
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.Match

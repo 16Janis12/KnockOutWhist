@@ -2,19 +2,20 @@ package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.UndoManager
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.BaseUndoManager
 import de.knockoutwhist.control.controllerBaseImpl.{PlayerLogic, TrickLogic}
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.*
-import de.knockoutwhist.events.ERROR_STATUS.*
-import de.knockoutwhist.events.GLOBAL_STATUS.*
-import de.knockoutwhist.events.PLAYER_STATUS.*
-import de.knockoutwhist.events.ROUND_STATUS.{SHOW_TURN, PLAYERS_OUT, SHOW_START_ROUND, WON_ROUND}
-import de.knockoutwhist.events.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.directional.*
-import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
+import de.knockoutwhist.events.old.ERROR_STATUS.*
+import de.knockoutwhist.events.old.GLOBAL_STATUS.*
+import de.knockoutwhist.events.old.PLAYER_STATUS.*
+import de.knockoutwhist.events.old.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, SHOW_TURN, WON_ROUND}
+import de.knockoutwhist.events.old.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
+import de.knockoutwhist.events.old.cards.{RenderHandEvent, ShowTieCardsEvent}
+import de.knockoutwhist.events.old.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
+import de.knockoutwhist.events.old.round.ShowCurrentTrickEvent
+import de.knockoutwhist.events.old.ui.{GameState, GameStateUpdateEvent}
+import de.knockoutwhist.events.old.ui.GameState.MAIN_MENU
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
