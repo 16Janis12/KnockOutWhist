@@ -1,8 +1,10 @@
-package de.knockoutwhist.undo
+package de.knockoutwhist.control.controllerBaseImpl.sublogic
 
 import de.knockoutwhist.control.ControlThread
+import de.knockoutwhist.control.controllerBaseImpl.GameLogic
+import de.knockoutwhist.undo.{Command, UndoneException}
 
-object UndoManager {
+class UndoManager(gameLogic: GameLogic) {
 
   private var undoStack: List[Command] = Nil
   private var redoStack: List[Command] = Nil

@@ -5,10 +5,12 @@ import de.knockoutwhist.utils.CustomPlayerQueue
 class CustomPlayerBaseQueue[A](protected var players: Array[A], val start: Int = 0) extends CustomPlayerQueue[A] {
 
   private var current = start
+  private var lastReset = 0
   
   def currentIndex: Int = current
   
   def nextPlayer(): A = {
+    lastReset += 1
     val player = players(current)
     current = (current + 1) % players.length
     player
@@ -20,6 +22,7 @@ class CustomPlayerBaseQueue[A](protected var players: Array[A], val start: Int =
   }
 
   def resetAndSetStart(player: A): Boolean = {
+    lastReset = 0
     if(players.contains(player)) {
       current = players.indexOf(player)
       true
@@ -28,6 +31,8 @@ class CustomPlayerBaseQueue[A](protected var players: Array[A], val start: Int =
     }
   }
   
+  override def playersSinceLastReset(): Int = lastReset
+
   override def toList: List[A] = players.toList
   override def isEmpty: Boolean = players.isEmpty
   override def size: Int = players.length

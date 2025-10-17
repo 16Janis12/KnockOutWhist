@@ -10,26 +10,14 @@ import scala.collection.immutable
 import scala.collection.immutable.List
 import scala.util.Random
 
-case class Round (trumpSuit: Suit, tricklist: List[Trick], playersin: List[AbstractPlayer], playersout: List[AbstractPlayer] = null, startingPlayer: Int = -1, winner: AbstractPlayer = null, firstRound: Boolean) {
-  def this(trumpSuit: Suit, playersin: List[AbstractPlayer], firstRound: Boolean) = {
-    this(trumpSuit, List[Trick](), playersin, firstRound = firstRound)
-  }
-
-  val playerQueue: CustomPlayerQueue[AbstractPlayer] = KnockOutWhist.config.createRightQueue(
-    playersin.toArray,
-    (startingPlayer == -1) ? Random.nextInt(playersin.length) |: startingPlayer
-  )
+case class Round (trumpSuit: Suit, firstRound: Boolean, tricklist: List[Trick] = List(), winner: Option[AbstractPlayer] = None) {
   
   def addTrick(trick: Trick): Round = {
-    Round(trumpSuit, tricklist :+ trick, playersin, playersout, playerQueue.currentIndex, winner, firstRound)
-  }
-  
-  def updatePlayersIn(playersin: List[AbstractPlayer]): Round = {
-    Round(trumpSuit, tricklist, playersin, playersout, playerQueue.currentIndex, winner, firstRound)
+    Round(trumpSuit, firstRound, tricklist :+ trick, winner)
   }
   
   override def toString: String = {
-    s"$trumpSuit, $tricklist, $playersin, $playersout, $winner, $firstRound"
+    s"$trumpSuit, $tricklist, $winner, $firstRound"
   }
   
   

@@ -26,7 +26,7 @@ class StubPlayerBuilder extends PlayerBuilder {
 
   override def build(): AbstractPlayer = {
     if (this.name.isDefined && this.id.isDefined) {
-      val player = new StubPlayer(this.name.get, None, id.get, false)
+      val player = new StubPlayer(this.name.get, id.get)
       reset()
       return player
     }

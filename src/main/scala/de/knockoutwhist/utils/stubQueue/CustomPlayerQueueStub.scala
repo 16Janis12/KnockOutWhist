@@ -17,6 +17,10 @@ class CustomPlayerQueueStub[A](protected var players: Array[A], val start: Int =
   def resetAndSetStart(player: A): Boolean = {
     false
   }
+  
+  def playersSinceLastReset(): Int = {
+    0
+  }
 
   override def toList: List[A] = List()
 

@@ -46,6 +46,14 @@ class CardBaseManager extends CardManager {
     }
   }
   
+  override def removeCards(amount: Int): List[Card] = {
+    val removedCards = ListBuffer[Card]()
+    for (_ <- 0 to amount) {
+      removedCards += nextCard()
+    }
+    removedCards.toList
+  }
+  
   override def createHand(amount: Int = 7): Hand = {
     val hand = ListBuffer[Card]()
     for (_ <- 1 to amount) {

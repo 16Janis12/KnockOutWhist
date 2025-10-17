@@ -10,6 +10,8 @@ object StubCardManager extends CardManager {
   override def resetOrder(): Unit = {}
 
   override def nextCard(): Card = Card(CardValue.Ace, Suit.Clubs)
+  
+  override def removeCards(amount: Int): List[Card] = List(Card(CardValue.Ace, Suit.Clubs))
 
   override def createHand(amount: Int): Hand = Hand(List(Card(CardValue.Ace, Suit.Clubs)))
 

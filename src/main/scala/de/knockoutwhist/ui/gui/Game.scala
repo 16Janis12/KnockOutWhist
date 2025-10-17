@@ -4,11 +4,11 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.control.ControlThread
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.UndoManager
 import de.knockoutwhist.events.ShowPlayerStatus
 import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Round, Trick}
-import de.knockoutwhist.undo.UndoManager
 import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
 import de.knockoutwhist.utils.gui.Animations
@@ -355,7 +355,7 @@ object Game {
   def updateNextPlayer(queue: CustomPlayerQueue[AbstractPlayer], currendIndx: Int): Unit = {
     val queueDupli = queue.duplicate()
     nextPlayers.children = queueDupli.iteratorWithStart(currendIndx).map(player => new Label {
-      text = !player.doglife ? player.name |: s"${player.name} (Doglife)"
+      text = !player.isInDoglife ? player.name |: s"${player.name} (Doglife)"
       font = Font.font(20)
     }).toSeq
   }

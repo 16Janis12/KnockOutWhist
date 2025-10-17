@@ -9,7 +9,11 @@ trait CardManager {
   def resetOrder(): Unit
 
   def nextCard(): Card
+  
+  def remainingCards: Int = cardContainer.size - currentIndx
 
+  def removeCards(amount: Int): List[Card]
+  
   def createHand(amount: Int = 7): Hand
   
   def grabSpecificCard(card: Card): Card

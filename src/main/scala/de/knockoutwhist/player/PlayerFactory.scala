@@ -1,6 +1,6 @@
 package de.knockoutwhist.player
 
-import de.knockoutwhist.player.Playertype.{AI, HUMAN, STUB}
+import de.knockoutwhist.player.Playertype.{HUMAN, STUB}
 import de.knockoutwhist.player.baseImpl.HumanPlayer
 import de.knockoutwhist.player.builder.*
 
@@ -8,7 +8,6 @@ import java.util.UUID
 
 enum Playertype:
   case HUMAN
-  case AI
   case STUB
 end Playertype
 
@@ -17,8 +16,6 @@ object PlayerFactory {
     val buildType: PlayerBuilder = playertype match {
       case HUMAN =>
         new HumanoidBuilder()
-      case AI =>
-        new AIPlayerBuilder()
       case STUB =>
         new StubPlayerBuilder
     }
@@ -41,8 +38,6 @@ object PlayerFactory {
     player match {
       case _: HumanPlayer =>
         HUMAN
-      case _: AIPlayer =>
-        AI
       case _: StubPlayer =>
         STUB
     }

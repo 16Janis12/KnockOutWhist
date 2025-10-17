@@ -1,4 +1,4 @@
-package de.knockoutwhist.undo.commands
+package de.knockoutwhist.undo.commands.old
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card

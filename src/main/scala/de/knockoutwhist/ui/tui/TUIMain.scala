@@ -2,6 +2,7 @@ package de.knockoutwhist.ui.tui
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.UndoManager
 import de.knockoutwhist.control.controllerBaseImpl.{PlayerLogic, TrickLogic}
 import de.knockoutwhist.control.{ControlHandler, ControlThread}
 import de.knockoutwhist.events.*
@@ -18,7 +19,7 @@ import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.UI
-import de.knockoutwhist.undo.{UndoManager, UndoneException}
+import de.knockoutwhist.undo.UndoneException
 import de.knockoutwhist.utils.CustomThread
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 

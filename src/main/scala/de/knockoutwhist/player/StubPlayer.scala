@@ -12,17 +12,7 @@ import java.util.UUID
 import scala.collection.immutable
 import scala.util.Try
 
-class StubPlayer private[player](name: String, hand: Option[Hand], id: UUID = UUID.randomUUID(), doglife: Boolean = false) extends AbstractPlayer(name, hand, id, doglife) {
-  
-  override def provideHand(hand: Hand): AbstractPlayer = {
-    StubPlayer(name, Some(hand), id, doglife)
-  }
-
-  override def removeCard(card: Card): AbstractPlayer = {
-    StubPlayer(name, Some(hand.get.removeCard(card)), id, doglife)
-  }
-
-  override def setDogLife(): AbstractPlayer = StubPlayer(name, hand, id, true)
+class StubPlayer private[player](name: String, id: UUID = UUID.randomUUID()) extends AbstractPlayer(name, id) {
 
   override def handlePlayCard(hand: Hand, matchImpl: Match, round: Round, trick: Trick, currentIndex: Int): Unit = {
     KnockOutWhist.config.trickcomponent.controlSuitplayed(Try{Card(Ten, Spades)}, matchImpl, round, trick, currentIndex, this)
