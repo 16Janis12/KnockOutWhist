@@ -1,26 +1,20 @@
 package de.knockoutwhist.ui.tui
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.BaseUndoManager
-import de.knockoutwhist.control.controllerBaseImpl.{PlayerLogic, TrickLogic}
-import de.knockoutwhist.control.{ControlHandler, ControlThread}
+import de.knockoutwhist.control.GameState.{Lobby, MainMenu}
+import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.MatchUtil
+import de.knockoutwhist.control.sublogic.PlayerTieLogic
+import de.knockoutwhist.control.{ControlThread, GameLogic}
 import de.knockoutwhist.events.*
-import de.knockoutwhist.events.old.ERROR_STATUS.*
-import de.knockoutwhist.events.old.GLOBAL_STATUS.*
-import de.knockoutwhist.events.old.PLAYER_STATUS.*
-import de.knockoutwhist.events.old.ROUND_STATUS.{PLAYERS_OUT, SHOW_START_ROUND, SHOW_TURN, WON_ROUND}
-import de.knockoutwhist.events.old.{ShowErrorStatus, ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
-import de.knockoutwhist.events.old.cards.{RenderHandEvent, ShowTieCardsEvent}
-import de.knockoutwhist.events.old.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
-import de.knockoutwhist.events.old.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.old.ui.{GameState, GameStateUpdateEvent}
-import de.knockoutwhist.events.old.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.util.DelayEvent
+import de.knockoutwhist.events.global.*
+import de.knockoutwhist.events.global.tie.*
+import de.knockoutwhist.events.player.{PlayCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.undo.UndoneException
+import de.knockoutwhist.undo.commands.{PlayCardCommand, PlayDogCardCommand, SelectTieNumberCommand, SelectTrumpSuitCommand}
 import de.knockoutwhist.utils.CustomThread
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 
@@ -29,14 +23,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-object TUIMain extends CustomThread with EventListener with UI {
+class TUIMain extends CustomThread with EventListener with UI {
+
+  var logic: Option[GameLogic] = None
 
   setName("TUI")
   
   var init = false
-  private var internState: GameState = GameState.NO_SET
 
-  override def instance: CustomThread = TUIMain
+  override def instance: CustomThread = this
 
   override def runLater[R](op: => R): Unit = {
     interrupted.set(true)
@@ -46,38 +41,87 @@ object TUIMain extends CustomThread with EventListener with UI {
   override def listen(event: SimpleEvent): Unit = {
     runLater {
       event match {
-        case event: RenderHandEvent =>
-          renderhandmethod(event)
-        case event: ShowTieCardsEvent =>
-          showtiecardseventmethod(event)
-        case event: ShowGlobalStatus =>
-          showglobalstatusmethod(event)
-        case event: ShowPlayerStatus =>
-          showplayerstatusmethod(event)
-        case event: ShowRoundStatus =>
-          showroundstatusmethod(event)
-        case event: ShowErrorStatus =>
-          showerrstatmet(event)
-        case event: RequestTieNumberEvent =>
-          reqnumbereventmet(event)
-        case event: RequestCardEvent =>
-          reqcardeventmet(event)
-        case event: RequestDogPlayCardEvent =>
-          reqdogeventmet(event)
-        case event: RequestPickTrumpsuitEvent =>
-          reqpicktevmet(event)
-        case event: ShowCurrentTrickEvent =>
-          showcurtrevmet(event)
-        case event: GameStateUpdateEvent =>
-          if (internState != event.gameState) {
-            internState = event.gameState
-            if (event.gameState == GameState.MAIN_MENU) {
-              mainMenu()
-            } else if (event.gameState == GameState.PLAYERS) {
-              reqplayersevent()
-            }
-            Some(true)
+        case event: MatchEndEvent =>
+          TUIUtil.clearConsole()
+          println(s"The match has ended! The winner is ${event.winner.name}.")
+        case event: NewRoundEvent =>
+          TUIUtil.clearConsole()
+          println(s"Starting a new round...")
+        case event: NewTrickEvent =>
+          TUIUtil.clearConsole()
+          println(s"Starting a new trick...")
+        case event: RoundEndEvent =>
+          TUIUtil.clearConsole()
+          println(s"The round has ended! The winner is ${event.winner.name}.")
+        case event: ShowDogsEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"Dogs: ${event.dogs.map(_.name).mkString(", ")}")
+        case event: ShowPlayersOutEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"Eliminated players: ${event.out.map(_.name).mkString(", ")}")
+        case event: TrickEndEvent =>
+          TUIUtil.clearConsole(4)
+          println(s"The trick has ended! The winner is ${event.winner.name}.")
+        case event: TrumpSelectEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"${event.player.name} will select the next trump suit.")
+        case event: TurnEvent =>
+          if (logic.get.getCurrentTrick.isEmpty) {
+            println("No trick found!")
+            return Some(true)
           }
+          val trickImpl = logic.get.getCurrentTrick.get
+          if (logic.get.getCurrentRound.isEmpty) {
+            println("No round found!")
+            return Some(true)
+          }
+          val roundImpl = logic.get.getCurrentRound.get
+          TUIUtil.clearConsole()
+          val sb = new StringBuilder()
+          sb.append("Current Trick:\n")
+          sb.append("Trump-Suit: " + roundImpl.trumpSuit + "\n")
+          if (trickImpl.firstCard.isDefined) {
+            sb.append(s"Suit to play: ${trickImpl.firstCard.get.suit}\n")
+          }
+          for ((card, player) <- trickImpl.cards) {
+            sb.append(s"${player.name} played ${card.toString}\n")
+          }
+          println(sb.toString())
+          println(s"It is now ${event.player.name}'s turn.")
+        case event: TieAllPlayersSelectedEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"All players have selected their tie cards.")
+        case event: TieEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"It's a tie. Let's cut to determine the winner. Players involved: ${event.players.map(_.name).mkString(", ")}")
+        case event: TieShowPlayerCardsEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"Players' tie cards:")
+          showtiecardseventmethod(event)
+        case event: TieTieEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"It's still a tie after the tie-breaker. Another tie-breaker will be held.")
+          println(s"This time, players involved: ${event.players.map(_.name).mkString(", ")}")
+        case event: TieTurnEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"It is now ${event.player.name}'s turn to select a tie card.")
+        case event: TieWinningPlayersEvent =>
+          TUIUtil.clearConsole(2)
+          println(s"The winner(s) of the tie-breaker: ${event.winners.map(_.name).mkString(", ")}")
+        case event: RequestTieChoiceEvent =>
+          reqnumbereventmet(event)
+        case event: PlayCardEvent =>
+          if (event.player.isInDogLife) reqdogeventmet(event)
+          else reqcardeventmet(event)
+        case event: RequestTrumpSuitEvent =>
+          reqpicktevmet(event)
+        case event: GameStateChangeEvent =>
+          if (event.newState == MainMenu) {
+            mainMenu()
+          } else if (event.newState == Lobby) {
+            reqplayersevent()
+          }
+          Some(true)
         case _ => None
       }
     }
@@ -136,12 +180,14 @@ object TUIMain extends CustomThread with EventListener with UI {
     }
   }
 
-  override def initial: Boolean = {
+  override def initial(gameLogic: GameLogic): Boolean = {
     if (init) {
       return false
     }
     init = true
+    this.logic = Some(gameLogic)
     start()
+    runLater(mainMenu())
     true
   }
 
@@ -160,38 +206,27 @@ object TUIMain extends CustomThread with EventListener with UI {
         value match {
           case 1 =>
             ControlThread.runLater {
-              KnockOutWhist.config.maincomponent.startMatch()
+              logic.get.createSession()
             }
           case 2 =>
             println("Exiting the game.")
-            System.exit(0)
-          case _ =>
-            showerrstatmet(ShowErrorStatus(INVALID_NUMBER))
             ControlThread.runLater {
-              ControlHandler.invoke(DelayEvent(500))
-              ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+              logic.get.endSession()
             }
+          case _ =>
             mainMenu()
         }
       case Failure(exception) =>
         exception match
           case undo: UndoneException =>
           case _ =>
-            showerrstatmet(ShowErrorStatus(NOT_A_NUMBER))
-            ControlThread.runLater {
-              ControlHandler.invoke(DelayEvent(500))
-              ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
-            }
+            mainMenu()
     }
   }
 
-  private def renderhandmethod(event: RenderHandEvent): Option[Boolean] = {
-    TUICards.renderHandEvent(event.hand, event.showNumbers).foreach(println)
-    Some(true)
-  }
-  private def showtiecardseventmethod(event: ShowTieCardsEvent): Option[Boolean] = {
+  private def showtiecardseventmethod(event: TieShowPlayerCardsEvent): Option[Boolean] = {
     val a: Array[String] = Array("", "", "", "", "", "", "", "")
-    for ((player, card) <- event.card) {
+    for ((player, card) <- logic.get.playerTieLogic.getSelectedCard) {
       val playerNameLength = player.name.length
       a(0) += " " + player.name + ":" + (" " * (playerNameLength - 1))
       val rendered = TUICards.renderCardAsString(card)
@@ -206,183 +241,95 @@ object TUIMain extends CustomThread with EventListener with UI {
     a.foreach(println)
     Some(true)
   }
-  private def showglobalstatusmethod(event: ShowGlobalStatus): Option[Boolean] = {
-    event.status match {
-      case SHOW_TIE =>
-        println("It's a tie! Let's cut to determine the winner.")
-        Some(true)
-      case SHOW_TIE_WINNER =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
-          None
-        } else {
-          println(s"${event.objects.head.asInstanceOf[AbstractPlayer].name} wins the cut!")
-          Some(true)
-        }
-      case SHOW_TIE_TIE =>
-        println("It's a tie again! Let's cut again.")
-        Some(true)
-      case SHOW_START_MATCH =>
-        TUIUtil.clearConsole()
-        println("Starting a new match...")
-        TUIUtil.clearConsole(2)
-        Some(true)
-      case SHOW_TYPE_PLAYERS =>
-        println("Please enter the names of the players, separated by a comma.")
-        Some(true)
-      case SHOW_FINISHED_MATCH =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
-          None
-        } else {
-          TUIUtil.clearConsole()
-          println(s"The match is over. The winner is ${event.objects.head.asInstanceOf[AbstractPlayer]}")
-          Some(true)
-        }
-      case _ => None
-    }
-  }
-  private def showplayerstatusmethod(event: ShowPlayerStatus): Option[Boolean] = {
-    val player = event.player
-    event.status match {
-      case SHOW_PLAY_CARD =>
-        println("Which card do you want to play?")
-        Some(true)
-      case SHOW_DOG_PLAY_CARD =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Boolean]) {
-          None
-        } else {
-          println("You are using your dog life. Do you want to play your final card now?")
-          if (event.objects.head.asInstanceOf[Boolean]) {
-            println("You have to play your final card this round!")
-            println("Please enter y to play your final card.")
-            Some(true)
-          } else {
-            println("Please enter y/n to play your final card.")
-            Some(true)
-          }
-        }
-      case SHOW_TIE_NUMBERS =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Int]) {
-          None
-        } else {
-          println(s"${player.name} enter a number between 1 and ${event.objects.head.asInstanceOf[Int]}.")
-          Some(true)
-        }
-      case SHOW_TRUMPSUIT_OPTIONS =>
-        println("Which suit do you want to pick as the next trump suit?")
-        println("1: Hearts")
-        println("2: Diamonds")
-        println("3: Clubs")
-        println("4: Spades")
-        println()
-        Some(true)
-      case SHOW_NOT_PLAYED =>
-        println(s"Player ${event.player} decided to not play his card")
-        Some(true)
-      case SHOW_WON_PLAYER_TRICK =>
-        println(s"${event.player.name} won the trick.")
-        TUIUtil.clearConsole(2)
-        Some(true)
-    }
-  }
-  private def showroundstatusmethod(event: ShowRoundStatus): Option[Boolean] = {
-    event.status match {
-      case SHOW_TURN =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
-          None
-        } else {
-          println(s"It's ${event.objects.head.asInstanceOf[AbstractPlayer].name} turn.")
-          Some(true)
-        }
-      case SHOW_START_ROUND =>
-        TUIUtil.clearConsole()
-        println(s"Starting a new round. The trump suit is ${event.currentRound.trumpSuit}.")
-        TUIUtil.clearConsole(2)
-        Some(true)
-      case WON_ROUND =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer]) {
-          None
-        } else {
-          println(s"${event.objects.head.asInstanceOf[AbstractPlayer].name} won the round.")
-          Some(true)
-        }
-      case PLAYERS_OUT =>
-        println("The following players are out of the game:")
-        event.currentRound.playersout.foreach(p => {
-          println(p.name)
-        })
-        Some(true)
-    }
-  }
-  private def showerrstatmet(event: ShowErrorStatus): Option[Boolean] = {
-    event.status match {
-      case INVALID_NUMBER =>
-        println("Please enter a valid number.")
-        Some(true)
-      case NOT_A_NUMBER =>
-        println("Please enter a number.")
-        Some(true)
-      case INVALID_INPUT =>
-        println("Please enter a valid input")
-        Some(true)
-      case INVALID_NUMBER_OF_PLAYERS =>
-        println("Please enter at least two names.")
-        Some(true)
-      case IDENTICAL_NAMES =>
-        println("Please enter unique names.")
-        Some(true)
-      case INVALID_NAME_FORMAT =>
-        println("Please enter valid names. Those can not be empty, shorter than 2 or longer then 10 characters.")
-        Some(true)
-      case WRONG_CARD =>
-        if (event.objects.length != 1 || !event.objects.head.isInstanceOf[Card]) {
-          None
-        } else {
-          println(f"You have to play a card of suit: ${event.objects.head.asInstanceOf[Card].suit}\n")
-          Some(true)
-        }
-    }
-  }
-  private def reqnumbereventmet(event: RequestTieNumberEvent): Option[Boolean] = {
+
+  private def reqnumbereventmet(event: RequestTieChoiceEvent): Option[Boolean] = {
+    println(s"${event.player.name}, please select a number between 1 and ${logic.get.playerTieLogic.highestAllowedNumber()} for your tie-breaker card:")
     val tryTie = Try {
       val number = input().toInt
-      if (number < 1 || number > event.remaining) {
-        throw new IllegalArgumentException(s"Number must be between 1 and ${event.remaining}")
+      if (number < 1 || number > logic.get.playerTieLogic.highestAllowedNumber()) {
+        throw new IllegalArgumentException(s"Number must be between 1 and ${logic.get.playerTieLogic.highestAllowedNumber()}")
       }
       number
     }
     if(tryTie.isFailure && tryTie.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
+    //TODO verify if the player can actually pick this number
     ControlThread.runLater {
-      KnockOutWhist.config.playerlogcomponent.selectedTie(event.winner, event.matchImpl, event.round, event.playersout, event.cut, tryTie, event.currentStep, event.remaining, event.currentIndex)
+      logic.get.undoManager.doStep(
+        SelectTieNumberCommand(
+          logic.get.createSnapshot(),
+          logic.get.playerTieLogic.createSnapshot(),
+          tryTie.get
+        )
+      )
     }
     Some(true)
   }
 
-  private def reqcardeventmet(event: RequestCardEvent): Option[Boolean] = {
+  private def reqcardeventmet(event: PlayCardEvent): Option[Boolean] = {
+    println("Which card do you want to play?")
+    if (event.player.currentHand().isEmpty) {
+      println("You have no cards to play! This should not happen.")
+      return Some(true)
+    }
+    val hand = event.player.currentHand().get
+    TUICards.renderHandEvent(hand, true).foreach(println(_))
     val tryCard = Try {
       val card = input().toInt - 1
-      if (card < 0 || card >= event.hand.cards.length) {
-        throw new IllegalArgumentException(s"Number has to be between 1 and ${event.hand.cards.length}")
+      if (card < 0 || card >= hand.cards.length) {
+        throw new IllegalArgumentException(s"Number has to be between 1 and ${hand.cards.length}")
       } else {
-        event.hand.cards(card)
+        hand.cards(card)
       }
     }
     if (tryCard.isFailure && tryCard.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
+    //TODO verify if the player can actually play this card
     ControlThread.runLater {
-      KnockOutWhist.config.trickcomponent.controlSuitplayed(tryCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+      logic.get.undoManager.doStep(
+        PlayCardCommand(
+          logic.get.createSnapshot(),
+          logic.get.playerTieLogic.createSnapshot(),
+          tryCard.get
+        )
+      )
     }
     Some(true)
   }
 
-  private def reqdogeventmet(event: RequestDogPlayCardEvent): Option[Boolean] = {
+  private def reqdogeventmet(event: PlayCardEvent): Option[Boolean] = {
+    println("You are using your dog life. Do you want to play your final card now?")
+    if (event.player.currentHand().isEmpty) {
+      println("You have no cards to play! This should not happen.")
+      return Some(true)
+    }
+    val hand = event.player.currentHand().get
+    if (logic.get.getCurrentMatch.isEmpty) {
+      println("No match found!")
+      return Some(true)
+    }
+    val matchImpl = logic.get.getCurrentMatch.get
+    if (logic.get.getCurrentRound.isEmpty) {
+      println("No round found!")
+      return Some(true)
+    }
+    val roundImpl = logic.get.getCurrentRound.get
+    val needstoplay = MatchUtil.dogNeedsToPlay(matchImpl, roundImpl)
+
+    if (needstoplay) {
+      println("You have to play your final card this round!")
+    } else {
+      println("Do you want to play your final card? (y/n)")
+    }
+
+    TUICards.renderHandEvent(hand, false).foreach(println(_))
     val tryDogCard = Try {
       val card = input()
       if (card.equalsIgnoreCase("y")) {
-        Some(event.hand.cards.head)
-      } else if (card.equalsIgnoreCase("n") && !event.needstoplay) {
+        Some(hand.cards.head)
+      } else if (card.equalsIgnoreCase("n") && !needstoplay) {
         None
       } else {
         throw new IllegalArgumentException("Didn't want to play card but had to")
@@ -391,43 +338,49 @@ object TUIMain extends CustomThread with EventListener with UI {
     if (tryDogCard.isFailure && tryDogCard.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
+    //TODO verify if the player can actually play this card
     ControlThread.runLater {
-      KnockOutWhist.config.trickcomponent.controlDogPlayed(tryDogCard, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+      logic.get.undoManager.doStep(
+        PlayDogCardCommand(
+          logic.get.createSnapshot(),
+          logic.get.playerTieLogic.createSnapshot(),
+          tryDogCard.get
+        )
+      )
     }
     Some(true)
   }
 
   private def reqplayersevent(): Option[Boolean] = {
-    showglobalstatusmethod(ShowGlobalStatus(SHOW_TYPE_PLAYERS))
+    println("Please enter the names of the players, separated by a comma.")
     val names = Try {input().split(",")}
     if (names.isFailure && names.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
     if (names.get.length < 2) {
-      showerrstatmet(ShowErrorStatus(INVALID_NUMBER_OF_PLAYERS))
+      println("Please enter at least two names.")
       return reqplayersevent()
     }
     if (names.get.distinct.length != names.get.length) {
-      showerrstatmet(ShowErrorStatus(IDENTICAL_NAMES))
+      println("Please enter unique names.")
       return reqplayersevent()
     }
     if (names.get.count(_.trim.isBlank) > 0
       || names.get.count(_.trim.length <= 2) > 0
       || names.get.count(_.trim.length > 10) > 0) {
-      showerrstatmet(ShowErrorStatus(INVALID_NAME_FORMAT))
+      println("Please enter valid names. Those can not be empty, shorter than 2 or longer then 10 characters.")
       return reqplayersevent()
     }
     ControlThread.runLater {
-      KnockOutWhist.config
-        .maincomponent
-        .enteredPlayers(names.get
-          .map(s => PlayerFactory.createPlayer(s, playertype = HUMAN))
-          .toList)
+      logic.get.createMatch(names.get
+        .map(s => PlayerFactory.createPlayer(s, playertype = HUMAN))
+        .toList)
+      logic.get.controlMatch()
     }
     Some(true)
   }
 
-  private def reqpicktevmet(event: RequestPickTrumpsuitEvent): Option[Boolean] = {
+  private def reqpicktevmet(event: RequestTrumpSuitEvent): Option[Boolean] = {
     val trySuit = Try {
       val suit = input().toInt
       suit match {
@@ -441,23 +394,16 @@ object TUIMain extends CustomThread with EventListener with UI {
     if (trySuit.isFailure && trySuit.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
+    //TODO verify if the player can actually pick this suit
     ControlThread.runLater {
-      KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, trySuit, event.remaining_players, event.firstRound, event.player)
+      logic.get.undoManager.doStep(
+        SelectTrumpSuitCommand(
+          logic.get.createSnapshot(),
+          logic.get.playerTieLogic.createSnapshot(),
+          trySuit.get
+        )
+      )
     }
-    Some(true)
-  }
-  private def showcurtrevmet(event: ShowCurrentTrickEvent): Option[Boolean] = {
-    TUIUtil.clearConsole()
-    val sb = new StringBuilder()
-    sb.append("Current Trick:\n")
-    sb.append("Trump-Suit: " + event.round.trumpSuit + "\n")
-    if (event.trick.firstCard.isDefined) {
-      sb.append(s"Suit to play: ${event.trick.firstCard.get.suit}\n")
-    }
-    for ((card, player) <- event.trick.cards) {
-      sb.append(s"${player.name} played ${card.toString}\n")
-    }
-    println(sb.toString())
     Some(true)
   }
 
@@ -472,17 +418,17 @@ object TUIMain extends CustomThread with EventListener with UI {
       if (reader.ready()) {
         val in = reader.readLine()
         if (in.equals("undo")) {
-          UndoManager.undoStep()
+          logic.get.undoManager.undoStep()
           throw new UndoneException("Undo")
         } else if (in.equals("redo")) {
-          UndoManager.redoStep()
+          logic.get.undoManager.redoStep()
           throw new UndoneException("Redo")
         }else if(in.equals("load")
-          && KnockOutWhist.config.persistenceManager.canLoadfile("currentSnapshot")) {
-          KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot.json")
+          && logic.get.persistenceManager.canLoadfile("currentSnapshot")) {
+          logic.get.persistenceManager.loadFile("currentSnapshot.json")
           throw new UndoneException("Load")
         }else if(in.equals("save")) {
-          KnockOutWhist.config.persistenceManager.saveFile("currentSnapshot.json")
+          logic.get.persistenceManager.saveFile("currentSnapshot.json")
         }
         return in
       }

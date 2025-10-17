@@ -10,9 +10,9 @@ class CustomPlayerBaseQueue[A](protected var players: Array[A], val start: Int =
   def currentIndex: Int = current
   
   def nextPlayer(): A = {
-    lastReset += 1
     val player = players(current)
     current = (current + 1) % players.length
+    lastReset = lastReset + 1
     player
   }
 

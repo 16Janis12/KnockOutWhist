@@ -1,13 +1,6 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.ui.gui.GUIMain
-import de.knockoutwhist.ui.tui.TUIMain
-import de.knockoutwhist.utils.events.EventHandler
-import de.knockoutwhist.utils.{CustomThread, DelayHandler}
-
-object ControlHandler extends EventHandler {
-  
-}
+import de.knockoutwhist.utils.CustomThread
 
 object ControlThread extends CustomThread {
   

@@ -1,21 +1,19 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, CardManager}
 import de.knockoutwhist.components.Configuration
-import de.knockoutwhist.control.{GameLogic, GameState, LogicSnapshot}
-import de.knockoutwhist.control.GameState.{FinishedMatch, InGame, Lobby, SelectTrump, TieBreak}
+import de.knockoutwhist.control.GameState.*
 import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.{MatchUtil, RoundResult, RoundUtil, TrickUtil}
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.{BasePlayerInputLogic, BasePlayerTieLogic, BaseUndoManager}
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.{BasePersistenceManager, BasePlayerInputLogic, BasePlayerTieLogic, BaseUndoManager}
+import de.knockoutwhist.control.sublogic.{PersistenceManager, PlayerInputLogic, PlayerTieLogic}
+import de.knockoutwhist.control.{GameLogic, GameState, LogicSnapshot}
+import de.knockoutwhist.events.global.*
 import de.knockoutwhist.events.global.tie.TieEvent
-import de.knockoutwhist.events.global.{GameStateChangeEvent, MatchEndEvent, NewRoundEvent, NewTrickEvent, RoundEndEvent, ShowDogsEvent, ShowPlayersOutEvent, TrickEndEvent, TrumpSelectEvent, TurnEvent}
-import de.knockoutwhist.events.old.GLOBAL_STATUS.SHOW_FINISHED_MATCH
-import de.knockoutwhist.events.old.ShowGlobalStatus
 import de.knockoutwhist.events.player.ReceivedHandEvent
 import de.knockoutwhist.events.util.DelayEvent
+import de.knockoutwhist.persistence.MethodEntryPoint.{ControlMatch, ControlRound}
 import de.knockoutwhist.player.{AbstractPlayer, PlayerData}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
-import de.knockoutwhist.undo.Command
 import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.events.EventHandler
 
@@ -30,9 +28,10 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   val ID: UUID = UUID.randomUUID()
 
   //Logics
-  val playerTieLogic: BasePlayerTieLogic = BasePlayerTieLogic(this)
-  val playerInputLogic: BasePlayerInputLogic = BasePlayerInputLogic(this)
+  val playerTieLogic: PlayerTieLogic = BasePlayerTieLogic(this)
+  val playerInputLogic: PlayerInputLogic = BasePlayerInputLogic(this)
   val undoManager: BaseUndoManager = BaseUndoManager(this)
+  val persistenceManager: PersistenceManager = BasePersistenceManager(this)
   
   //Game State
   private[control] var state: GameState = GameState.MainMenu
@@ -54,11 +53,12 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     currentTrick = None
     currentPlayer = None
     playerQueue = None
+    invoke(GameStateChangeEvent(state, Lobby))
     state = Lobby
   }
 
   override def createMatch(players: List[AbstractPlayer]): Match = {
-    val matchImpl = Match(totalplayers = players)
+    val matchImpl = Match(totalplayers = players, playersIn = players)
     currentMatch = Some(matchImpl)
     matchImpl
   }
@@ -67,7 +67,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
     val matchImpl = currentMatch.get
 
-    //TODO update persistence
+    persistenceManager.update(ControlMatch)
 
     if (matchImpl.isOver) {
       //Winner is the last person in the playersIn list
@@ -85,7 +85,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
 
         providePlayersWithCards()
         
-        val randomPlayer: Int = Random.nextInt(matchImpl.playersIn.size)
+        val randomPlayer: Int = 1//Random.nextInt(matchImpl.playersIn.size)
         playerQueue = Some(config.createRightQueue(matchImpl.playersIn.toArray, randomPlayer))
         
         matchImpl.playersIn.foreach(player => {invoke(ReceivedHandEvent(player))})
@@ -134,11 +134,12 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     if (currentRound.isEmpty) throw new IllegalStateException("No current round set")
     val roundImpl = currentRound.get
 
-    //TODO update persistence
+    persistenceManager.update(ControlRound)
 
     if (MatchUtil.isRoundOver(matchImpl, roundImpl)) {
       val roundResult: RoundResult = RoundUtil.finishRound(roundImpl, matchImpl)
       if (roundResult.isTie) {
+        invoke(GameStateChangeEvent(state, TieBreak))
         state = TieBreak
 
         invoke(TieEvent(roundResult.winners))
@@ -206,7 +207,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     if (currentTrick.isEmpty) throw new IllegalStateException("No current trick set")
     val trickImpl = currentTrick.get
 
-    //TODO update persistence
+    persistenceManager.update(ControlRound)
 
     if (TrickUtil.isOver(matchImpl, queueImpl)) {
       val newRound = endTrick()
@@ -220,6 +221,8 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       queueImpl.resetAndSetStart(winner)
       controlRound()
     } else {
+      val playerImpl = queueImpl.nextPlayer()
+      currentPlayer = Some(playerImpl)
       controlPlayerPlay()
     }
   }
@@ -239,10 +242,8 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   }
   
   override def controlPlayerPlay(): Unit = {
-    if (playerQueue.isEmpty) throw new IllegalStateException("No player queue set")
-    val queueImpl = playerQueue.get
-    val playerImpl = queueImpl.nextPlayer()
-    currentPlayer = Some(playerImpl)
+    if (currentPlayer.isEmpty) throw new IllegalStateException("No current player set")
+    val playerImpl = currentPlayer.get
     if (playerImpl.currentHand().isEmpty) {
       controlTrick()
       return
@@ -269,7 +270,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     val handSize = matchImpl.numberofcards
 
     matchImpl.playersIn.foreach(player => {
-      val hand = if (player.isInDogLife) {
+      val hand = if (!player.isInDogLife) {
         cardManagerImpl.createHand(handSize)
       } else {
         cardManagerImpl.createHand(1)
@@ -282,21 +283,23 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   
   // Getters
   
-  def getCurrentState: GameState = state
-  
-  def getCurrentMatch: Option[Match] = currentMatch
-  
-  def getCurrentRound: Option[Round] = currentRound
-  
-  def getCurrentTrick: Option[Trick] = currentTrick
-  
-  def getCurrentPlayer: Option[AbstractPlayer] = currentPlayer
-
-  def getPlayerQueue: Option[CustomPlayerQueue[AbstractPlayer]] = playerQueue
+  override def getCurrentState: GameState = state
+  override def getCurrentMatch: Option[Match] = currentMatch
+  override def getCurrentRound: Option[Round] = currentRound
+  override def getCurrentTrick: Option[Trick] = currentTrick
+  override def getCurrentPlayer: Option[AbstractPlayer] = currentPlayer
+  override def getPlayerQueue: Option[CustomPlayerQueue[AbstractPlayer]] = playerQueue
   
   
   //Snapshotting
-  override def createSnapshot(): LogicSnapshot[BaseGameLogic] = BaseGameLogicSnapshot(this)
+
+  override def createSnapshot(): LogicSnapshot[BaseGameLogic.this.type] = {
+    BaseGameLogicSnapshot(this).asInstanceOf[LogicSnapshot[BaseGameLogic.this.type]]
+  }
+
+  override def endSession(): Unit = {
+    System.exit(0)
+  }
 }
 
 class BaseGameLogicSnapshot(
@@ -331,7 +334,7 @@ class BaseGameLogicSnapshot(
       gameLogic.currentPlayer,
       
       gameLogic.playerQueue.map(pq => pq.currentIndex),
-      gameLogic.playerQueue.map(pq => pq.toList),
+      gameLogic.playerQueue.map(pq => pq.duplicate().toList),
       
       gameLogic.currentMatch match {
         case Some(m) => m.totalplayers.map(p => (p.id, p.generatePlayerData())).toMap
@@ -359,7 +362,7 @@ class BaseGameLogicSnapshot(
 
     //Custom Player Queue
     if (logic.playerQueue.isDefined) {
-      if (players.isDefined || playerIndex.isDefined)
+      if (players.isDefined && playerIndex.isDefined)
         logic.playerQueue = Some(logic.config.createRightQueue(
           players.get.toArray,
           playerIndex.get

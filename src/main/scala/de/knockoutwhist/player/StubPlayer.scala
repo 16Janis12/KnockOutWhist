@@ -4,7 +4,6 @@ import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.CardValue.Ten
 import de.knockoutwhist.cards.Suit.Spades
 import de.knockoutwhist.cards.{Card, Hand}
-import de.knockoutwhist.control.ControlHandler
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 import java.util.UUID

@@ -5,7 +5,7 @@ import de.knockoutwhist.control.LogicSnapshot
 import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
 import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.RoundResult
 import de.knockoutwhist.control.sublogic.PlayerTieLogic
-import de.knockoutwhist.events.global.tie.{TieAllPlayersSelectedEvent, TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
+import de.knockoutwhist.events.global.tie.*
 import de.knockoutwhist.events.player.RequestTieChoiceEvent
 import de.knockoutwhist.events.util.DelayEvent
 import de.knockoutwhist.player.AbstractPlayer
@@ -32,9 +32,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
   override def handleNextTieBreakerPlayer(): Unit = {
     tieBreakerIndex += 1
     if(tieBreakerIndex >= 0 && tieBreakerIndex < tiedPlayers.size) {
-      val player = tiedPlayers(tieBreakerIndex)
-      gameLogic.invoke(TieTurnEvent(player))
-      gameLogic.invoke(RequestTieChoiceEvent(player, highestAllowedNumber()))
+      requestTieChoice(currentTiePlayer())
     } else {
       // All players have selected their tie-breaker cards
       // Find the highest card among selected cards
@@ -75,6 +73,15 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
     }
   }
 
+  override def currentTiePlayer(): AbstractPlayer = {
+    tiedPlayers(tieBreakerIndex)
+  }
+
+  override def requestTieChoice(player: AbstractPlayer): Unit = {
+    gameLogic.invoke(TieTurnEvent(player))
+    gameLogic.invoke(RequestTieChoiceEvent(player, highestAllowedNumber()))
+  }
+
   /**
    * Called when a player has selected a tie-breaker card
    * @param number the index of the selected card
@@ -101,8 +108,15 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
     remainingCards - (tiedPlayers.size - selectedCard.size - 1)
   }
 
-  override def createSnapshot(): LogicSnapshot[BasePlayerTieLogic] = BasePlayerTieLogicSnapshot(this)
-  
+  override def createSnapshot(): LogicSnapshot[BasePlayerTieLogic.this.type] = BasePlayerTieLogicSnapshot(this).asInstanceOf[LogicSnapshot[BasePlayerTieLogic.this.type]]
+
+  // Getter
+  override def getRoundResult: Option[RoundResult] = roundResult
+  override def getTiedPlayers: List[AbstractPlayer] = tiedPlayers
+  override def getTieBreakerIndex: Int = tieBreakerIndex
+  override def getLastNumber: Int = lastNumber
+  override def getSelectedCard: Map[AbstractPlayer, Card] = selectedCard
+
 }
 
 class BasePlayerTieLogicSnapshot(
@@ -110,13 +124,13 @@ class BasePlayerTieLogicSnapshot(
                                   val winners: List[AbstractPlayer],
                                   val tricked: List[AbstractPlayer],
                                   val notTricked: List[AbstractPlayer],
-                                
+
                                   val tiedPlayers: List[AbstractPlayer],
                                   val tieBreakerIndex: Int,
                                   val lastNumber: Int,
                                   val selectedCard: Map[AbstractPlayer, Card]
                                 ) extends LogicSnapshot[BasePlayerTieLogic] {
-  
+
   def this(logic: BasePlayerTieLogic) = {
     this(
       logic.roundResult.map(_.winners).getOrElse(Nil),
@@ -128,7 +142,7 @@ class BasePlayerTieLogicSnapshot(
       logic.selectedCard
     )
   }
-  
+
   override def restore(logic: BasePlayerTieLogic): Unit = {
     if (winners.nonEmpty || tricked.nonEmpty || notTricked.nonEmpty) {
       logic.roundResult = Some(RoundResult(winners, tricked, notTricked))

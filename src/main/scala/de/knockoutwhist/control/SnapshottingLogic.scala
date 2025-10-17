@@ -7,7 +7,7 @@ trait SnapshottingGameLogic {
 }
 
 trait LogicSnapshot[T <: SnapshottingGameLogic] {
-  
+
   def restore(logic: T): Unit
-  
+
 }

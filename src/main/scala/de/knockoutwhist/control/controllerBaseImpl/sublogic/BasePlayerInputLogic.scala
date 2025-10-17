@@ -37,6 +37,7 @@ final class BasePlayerInputLogic(gameLogic: BaseGameLogic) extends PlayerInputLo
        trickImpl
         .addCard(card, player)
     }
+    player.removeCard(card)
     
     gameLogic.currentTrick = Some(newTrick)
     gameLogic.controlTrick()
@@ -57,6 +58,7 @@ final class BasePlayerInputLogic(gameLogic: BaseGameLogic) extends PlayerInputLo
         trickImpl
           .addCard(dog.get, player)
       }
+      player.removeCard(dog.get)
       gameLogic.currentTrick = Some(newTrick)
     }
     gameLogic.controlTrick()

@@ -13,7 +13,7 @@ class BaseUndoManager(gameLogic: BaseGameLogic) extends UndoManager {
   override def doStep(command: Command): Unit = {
     redoStack = Nil
     undoStack = command :: undoStack
-    command.doStep()
+    command.doStep(gameLogic)
   }
 
   override def undoStep(): Unit = {
@@ -24,7 +24,7 @@ class BaseUndoManager(gameLogic: BaseGameLogic) extends UndoManager {
           undoStack = stack
           redoStack = head :: redoStack
           try {
-            head.undoStep()
+            head.undoStep(gameLogic)
           } catch {
             case _: UndoneException =>
           }
@@ -40,7 +40,7 @@ class BaseUndoManager(gameLogic: BaseGameLogic) extends UndoManager {
           redoStack = stack
           undoStack = head :: undoStack
           try {
-            head.doStep()
+            head.doStep(gameLogic)
           } catch {
             case _: UndoneException =>
           }
