@@ -352,6 +352,12 @@ class BaseGameLogicSnapshot(
       val cardManagerImpl = logic.cardManager.get
       if (cardContainer.isDefined && cardIndex.isDefined)
         cardManagerImpl.setState(cardContainer.get, cardIndex.get)
+    } else {
+      if (cardContainer.isDefined && cardIndex.isDefined) {
+        val newCardManager = logic.config.cardManager
+        newCardManager.setState(cardContainer.get, cardIndex.get)
+        logic.cardManager = Some(newCardManager)
+      }
     }
     
 
@@ -362,6 +368,12 @@ class BaseGameLogicSnapshot(
 
     //Custom Player Queue
     if (logic.playerQueue.isDefined) {
+      if (players.isDefined && playerIndex.isDefined)
+        logic.playerQueue = Some(logic.config.createRightQueue(
+          players.get.toArray,
+          playerIndex.get
+        ))
+    } else {
       if (players.isDefined && playerIndex.isDefined)
         logic.playerQueue = Some(logic.config.createRightQueue(
           players.get.toArray,

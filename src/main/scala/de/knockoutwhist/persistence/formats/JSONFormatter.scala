@@ -2,7 +2,7 @@ package de.knockoutwhist.persistence.formats
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.control.GameState
+import de.knockoutwhist.control.{GameLogic, GameState, LogicSnapshot}
 import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogicSnapshot
 import de.knockoutwhist.control.controllerBaseImpl.sublogic.{BasePlayerTieLogic, BasePlayerTieLogicSnapshot}
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
@@ -38,19 +38,18 @@ class JSONFormatter extends FileFormatter {
 
   override def parseFormat(bytes: Array[Byte]): MatchSnapshot = {
     val json = Json.parse(new String(bytes))
-    val gameState = GameState.valueOf((json \ "gamestate").get.asInstanceOf[JsString].value)
-    val methodEntryPoint = (json \ "methodEntryPoint").get match {
+    val methodEntryPoint = (json \ "entryPoint").get match {
       case JsString("None") => None
       case JsString(methodEntryPoint) => Some(MethodEntryPoint.valueOf(methodEntryPoint))
       case default => None
     }
-    val gameLogicJson = (json \ "gameLogic").get match {
+    val gameLogic = (json \ "gameLogic").get match {
       case JsString("None") => None
       case gameLogicJson: JsObject => Some(BaseGameLogicJsonFormatter.createBaseGameLogicFromJson(gameLogicJson, playerUtil))
       case default => None
     }
 
-    MatchSnapshot(methodEntryPoint)
+    MatchSnapshot(methodEntryPoint, gameLogic.asInstanceOf[Option[LogicSnapshot[GameLogic]]])
   }
 
   private object BaseGameLogicJsonFormatter {
@@ -257,13 +256,7 @@ class JSONFormatter extends FileFormatter {
     def parseRoundJson(roundJson: JsObject, playerUtil: PlayerUtil, cc: List[Card]): Round = {
       val tricks = (roundJson \ "tricks").get
       val tricksList = tricks.asInstanceOf[JsArray].value.map(trickJson => TrickJsonFormatter.parseTrickJson(trickJson.asInstanceOf[JsObject], playerUtil, cc)).toList
-      val playersin = (roundJson \ "playersin").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cc)).toList
-      val playersout = (roundJson \ "playersout").get match {
-        case JsString("None") => List()
-        case default => (roundJson \ "playersout").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cc)).toList
-      }
       val trumpSuit = Suit.fromOrdinal((roundJson \ "trumpSuit").get.asInstanceOf[JsNumber].value.toInt)
-      val startingPlayer = (roundJson \ "startingPlayer").get.asInstanceOf[JsNumber].value.toInt
       val winner = if ((roundJson \ "winner").get.isInstanceOf[JsString]) {
         None
       } else {

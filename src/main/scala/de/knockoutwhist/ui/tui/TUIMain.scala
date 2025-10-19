@@ -3,7 +3,7 @@ package de.knockoutwhist.ui.tui
 import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
 import de.knockoutwhist.control.GameState.{Lobby, MainMenu}
 import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.MatchUtil
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.{MatchUtil, PlayerUtil}
 import de.knockoutwhist.control.sublogic.PlayerTieLogic
 import de.knockoutwhist.control.{ControlThread, GameLogic}
 import de.knockoutwhist.events.*
@@ -254,7 +254,12 @@ class TUIMain extends CustomThread with EventListener with UI {
     if(tryTie.isFailure && tryTie.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
-    //TODO verify if the player can actually pick this number
+
+    if (tryTie.isFailure) {
+      println("Invalid input. Please try again.")
+      return reqnumbereventmet(event)
+    }
+
     ControlThread.runLater {
       logic.get.undoManager.doStep(
         SelectTieNumberCommand(
@@ -269,6 +274,12 @@ class TUIMain extends CustomThread with EventListener with UI {
 
   private def reqcardeventmet(event: PlayCardEvent): Option[Boolean] = {
     println("Which card do you want to play?")
+    if (logic.isEmpty) throw new IllegalStateException("Logic is not initialized")
+    val logicImpl = logic.get
+    if (logicImpl.getCurrentRound.isEmpty) throw new IllegalStateException("No round found!")
+    val roundImpl = logicImpl.getCurrentRound.get
+    if (logicImpl.getCurrentTrick.isEmpty) throw new IllegalStateException("No trick found!")
+    val trickImpl = logicImpl.getCurrentTrick.get
     if (event.player.currentHand().isEmpty) {
       println("You have no cards to play! This should not happen.")
       return Some(true)
@@ -286,7 +297,19 @@ class TUIMain extends CustomThread with EventListener with UI {
     if (tryCard.isFailure && tryCard.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
-    //TODO verify if the player can actually play this card
+
+    if (tryCard.isFailure) {
+      println("Invalid input. Please try again.")
+      return reqcardeventmet(event)
+    }
+
+    if (!PlayerUtil.canPlayCard(tryCard.get, roundImpl, trickImpl, event.player)) {
+      println("You cannot play this card. The suit to follow is " +
+        s"${if (trickImpl.firstCard.isDefined) trickImpl.firstCard.get.suit.toString else "N/A"}. " +
+        s"You have to follow suit if you can.")
+      return reqcardeventmet(event)
+    }
+
     ControlThread.runLater {
       logic.get.undoManager.doStep(
         PlayCardCommand(
@@ -338,7 +361,12 @@ class TUIMain extends CustomThread with EventListener with UI {
     if (tryDogCard.isFailure && tryDogCard.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
-    //TODO verify if the player can actually play this card
+
+    if (tryDogCard.isFailure) {
+      println("Invalid input. Please try again.")
+      return reqdogeventmet(event)
+    }
+
     ControlThread.runLater {
       logic.get.undoManager.doStep(
         PlayDogCardCommand(
@@ -394,7 +422,10 @@ class TUIMain extends CustomThread with EventListener with UI {
     if (trySuit.isFailure && trySuit.failed.get.isInstanceOf[UndoneException]) {
       return Some(true)
     }
-    //TODO verify if the player can actually pick this suit
+    if (trySuit.isFailure) {
+      println("Invalid input. Please try again.")
+      return reqpicktevmet(event)
+    }
     ControlThread.runLater {
       logic.get.undoManager.doStep(
         SelectTrumpSuitCommand(
@@ -425,10 +456,12 @@ class TUIMain extends CustomThread with EventListener with UI {
           throw new UndoneException("Redo")
         }else if(in.equals("load")
           && logic.get.persistenceManager.canLoadfile("currentSnapshot")) {
-          logic.get.persistenceManager.loadFile("currentSnapshot.json")
+          ControlThread.runLater {
+            logic.get.persistenceManager.loadFile("currentSnapshot")
+          }
           throw new UndoneException("Load")
         }else if(in.equals("save")) {
-          logic.get.persistenceManager.saveFile("currentSnapshot.json")
+          logic.get.persistenceManager.saveFile("currentSnapshot")
         }
         return in
       }
