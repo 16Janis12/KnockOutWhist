@@ -20,7 +20,7 @@ object RoundUtil {
     val winners = tricksMapped
       .filter((p, i) => i == maxTricks)
       .keys.toList
-    val trickedPlayers = tricksMapped.keys.toList
+    val trickedPlayers = tricksMapped.map((p, i) => ResultPlayer(p, i)).toList
     val notTrickedPlayers = matchImpl.playersIn.filterNot(trickedPlayers.contains)
     RoundResult(winners, trickedPlayers, notTrickedPlayers)
   }
@@ -36,6 +36,8 @@ object RoundUtil {
 
 }
 
-case class RoundResult(winners: List[AbstractPlayer], tricked: List[AbstractPlayer], notTricked: List[AbstractPlayer]) {
+case class RoundResult(winners: List[AbstractPlayer], tricked: List[ResultPlayer], notTricked: List[AbstractPlayer]) {
   def isTie: Boolean = winners.size > 1
 }
+
+case class ResultPlayer(player: AbstractPlayer, amountOfTricks: Int)

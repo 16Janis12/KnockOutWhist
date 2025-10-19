@@ -7,19 +7,9 @@ import de.knockoutwhist.rounds.{Round, Trick}
 object PlayerUtil {
   
   def canPlayCard(card: Card, round: Round, trick: Trick, player: AbstractPlayer): Boolean = {
-    if (trick.firstCard.isDefined) {
-      val firstCard = trick.firstCard.get
-      if (firstCard.suit != card.suit) {
-        val alternatives: List[Card] = for cardInHand <- player.currentHand().get.cards
-                                           if cardInHand.suit == firstCard.suit
-        yield cardInHand
-        if (round.trumpSuit == card.suit && alternatives.isEmpty) {
-          return true
-        }
-        if (alternatives.nonEmpty) {
-          return false
-        }
-      }
+    val alternatives = alternativeCards(card, round, trick, player)
+    if (alternatives.nonEmpty) {
+      return false
     }
     true
   }

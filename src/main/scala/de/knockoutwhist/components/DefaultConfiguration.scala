@@ -6,6 +6,7 @@ import de.knockoutwhist.di.{KnockOutConfigurationModule, KnockOutLogicModule}
 import de.knockoutwhist.persistence.formats.FileFormatter
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
+import de.knockoutwhist.ui.gui.GUIMain
 import de.knockoutwhist.ui.tui.TUIMain
 import de.knockoutwhist.utils
 import de.knockoutwhist.utils.CustomPlayerQueue
@@ -21,7 +22,8 @@ class DefaultConfiguration extends Configuration {
   override def cardManager: CardManager = injector.getInstance(classOf[CardManager])
   override def fileFormatter: FileFormatter = injector.getInstance(classOf[FileFormatter])
   override def uis: Set[UI] = Set[UI](
-    TUIMain()
+    TUIMain(),
+    GUIMain()
   )
   override def listener: Set[EventListener] = Set[EventListener](
     utils.DelayHandler

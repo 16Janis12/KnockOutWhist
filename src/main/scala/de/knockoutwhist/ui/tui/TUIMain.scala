@@ -9,7 +9,7 @@ import de.knockoutwhist.control.{ControlThread, GameLogic}
 import de.knockoutwhist.events.*
 import de.knockoutwhist.events.global.*
 import de.knockoutwhist.events.global.tie.*
-import de.knockoutwhist.events.player.{PlayCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}
+import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.UI
@@ -68,12 +68,12 @@ class TUIMain extends CustomThread with EventListener with UI {
         case event: TurnEvent =>
           if (logic.get.getCurrentTrick.isEmpty) {
             println("No trick found!")
-            return Some(true)
+            return
           }
           val trickImpl = logic.get.getCurrentTrick.get
           if (logic.get.getCurrentRound.isEmpty) {
             println("No round found!")
-            return Some(true)
+            return
           }
           val roundImpl = logic.get.getCurrentRound.get
           TUIUtil.clearConsole()
@@ -110,7 +110,7 @@ class TUIMain extends CustomThread with EventListener with UI {
           println(s"The winner(s) of the tie-breaker: ${event.winners.map(_.name).mkString(", ")}")
         case event: RequestTieChoiceEvent =>
           reqnumbereventmet(event)
-        case event: PlayCardEvent =>
+        case event: RequestCardEvent =>
           if (event.player.isInDogLife) reqdogeventmet(event)
           else reqcardeventmet(event)
         case event: RequestTrumpSuitEvent =>
@@ -128,7 +128,7 @@ class TUIMain extends CustomThread with EventListener with UI {
   }
   
   
-  object TUICards {
+  private object TUICards {
     def renderCardAsString(card: Card): Vector[String] = {
       val lines = "│         │"
       if (card.cardValue == CardValue.Ten) {
@@ -272,7 +272,7 @@ class TUIMain extends CustomThread with EventListener with UI {
     Some(true)
   }
 
-  private def reqcardeventmet(event: PlayCardEvent): Option[Boolean] = {
+  private def reqcardeventmet(event: RequestCardEvent): Option[Boolean] = {
     println("Which card do you want to play?")
     if (logic.isEmpty) throw new IllegalStateException("Logic is not initialized")
     val logicImpl = logic.get
@@ -322,7 +322,7 @@ class TUIMain extends CustomThread with EventListener with UI {
     Some(true)
   }
 
-  private def reqdogeventmet(event: PlayCardEvent): Option[Boolean] = {
+  private def reqdogeventmet(event: RequestCardEvent): Option[Boolean] = {
     println("You are using your dog life. Do you want to play your final card now?")
     if (event.player.currentHand().isEmpty) {
       println("You have no cards to play! This should not happen.")

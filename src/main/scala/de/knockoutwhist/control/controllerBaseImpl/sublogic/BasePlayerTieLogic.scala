@@ -3,7 +3,7 @@ package de.knockoutwhist.control.controllerBaseImpl.sublogic
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.LogicSnapshot
 import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.RoundResult
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.{ResultPlayer, RoundResult}
 import de.knockoutwhist.control.sublogic.PlayerTieLogic
 import de.knockoutwhist.events.global.tie.*
 import de.knockoutwhist.events.player.RequestTieChoiceEvent
@@ -17,6 +17,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
   private[control] var tieBreakerIndex: Int = -1
   private[control] var lastNumber = -1
   private[control] var selectedCard: Map[AbstractPlayer, Card] = Map.empty
+  private var _waitingForInput: Boolean = false
   
   override def handleTie(roundResult: RoundResult): Unit = {
     this.roundResult = Some(roundResult)
@@ -78,6 +79,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
   }
 
   override def requestTieChoice(player: AbstractPlayer): Unit = {
+    _waitingForInput = true
     gameLogic.invoke(TieTurnEvent(player))
     gameLogic.invoke(RequestTieChoiceEvent(player, highestAllowedNumber()))
   }
@@ -90,9 +92,12 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
     val player = tiedPlayers(tieBreakerIndex)
     val highestNumber = highestAllowedNumber()
     if (number < 0 || number > highestNumber)
-      throw new IllegalArgumentException(s"Selected number $number is out of allowed range (1 to $highestNumber)")
+      throw new IllegalArgumentException(s"Selected number $number is out of allowed range (0 to $highestNumber)")
 
     if (gameLogic.cardManager.isEmpty) throw new IllegalStateException("No card manager set")
+    
+    _waitingForInput = false
+    
     val cardManager = gameLogic.cardManager.get
     val card = cardManager.removeCards(number).last
     selectedCard += (player -> card)
@@ -108,6 +113,10 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
     remainingCards - (tiedPlayers.size - selectedCard.size - 1)
   }
 
+  override def isWaitingForInput: Boolean = _waitingForInput
+  
+  
+
   override def createSnapshot(): LogicSnapshot[BasePlayerTieLogic.this.type] = BasePlayerTieLogicSnapshot(this).asInstanceOf[LogicSnapshot[BasePlayerTieLogic.this.type]]
 
   // Getter
@@ -122,7 +131,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
 class BasePlayerTieLogicSnapshot(
                                   //Round result
                                   val winners: List[AbstractPlayer],
-                                  val tricked: List[AbstractPlayer],
+                                  val tricked: List[ResultPlayer],
                                   val notTricked: List[AbstractPlayer],
 
                                   val tiedPlayers: List[AbstractPlayer],

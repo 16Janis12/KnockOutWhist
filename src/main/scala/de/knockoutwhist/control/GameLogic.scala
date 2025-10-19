@@ -20,6 +20,8 @@ trait GameLogic extends EventHandler with SnapshottingGameLogic  {
   def controlPlayerPlay(): Unit
   def providePlayersWithCards(): Unit
   
+  def isWaitingForInput: Boolean
+  
   def playerInputLogic: PlayerInputLogic
   def playerTieLogic: PlayerTieLogic
   def undoManager: UndoManager

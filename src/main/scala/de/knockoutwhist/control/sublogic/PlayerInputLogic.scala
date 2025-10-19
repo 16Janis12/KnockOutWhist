@@ -10,6 +10,8 @@ trait PlayerInputLogic {
   def requestCard(player: AbstractPlayer): Unit
   def receivedCard(card: Card): Unit
   def receivedDog(dog: Option[Card]): Unit
+
+  def isWaitingForInput: Boolean
   
 
 }

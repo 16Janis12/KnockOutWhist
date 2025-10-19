@@ -14,6 +14,8 @@ trait PlayerTieLogic extends SnapshottingGameLogic {
   def receivedTieBreakerCard(number: Int): Unit
   def highestAllowedNumber(): Int
 
+  def isWaitingForInput: Boolean
+
   def getRoundResult: Option[RoundResult]
   def getTiedPlayers: List[AbstractPlayer]
   def getTieBreakerIndex: Int

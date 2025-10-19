@@ -175,7 +175,9 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       winner = Some(winner)
     )
     
-    invoke(RoundEndEvent(winner))
+    invoke(RoundEndEvent(winner, roundResult.tricked.filter(
+      rp => rp.player == winner
+    ).map(rp => rp.amountOfTricks).sum))
     invoke(DelayEvent(2000))
 
     if (roundResult.notTricked.nonEmpty) {
@@ -194,7 +196,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       }
     }
     roundResult.tricked.foreach(player => {
-      player.resetDogLife()
+      player.player.resetDogLife()
     })
     matchImpl.addRound(resultingRound)
   }
@@ -257,6 +259,15 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     playerInputLogic.requestCard(playerImpl)
   }
 
+  override def isWaitingForInput: Boolean = {
+    if (state == InGame || state == SelectTrump) {
+      playerInputLogic.isWaitingForInput
+    } else if (state == TieBreak) {
+      playerTieLogic.isWaitingForInput
+    } else {
+      false
+    }
+  }
 
   //
   override def providePlayersWithCards(): Unit = {
@@ -298,6 +309,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   }
 
   override def endSession(): Unit = {
+    //TODO Return to main menu
     System.exit(0)
   }
 }
