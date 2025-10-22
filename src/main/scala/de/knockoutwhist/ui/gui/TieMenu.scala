@@ -15,8 +15,8 @@ import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
 import scalafx.scene.control.{Button, Label, Slider}
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.*
+import scalafx.scene.layout.Priority.Always
 import scalafx.scene.text.Font
 import scalafx.scene.{Node, Parent, layout}
 import scalafx.util.Duration

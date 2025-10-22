@@ -2,9 +2,9 @@ package de.knockoutwhist.persistence.formats
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.control.{GameLogic, GameState, LogicSnapshot}
 import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogicSnapshot
 import de.knockoutwhist.control.controllerBaseImpl.sublogic.{BasePlayerTieLogic, BasePlayerTieLogicSnapshot}
+import de.knockoutwhist.control.{GameLogic, GameState, LogicSnapshot}
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
 import de.knockoutwhist.player.{AbstractPlayer, PlayerData, PlayerFactory, Playertype}
 import de.knockoutwhist.rounds.{Match, Round, Trick}

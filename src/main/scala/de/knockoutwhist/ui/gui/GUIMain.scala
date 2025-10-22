@@ -3,8 +3,8 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.control.GameLogic
 import de.knockoutwhist.control.GameState.{InGame, Lobby, MainMenu, TieBreak}
-import de.knockoutwhist.events.global.{CardPlayedEvent, GameStateChangeEvent, MatchEndEvent, NewRoundEvent, RoundEndEvent, TrickEndEvent, TrumpSelectEvent, TrumpSelectedEvent, TurnEvent}
 import de.knockoutwhist.events.global.tie.{TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
+import de.knockoutwhist.events.global.*
 import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI

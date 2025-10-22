@@ -1,10 +1,8 @@
 package de.knockoutwhist.player
 
-import de.knockoutwhist.cards.{Card, Hand, Suit}
+import de.knockoutwhist.cards.{Card, Hand}
 
 import java.util.UUID
-import scala.collection.immutable
-import scala.util.Try
 
 //If you get an uuid conflict, go play the lottery!!!
 abstract case class AbstractPlayer private[player](name: String, id: UUID = UUID.randomUUID()) {

@@ -2,8 +2,8 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.BasePersistenceManager
 import de.knockoutwhist.control.ControlThread
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.BasePersistenceManager
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.tui.TUIMain
@@ -13,8 +13,8 @@ import scalafx.animation.Timeline
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft, TopRight}
 import scalafx.scene.Parent
-import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.*
+import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
@@ -70,7 +70,7 @@ class MainMenu(gui: GUIMain) {
           text = "Load Game"
           font = Font.font(20)
           styleClass += Styles.ACCENT
-          disable = gui.logic.isEmpty || gui.logic.get.persistenceManager.canLoadfile("currentSnapshot")
+          disable = gui.logic.isDefined && !gui.logic.get.persistenceManager.canLoadfile("currentSnapshot")
           onMouseClicked = _ => gui.logic.get.persistenceManager.loadFile("currentSnapshot")
         }
       )

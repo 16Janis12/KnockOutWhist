@@ -5,7 +5,7 @@ import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 
 object DelayHandler extends EventListener {
 
-  private[knockoutwhist] var activateDelay: Boolean = true
+  private[knockoutwhist] var activateDelay: Boolean = false
 
   override def listen(event: SimpleEvent): Unit = {
     event match {

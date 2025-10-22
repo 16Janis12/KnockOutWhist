@@ -7,6 +7,8 @@ import de.knockoutwhist.rounds.{Round, Trick}
 object PlayerUtil {
   
   def canPlayCard(card: Card, round: Round, trick: Trick, player: AbstractPlayer): Boolean = {
+    if (trick.firstCard.isEmpty)
+      return true
     val alternatives = alternativeCards(card, round, trick, player)
     if (alternatives.nonEmpty) {
       return false

@@ -9,4 +9,5 @@ object ControlThread extends CustomThread {
   def isControlThread: Boolean = Thread.currentThread().equals(ControlThread)
 
   override def instance: CustomThread = ControlThread
+  
 }

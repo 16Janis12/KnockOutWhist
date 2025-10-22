@@ -256,41 +256,26 @@ class Game(gui: GUIMain) {
             if (logic.getCurrentPlayer.isDefined && logic.isWaitingForInput) {
               val currentPlayer = logic.getCurrentPlayer.get
               if (!currentPlayer.isInDogLife) {
-                if (PlayerUtil.canPlayCard(card, currentRound, currentTrick, currentPlayer)) {
+                if (!PlayerUtil.canPlayCard(card, currentRound, currentTrick, currentPlayer)) {
                   val pulse = Animations.pulse(this, Duration(400))
                   pulse.play()
-                }
-                hideCards(this)
-                val slideOut = Animations.slideOutUp(this, Duration(400), -350)
-                slideOut.onFinished = _ => {
-                  visible = false
-                  ControlThread.runLater {
-                    logic.undoManager.doStep(
-                      PlayCardCommand(
-                        logic.createSnapshot(),
-                        logic.playerTieLogic.createSnapshot(),
-                        card
+                } else {
+                  hideCards(this)
+                  val slideOut = Animations.slideOutUp(this, Duration(400), -350)
+                  slideOut.onFinished = _ => {
+                    visible = false
+                    ControlThread.runLater {
+                      logic.undoManager.doStep(
+                        PlayCardCommand(
+                          logic.createSnapshot(),
+                          logic.playerTieLogic.createSnapshot(),
+                          card
+                        )
                       )
-                    )
+                    }
                   }
+                  slideOut.play()
                 }
-                slideOut.play()
-              } else {
-                hideCards(this)
-                val slideOutDog = Animations.slideOutUp(this, Duration(400), -350)
-                slideOutDog.onFinished = _ => {
-                  visible = false
-                  ControlThread.runLater {
-                    logic.undoManager.doStep(
-                      PlayDogCardCommand(
-                        logic.createSnapshot(),
-                        logic.playerTieLogic.createSnapshot(),
-                        Some(card)
-                      )
-                    )
-                  }
-                }
-                slideOutDog.play()
               }
             }
           }
