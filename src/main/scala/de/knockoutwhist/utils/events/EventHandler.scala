@@ -18,9 +18,6 @@ abstract class EventHandler {
   }
 
   def invoke(event: SimpleEvent): Boolean = {
-    if (!ControlThread.isControlThread) {
-      throw new IllegalStateException("Cannot invoke event from a non control thread")
-    }
     event match {
       case simpleEvent: SimpleEvent =>
         listeners.map(_.listen(simpleEvent)).nonEmpty
