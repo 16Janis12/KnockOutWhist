@@ -5,7 +5,7 @@ import de.knockoutwhist.control.GameLogic
 import de.knockoutwhist.control.GameState.{InGame, Lobby, MainMenu, TieBreak}
 import de.knockoutwhist.events.global.tie.{TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
 import de.knockoutwhist.events.global.*
-import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent}
+import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.CustomThread
@@ -89,9 +89,9 @@ class GUIMain extends JFXApp3 with EventListener with UI {
             _game.updateFirstCard(_logic.get.getCurrentTrick.get.firstCard.get)
           else
             _game.resetFirstCard()
-        case RequestTieChoiceEvent =>
-          _tieMenu.showNeccessary()
         case event: RequestTieChoiceEvent =>
+          _tieMenu.showNeccessary()
+        case event: RequestTrumpSuitEvent =>
           _pickTrumpsuit.showPickTrumpsuit(event.player)
         case _ => None
       }
