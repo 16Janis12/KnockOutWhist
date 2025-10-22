@@ -6,8 +6,8 @@ import de.knockoutwhist.rounds.{Match, Round}
 
 object RoundUtil {
   
-  def createRound(trumpSuit: Suit): Round = {
-    Round(trumpSuit, false)
+  def createRound(trumpSuit: Suit, firstRound: Boolean = false): Round = {
+    Round(trumpSuit, firstRound)
   }
 
   def finishRound(round: Round, matchImpl: Match): RoundResult = {

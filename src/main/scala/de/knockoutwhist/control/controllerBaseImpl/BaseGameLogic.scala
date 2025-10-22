@@ -81,7 +81,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
         if (cardManager.isEmpty) throw new IllegalStateException("No card manager set")
         val cardManagerImpl = cardManager.get
         val firstCard = cardManagerImpl.nextCard()
-        val newRound = RoundUtil.createRound(firstCard.suit)
+        val newRound = RoundUtil.createRound(firstCard.suit, true)
 
         providePlayersWithCards()
         
@@ -180,7 +180,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     ).map(rp => rp.amountOfTricks).sum))
     invoke(DelayEvent(2000))
 
-    if (roundResult.notTricked.nonEmpty) {
+    if (roundResult.notTricked.nonEmpty && !roundImpl.firstRound) {
       if (matchImpl.dogLife) {
         invoke(ShowPlayersOutEvent(roundResult.notTricked))
         invoke(DelayEvent(2000))
