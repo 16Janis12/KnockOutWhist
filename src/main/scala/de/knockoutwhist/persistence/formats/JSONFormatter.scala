@@ -103,32 +103,38 @@ class JSONFormatter extends FileFormatter {
       val cardIndex = (baseGameLogicJson \ "cardManagerContainer" \ "currentIdx").get match {
         case JsString("None") => None
         case JsNumber(idx) => Some(idx.toInt)
+        case _ => None
       }
 
       val matchImpl = (baseGameLogicJson \ "match").get match {
         case JsString("None") => None
         case matchJson: JsObject => Some(MatchJsonFormatter.parseMatchJson(matchJson, playerUtil, cc))
+        case _ => None
       }
 
       val round = (baseGameLogicJson \ "round").get match {
         case JsString("None") => None
         case roundJson: JsObject => Some(RoundJsonFormatter.parseRoundJson(roundJson, playerUtil, cc))
+        case _ => None
       }
 
       val trick = (baseGameLogicJson \ "trick").get match {
         case JsString("None") => None
         case trickJson: JsObject => Some(TrickJsonFormatter.parseTrickJson(trickJson, playerUtil, cc))
+        case _ => None
       }
 
       val player = (baseGameLogicJson \ "player").get match {
         case JsString("None") => None
         case playerJson: JsObject => Some(PlayerJsonFormatter.parsePlayerJson(playerJson, playerUtil, cc))
+        case _ => None
       }
 
       val queueJson = (baseGameLogicJson \ "queue").get
       val playerIndex = (queueJson \ "currentIndx").get match {
         case JsString("None") => None
         case JsNumber(idx) => Some(idx.toInt)
+        case _ => None
       }
       val playersJson = (queueJson \ "players").get
       val players = if (playersJson.isInstanceOf[JsString]) {
@@ -184,7 +190,7 @@ class JSONFormatter extends FileFormatter {
       val doglife = (playerJson \ "doglife").get.asInstanceOf[JsBoolean].value
       val playerType = Playertype.valueOf((playerJson \ "playerType").get.asInstanceOf[JsString].value)
 
-      val hand = if (handJson.isInstanceOf[JsString]) {
+      val hand = if (handJson.isEmpty || !handJson.get.isInstanceOf[JsObject]) {
         None
       } else {
         Some(parseHandJson(handJson.get.asInstanceOf[JsObject], cards))

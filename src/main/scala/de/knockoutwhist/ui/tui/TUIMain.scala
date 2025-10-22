@@ -21,7 +21,8 @@ import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
 import java.io.{BufferedReader, InputStreamReader}
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.annotation.tailrec
-import scala.util.{Failure, Success, Try}
+import scala.util.boundary.break
+import scala.util.{Failure, Success, Try, boundary}
 
 class TUIMain extends CustomThread with EventListener with UI {
 
@@ -66,28 +67,30 @@ class TUIMain extends CustomThread with EventListener with UI {
           TUIUtil.clearConsole(2)
           println(s"${event.player.name} will select the next trump suit.")
         case event: TurnEvent =>
-          if (logic.get.getCurrentTrick.isEmpty) {
-            println("No trick found!")
-            return
+          boundary {
+            if (logic.get.getCurrentTrick.isEmpty) {
+              println("No trick found!")
+              break()
+            }
+            val trickImpl = logic.get.getCurrentTrick.get
+            if (logic.get.getCurrentRound.isEmpty) {
+              println("No round found!")
+              break()
+            }
+            val roundImpl = logic.get.getCurrentRound.get
+            TUIUtil.clearConsole()
+            val sb = new StringBuilder()
+            sb.append("Current Trick:\n")
+            sb.append("Trump-Suit: " + roundImpl.trumpSuit + "\n")
+            if (trickImpl.firstCard.isDefined) {
+              sb.append(s"Suit to play: ${trickImpl.firstCard.get.suit}\n")
+            }
+            for ((card, player) <- trickImpl.cards) {
+              sb.append(s"${player.name} played ${card.toString}\n")
+            }
+            println(sb.toString())
+            println(s"It is now ${event.player.name}'s turn.")
           }
-          val trickImpl = logic.get.getCurrentTrick.get
-          if (logic.get.getCurrentRound.isEmpty) {
-            println("No round found!")
-            return
-          }
-          val roundImpl = logic.get.getCurrentRound.get
-          TUIUtil.clearConsole()
-          val sb = new StringBuilder()
-          sb.append("Current Trick:\n")
-          sb.append("Trump-Suit: " + roundImpl.trumpSuit + "\n")
-          if (trickImpl.firstCard.isDefined) {
-            sb.append(s"Suit to play: ${trickImpl.firstCard.get.suit}\n")
-          }
-          for ((card, player) <- trickImpl.cards) {
-            sb.append(s"${player.name} played ${card.toString}\n")
-          }
-          println(sb.toString())
-          println(s"It is now ${event.player.name}'s turn.")
         case event: TieAllPlayersSelectedEvent =>
           TUIUtil.clearConsole(2)
           println(s"All players have selected their tie cards.")

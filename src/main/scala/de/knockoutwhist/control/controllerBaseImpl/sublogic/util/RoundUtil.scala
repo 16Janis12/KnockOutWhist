@@ -21,7 +21,7 @@ object RoundUtil {
       .filter((p, i) => i == maxTricks)
       .keys.toList
     val trickedPlayers = tricksMapped.map((p, i) => ResultPlayer(p, i)).toList
-    val notTrickedPlayers = matchImpl.playersIn.filterNot(trickedPlayers.contains)
+    val notTrickedPlayers = matchImpl.playersIn.filterNot(p => tricksMapped.keySet.contains(p))
     RoundResult(winners, trickedPlayers, notTrickedPlayers)
   }
   
