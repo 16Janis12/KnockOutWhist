@@ -1,14 +1,12 @@
 package de.knockoutwhist
 
 
-import com.google.inject.{Guice, Inject, Injector}
-import de.knockoutwhist.components.{Configuration, DefaultConfiguration}
-import de.knockoutwhist.control.{ControlHandler, ControlThread}
+import com.google.inject.{Guice, Injector}
+import de.knockoutwhist.components.Configuration
+import de.knockoutwhist.control.ControlThread
+import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
 import de.knockoutwhist.di.KnockOutConfigurationModule
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
-import de.knockoutwhist.ui.gui.GUIMain
-import de.knockoutwhist.ui.tui.TUIMain
+import de.knockoutwhist.utils.events.EventListener
 
 
 object KnockOutWhist {
@@ -33,14 +31,15 @@ object KnockOutWhist {
   
   def entry(configuration: Configuration): Unit = {
     _config = Some(configuration)
-    for (handler <- configuration.listener) ControlHandler.addListener(handler)
+    val baseLogic = BaseGameLogic(configuration)
+    for (handler <- configuration.listener) baseLogic.addListener(handler)
     ControlThread.start()
-    configuration.persistenceManager.loadManager()
     for (ui <- configuration.uis) {
-      if (!ui.initial) throw new IllegalStateException(s"${ui.getClass.getName} could not be started.")
-    }
-    ControlThread.runLater {
-      ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+      if (!ui.initial(baseLogic)) throw new IllegalStateException(s"${ui.getClass.getName} could not be started.")
+      ui match {
+        case eventListener: EventListener => baseLogic.addListener(eventListener)
+        case _ =>
+      }
     }
   }
   

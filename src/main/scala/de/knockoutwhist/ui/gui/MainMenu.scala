@@ -2,10 +2,8 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
-import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
-import de.knockoutwhist.persistence.stub.PersistenceBaseManager
+import de.knockoutwhist.control.ControlThread
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.BasePersistenceManager
 import de.knockoutwhist.player.Playertype.HUMAN
 import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory}
 import de.knockoutwhist.ui.tui.TUIMain
@@ -15,27 +13,27 @@ import scalafx.animation.Timeline
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter, TopLeft, TopRight}
 import scalafx.scene.Parent
+import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.{Alert, Button, Label, Slider, TextField}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.text.{Font, TextAlignment}
 import scalafx.util.Duration
 
-import java.awt.Taskbar.Feature
+import java.awt.Taskbar.{Feature, getTaskbar}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-object MainMenu {
+class MainMenu(gui: GUIMain) {
 
   private val mainMenu: StackPane = new StackPane()
   
   def current_root: Parent = mainMenu
 
   def createMainMenu: StackPane = {
-    GUIMain.stage.maximized = false
-    GUIMain.stage.resizable = true
+    gui.stage.maximized = false
+    gui.stage.resizable = true
     changeChild(new VBox {
       alignment = Center
       spacing = 10
@@ -54,7 +52,7 @@ object MainMenu {
           styleClass += Styles.SUCCESS
           onMouseClicked = _ => {
             ControlThread.runLater {
-              KnockOutWhist.config.maincomponent.startMatch()
+              gui.logic.get.createSession()
             }
           }
         },
@@ -72,8 +70,8 @@ object MainMenu {
           text = "Load Game"
           font = Font.font(20)
           styleClass += Styles.ACCENT
-          disable = !KnockOutWhist.config.persistenceManager.canLoadfile("currentSnapshot")
-          onMouseClicked = _ => KnockOutWhist.config.persistenceManager.loadFile("currentSnapshot")
+          disable = gui.logic.isDefined && !gui.logic.get.persistenceManager.canLoadfile("currentSnapshot")
+          onMouseClicked = _ => gui.logic.get.persistenceManager.loadFile("currentSnapshot")
         }
       )
     }, Duration(1000))
@@ -95,7 +93,7 @@ object MainMenu {
     }
   }
   def createPlayeramountmenu(): Unit = {
-    GUIMain.stage.maximized = true
+    gui.stage.maximized = true
     changeChild(new BorderPane {
       margin = Insets(50, 50, 50, 50)
       val players: VBox = new VBox {
@@ -125,7 +123,7 @@ object MainMenu {
           }
           onMouseClicked = _ => {
             ControlThread.runLater {
-              ControlHandler.invoke(GameStateUpdateEvent(MAIN_MENU))
+              gui.logic.get.endSession()
             }
           }
         }
@@ -159,7 +157,8 @@ object MainMenu {
               }.showAndWait()
             }else {
               ControlThread.runLater {
-                KnockOutWhist.config.maincomponent.enteredPlayers(playerNamesList.toList)
+                gui.logic.get.createMatch(playerNamesList.toList)
+                gui.logic.get.controlMatch()
               }
             }
           }

@@ -33,4 +33,13 @@ end CardValue
 case class Card(cardValue: CardValue, suit: Suit) {
   
   override def toString: String = s"$cardValue of $suit"
+
+  override def canEqual(that: Any): Boolean = that.isInstanceOf[Card]
+  
+  override def equals(obj: Any): Boolean = obj match {
+    case that: Card =>
+      this.cardValue == that.cardValue &&
+      this.suit == that.suit
+    case _ => false
+  }
 }

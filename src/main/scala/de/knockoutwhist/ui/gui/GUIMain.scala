@@ -1,15 +1,11 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
-import de.knockoutwhist.events.GLOBAL_STATUS.{SHOW_FINISHED_MATCH, SHOW_TIE_TIE, SHOW_TIE_WINNER}
-import de.knockoutwhist.events.PLAYER_STATUS.{SHOW_TIE_NUMBERS, SHOW_WON_PLAYER_TRICK}
-import de.knockoutwhist.events.ROUND_STATUS.{SHOW_TURN, WON_ROUND}
-import de.knockoutwhist.events.cards.ShowTieCardsEvent
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent, RequestPickTrumpsuitEvent, RequestTieNumberEvent}
-import de.knockoutwhist.events.round.ShowCurrentTrickEvent
-import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU, NO_SET, PLAYERS, TIE, TRUMPSUIT}
-import de.knockoutwhist.events.ui.{GameState, GameStateUpdateEvent}
-import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus, ShowRoundStatus}
+import de.knockoutwhist.control.GameLogic
+import de.knockoutwhist.control.GameState.{InGame, Lobby, MainMenu, TieBreak}
+import de.knockoutwhist.events.global.tie.{TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
+import de.knockoutwhist.events.global.*
+import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.CustomThread
@@ -21,12 +17,24 @@ import scalafx.beans.property.ObjectProperty
 import scalafx.scene.{Parent, Scene}
 
 import scala.compiletime.uninitialized
+import scala.util.Try
 
-object GUIMain extends JFXApp3 with EventListener with UI {
+class GUIMain extends JFXApp3 with EventListener with UI {
 
   private var platformReady: Boolean = false
-  private var internState: GameState = NO_SET
   private var currentRoot: Parent = uninitialized
+  private var _logic: Option[GameLogic] = None
+
+  //UIS
+  private var _mainMenu: MainMenu = uninitialized
+  private var _game: Game = uninitialized
+  private var _tieMenu: TieMenu = uninitialized
+  private var _pickTrumpsuit: PickTrumsuit = uninitialized
+  private var _winnerScreen: WinnerScreen = uninitialized
+  
+  def mainMenu: MainMenu = _mainMenu
+  
+  def logic: Option[GameLogic] = _logic
 
   override def listen(event: SimpleEvent): Unit = {
     while (!platformReady) {
@@ -34,80 +42,76 @@ object GUIMain extends JFXApp3 with EventListener with UI {
     }
     Platform.runLater {
       event match {
-        case event: GameStateUpdateEvent =>
-          if (internState != event.gameState) {
-            internState = event.gameState
-            if (event.gameState == INGAME) {
-              Game.createGame()
-            } else if (event.gameState == MAIN_MENU) {
-              MainMenu.createMainMenu
-            } else if (event.gameState == PLAYERS) {
-              MainMenu.createPlayeramountmenu()
-            } else if (event.gameState == TIE) {
-              TieMenu.spawnTieMain()
-            }
+        case event: GameStateChangeEvent =>
+          if (event.newState == InGame) {
+            _game.createGame()
+          } else if (event.newState == MainMenu) {
+            _mainMenu.createMainMenu
+          } else if (event.newState == Lobby) {
+            _mainMenu.createPlayeramountmenu()
+          } else if (event.newState == TieBreak) {
+            _tieMenu.spawnTieMain()
           }
-        case event: ShowGlobalStatus =>
-          event.status match
-            case SHOW_TIE_WINNER =>
-              TieMenu.updateWinnerLabel(event)
-            case SHOW_TIE_TIE =>
-              TieMenu.showTieAgain(event)
-            case SHOW_FINISHED_MATCH => 
-              WinnerScreen.spawnWinnerScreen(event.objects.head.asInstanceOf[AbstractPlayer])
-            case _ =>
-        case event: ShowPlayerStatus =>
-          event.status match
-            case SHOW_WON_PLAYER_TRICK =>
-              Game.showFinishedTrick(event)
-            case SHOW_TIE_NUMBERS =>
-              TieMenu.updatePlayerLabel(event.player)
-              TieMenu.changeSlider(event.objects.head.asInstanceOf[Int])
-            case _ =>
-        case event: ShowCurrentTrickEvent =>
-          Game.updatePlayedCards(event.trick)
-        case event: ShowRoundStatus =>
-          event.status match
-            case WON_ROUND =>
-              Game.showWon(event.currentRound)
-            case SHOW_TURN =>
-              Game.updateStatus(event.objects.head.asInstanceOf[AbstractPlayer])
-            case _ =>
+        case event: TieWinningPlayersEvent =>
+          _tieMenu.updateWinnerLabel(event)
+
+        case event: TieTieEvent =>
+          _tieMenu.showTieAgain(event)
+        case event: MatchEndEvent =>
+          _winnerScreen.spawnWinnerScreen(event.winner)
+        case event: TrickEndEvent =>
+          _game.showFinishedTrick(event)
+        case event: TieTurnEvent =>
+          _tieMenu.updatePlayerLabel(event.player)
+          _tieMenu.changeSlider(logic.get.playerTieLogic.highestAllowedNumber())
+        case event: NewRoundEvent =>
+          _game.updateTrumpSuit(logic.get.getCurrentRound.get.trumpSuit)
+          _game.resetFirstCard()
+        case event: RoundEndEvent =>
+          _game.showWon(event.winner, event.amountOfTricks)
+        case event: TurnEvent =>
+          _game.updateStatus(event.player)
+        case event: TieShowPlayerCardsEvent =>
+          val cards = logic.get.playerTieLogic.getSelectedCard
+          _tieMenu.addCutCards(cards.map((p, c) => (p, c)).toList)
+        case event: CardPlayedEvent =>
+          _game.updatePlayedCards()
+          if (event.trick.firstCard.isDefined)
+            _game.updateFirstCard(event.trick.firstCard.get)
+        case event: TrumpSelectedEvent =>
+          _game.updateTrumpSuit(event.suit)
         case event: RequestCardEvent =>
-          Game.requestCard = Some(event)
-          Game.requestDogCard = None
-          Game.updateNextPlayer(event.round.playerQueue, event.currentIndex)
-          Game.updateTrumpSuit(event.round.trumpSuit)
-          if(event.trick.firstCard.isDefined) Game.updateFirstCard(event.trick.firstCard.get)
-          else Game.resetFirstCard()
-          Game.updatePlayerCards(event.player.hand.get)
-        case event: RequestPickTrumpsuitEvent => 
-          PickTrumsuit.showPickTrumpsuit(event)
-        case event: RequestDogPlayCardEvent =>
-          Game.requestCard = None
-          Game.requestDogCard = Some(event)
-          Game.updateNextPlayer(event.round.playerQueue, event.currentIndex)
-          Game.updateTrumpSuit(event.round.trumpSuit)
-          if(event.trick.firstCard.isDefined) Game.updateFirstCard(event.trick.firstCard.get)
-          else Game.resetFirstCard()
-          Game.updatePlayerCards(event.player.hand.get)
-        case event: RequestTieNumberEvent =>
-          TieMenu.showNeccessary()
-          TieMenu.requestInfo = Some(event)
-        case event: ShowTieCardsEvent =>
-          TieMenu.addCutCards(event.card)
+          _game.updateNextPlayer(_logic.get.getPlayerQueue.get, _logic.get.getPlayerQueue.get.currentIndex)
+          _game.updateTrumpSuit(_logic.get.getCurrentRound.get.trumpSuit)
+          _game.updatePlayerCards(event.player)
+          _game.updatePlayedCards()
+          if (_logic.get.getCurrentTrick.get.firstCard.isDefined)
+            _game.updateFirstCard(_logic.get.getCurrentTrick.get.firstCard.get)
+          else
+            _game.resetFirstCard()
+        case event: RequestTieChoiceEvent =>
+          _tieMenu.showNeccessary()
+        case event: RequestTrumpSuitEvent =>
+          _pickTrumpsuit.showPickTrumpsuit(event.player)
         case _ => None
       }
     }
   }
 
-  override def initial: Boolean = {
-    GUIThread.start()
+  override def initial(logic: GameLogic): Boolean = {
+    this._logic = Some(logic)
+    new GUIThread(this).start()
     true
   }
 
   override def start(): Unit = {
-    currentRoot = MainMenu.current_root
+    _game = new Game(this)
+    _mainMenu = new MainMenu(this)
+    _tieMenu = new TieMenu(this)
+    _pickTrumpsuit = new PickTrumsuit(this)
+    _winnerScreen = new WinnerScreen(this)
+
+    currentRoot = mainMenu.current_root
     val cont = ObjectProperty(currentRoot)
     JFXApp3.userAgentStylesheet_=(new PrimerDark().getUserAgentStylesheet)
     stage = new PrimaryStage {
@@ -121,6 +125,8 @@ object GUIMain extends JFXApp3 with EventListener with UI {
         })
       }
     }
+
+    _mainMenu.createMainMenu
     stage.show()
     platformReady = true
   }
@@ -131,14 +137,14 @@ object GUIMain extends JFXApp3 with EventListener with UI {
 
 }
 
-object GUIThread extends CustomThread {
+class GUIThread(gui: GUIMain) extends CustomThread {
 
   setName("GUIThread")
 
-  override def instance: CustomThread = GUIThread
+  override def instance: CustomThread = this
 
   override def run(): Unit = {
-    GUIMain.main(new Array[String](_length = 0))
+    gui.main(new Array[String](_length = 0))
   }
   
 }

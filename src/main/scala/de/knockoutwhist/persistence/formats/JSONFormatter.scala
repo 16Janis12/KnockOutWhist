@@ -2,9 +2,11 @@ package de.knockoutwhist.persistence.formats
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.*
-import de.knockoutwhist.events.ui.GameState
+import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogicSnapshot
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.{BasePlayerTieLogic, BasePlayerTieLogicSnapshot}
+import de.knockoutwhist.control.{GameLogic, GameState, LogicSnapshot}
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
-import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory, Playertype}
+import de.knockoutwhist.player.{AbstractPlayer, PlayerData, PlayerFactory, Playertype}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
 import play.api.libs.json
 import play.api.libs.json.*
@@ -22,64 +24,134 @@ class JSONFormatter extends FileFormatter {
 
   override def createFormat(matchSnapshot: MatchSnapshot): Array[Byte] = {
     val js = Json.obj(
-      "gamestate" -> matchSnapshot.gameState.toString,
-      matchSnapshot.methodEntryPoint match {
-        case None => "methodEntryPoint" -> JsString("None")
-        case Some(methodEntryPoint) => "methodEntryPoint" -> JsString(methodEntryPoint.toString)
+      matchSnapshot.entryPoint match {
+        case None => "entryPoint" -> JsString("None")
+        case Some(entryPoint) => "entryPoint" -> JsString(entryPoint.toString)
       },
-      matchSnapshot.matchImpl match {
-        case None => "match" -> JsString("None")
-        case Some(matchImpl) => "match" -> MatchJsonFormatter.createMatchJson(matchImpl)
+      matchSnapshot.gameLogicSnapShot match {
+        case None => "gameLogic" -> JsString("None")
+        case Some(gameLogic) => "gameLogic" -> BaseGameLogicJsonFormatter.createBaseGameLogicJson(gameLogic.asInstanceOf[BaseGameLogicSnapshot])
       },
-      matchSnapshot.matchImpl match {
-        case None => "cardManager" -> JsString("None")
-        case Some(matchImpl) => "cardManager" -> CardManagerJsonFormatter.createCardManagerJson(matchImpl.cardManager)
-      },
-      matchSnapshot.round match {
-        case None => "round" -> JsString("None")
-        case Some(round) => "round" -> RoundJsonFormatter.createRoundJson(round)
-      },
-      matchSnapshot.trick match {
-        case None => "trick" -> JsString("None")
-        case Some(trick) => "trick" -> TrickJsonFormatter.createTrickJson(trick)
-      },
-      matchSnapshot.currentIndex match {
-        case None => "currentIndex" -> JsString("None")
-        case Some(index) => "currentIndex" -> JsNumber(index)
-      }
     )
     js.toString().getBytes
   }
 
   override def parseFormat(bytes: Array[Byte]): MatchSnapshot = {
     val json = Json.parse(new String(bytes))
-    val gameState = GameState.valueOf((json \ "gamestate").get.asInstanceOf[JsString].value)
-    val methodEntryPoint = (json \ "methodEntryPoint").get match {
+    val methodEntryPoint = (json \ "entryPoint").get match {
       case JsString("None") => None
       case JsString(methodEntryPoint) => Some(MethodEntryPoint.valueOf(methodEntryPoint))
       case default => None
     }
-    val matchImpl = (json \ "match").get match {
+    val gameLogic = (json \ "gameLogic").get match {
       case JsString("None") => None
-      case matchJson => Some(MatchJsonFormatter.parseMatchJson(matchJson.asInstanceOf[JsObject], playerUtil, CardManagerJsonFormatter.parseCardManagerJson((json \ "cardManager").get.asInstanceOf[JsObject])))
+      case gameLogicJson: JsObject => Some(BaseGameLogicJsonFormatter.createBaseGameLogicFromJson(gameLogicJson, playerUtil))
       case default => None
     }
-    val round = (json \ "round").get match {
-      case JsString("None") => None
-      case roundJson => Some(RoundJsonFormatter.parseRoundJson(roundJson.asInstanceOf[JsObject], playerUtil, CardManagerJsonFormatter.parseCardManagerJson((json \ "cardManager").get.asInstanceOf[JsObject])))
-      case default => None
+
+    MatchSnapshot(methodEntryPoint, gameLogic.asInstanceOf[Option[LogicSnapshot[GameLogic]]])
+  }
+
+  private object BaseGameLogicJsonFormatter {
+
+    def createBaseGameLogicJson(baseGameLogic: BaseGameLogicSnapshot): JsValue = {
+      Json.obj(
+        "gameState" -> JsString(baseGameLogic.savedState.toString),
+
+        "cardManagerContainer" -> Json.obj(
+          "cardContainer" -> Json.obj(
+            "card" ->
+              (if (baseGameLogic.cardContainer.isDefined) JsArray(
+                baseGameLogic.cardContainer.get
+                  .map(card => CardJsonFormatter.createCardJson(card)))
+              else JsString("None"))
+          ),
+          "currentIdx" ->
+            (if (baseGameLogic.cardIndex.isDefined) JsNumber(baseGameLogic.cardIndex.get) else JsString("None"))
+        ),
+
+        "match" -> (if (baseGameLogic.currentMatch.isDefined) MatchJsonFormatter.createMatchJson(baseGameLogic.currentMatch.get) else JsString("None")),
+        "round" -> (if (baseGameLogic.currentRound.isDefined) RoundJsonFormatter.createRoundJson(baseGameLogic.currentRound.get) else JsString("None")),
+        "trick" -> (if (baseGameLogic.currentTrick.isDefined) TrickJsonFormatter.createTrickJson(baseGameLogic.currentTrick.get) else JsString("None")),
+        "player" -> (if (baseGameLogic.currentPlayer.isDefined) PlayerJsonFormatter.createPlayerJson(baseGameLogic.currentPlayer.get) else JsString("None")),
+
+        "queue" -> Json.obj(
+          "currentIndx" -> (if (baseGameLogic.playerIndex.isDefined) JsNumber(baseGameLogic.playerIndex.get) else JsString("None")),
+          "players" ->
+            (if (baseGameLogic.players.isDefined) JsArray(
+              baseGameLogic.players.get
+                .map(player => PlayerJsonFormatter.createPlayerJson(player)))
+            else JsString("None"))
+        ),
+      )
     }
-    val trick = (json \ "trick").get match {
-      case JsString("None") => None
-      case trickJson => Some(TrickJsonFormatter.parseTrickJson(trickJson.asInstanceOf[JsObject], playerUtil, CardManagerJsonFormatter.parseCardManagerJson((json \ "cardManager").get.asInstanceOf[JsObject])))
-      case default => None
+
+    def createBaseGameLogicFromJson(baseGameLogicJson: JsObject, playerUtil: PlayerUtil): BaseGameLogicSnapshot = {
+      val gameState = GameState.valueOf((baseGameLogicJson \ "gameState").get.asInstanceOf[JsString].value)
+
+      val cardContainerJson = (baseGameLogicJson \ "cardManagerContainer" \ "cardContainer" \ "card").get
+      val cardContainer = if (cardContainerJson.isInstanceOf[JsString]) {
+        None
+      } else {
+        Some(cardContainerJson.asInstanceOf[JsArray].value.map(cardJson => CardJsonFormatter.parseCardJson(cardJson.asInstanceOf[JsObject])).toList)
+      }
+      val cc = cardContainer match {
+        case Some(cards) => cards
+        case None => List.empty[Card]
+      }
+      
+      val cardIndex = (baseGameLogicJson \ "cardManagerContainer" \ "currentIdx").get match {
+        case JsString("None") => None
+        case JsNumber(idx) => Some(idx.toInt)
+      }
+
+      val matchImpl = (baseGameLogicJson \ "match").get match {
+        case JsString("None") => None
+        case matchJson: JsObject => Some(MatchJsonFormatter.parseMatchJson(matchJson, playerUtil, cc))
+      }
+
+      val round = (baseGameLogicJson \ "round").get match {
+        case JsString("None") => None
+        case roundJson: JsObject => Some(RoundJsonFormatter.parseRoundJson(roundJson, playerUtil, cc))
+      }
+
+      val trick = (baseGameLogicJson \ "trick").get match {
+        case JsString("None") => None
+        case trickJson: JsObject => Some(TrickJsonFormatter.parseTrickJson(trickJson, playerUtil, cc))
+      }
+
+      val player = (baseGameLogicJson \ "player").get match {
+        case JsString("None") => None
+        case playerJson: JsObject => Some(PlayerJsonFormatter.parsePlayerJson(playerJson, playerUtil, cc))
+      }
+
+      val queueJson = (baseGameLogicJson \ "queue").get
+      val playerIndex = (queueJson \ "currentIndx").get match {
+        case JsString("None") => None
+        case JsNumber(idx) => Some(idx.toInt)
+      }
+      val playersJson = (queueJson \ "players").get
+      val players = if (playersJson.isInstanceOf[JsString]) {
+        None
+      } else {
+        Some(playersJson.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cc)).toList)
+      }
+      BaseGameLogicSnapshot(
+        gameState,
+        cardContainer,
+        cardIndex,
+        matchImpl,
+        round,
+        trick,
+        player,
+        playerIndex,
+        players,
+        matchImpl match {
+          case Some(m) => m.totalplayers.map(p => (p.id, p.generatePlayerData())).toMap
+          case None => Map.empty[UUID, PlayerData]
+        }
+      )
     }
-    val currentIndex = (json \ "currentIndex").get match {
-      case JsString("None") => None
-      case JsNumber(index) => Some(index.toInt)
-      case default => None
-    }
-    MatchSnapshot(matchImpl, round, trick, currentIndex, gameState, methodEntryPoint)
   }
 
   private object PlayerJsonFormatter {
@@ -87,8 +159,8 @@ class JSONFormatter extends FileFormatter {
       Json.obj(
         "id" -> abstractPlayer.id.toString,
         "name" -> abstractPlayer.name,
-        "hand" -> createHandJson(abstractPlayer.hand),
-        "doglife" -> abstractPlayer.doglife,
+        "hand" -> createHandJson(abstractPlayer.currentHand()),
+        "doglife" -> abstractPlayer.isInDogLife,
         "playerType" -> PlayerFactory.parsePlayerType(abstractPlayer).toString
       )
     }
@@ -105,7 +177,7 @@ class JSONFormatter extends FileFormatter {
       }
     }
 
-    def parsePlayerJson(playerJson: JsObject, playerUtil: PlayerUtil, cardManager: CardManager): AbstractPlayer = {
+    def parsePlayerJson(playerJson: JsObject, playerUtil: PlayerUtil, cards: List[Card]): AbstractPlayer = {
       val id = UUID.fromString((playerJson \ "id").get.asInstanceOf[JsString].value)
       val name = (playerJson \ "name").get.asInstanceOf[JsString].value
       val handJson = playerJson \ "hand"
@@ -115,16 +187,16 @@ class JSONFormatter extends FileFormatter {
       val hand = if (handJson.isInstanceOf[JsString]) {
         None
       } else {
-        Some(parseHandJson(handJson.get.asInstanceOf[JsObject], cardManager))
+        Some(parseHandJson(handJson.get.asInstanceOf[JsObject], cards))
       }
 
       playerUtil.handlePlayer(id, name, hand, doglife, playerType)
     }
 
-    private def parseHandJson(handJson: JsObject, cardManager: CardManager): Hand = {
+    private def parseHandJson(handJson: JsObject, cc: List[Card]): Hand = {
       val cards = (handJson \ "cards").get.asInstanceOf[JsArray].value.map(cardJson => {
         val card = CardJsonFormatter.parseCardJson(cardJson.asInstanceOf[JsObject])
-        cardManager.grabSpecificCard(card)
+        CardFormatUtil.grabSpecificCard(card, cc)
       })
       Hand(cards.toList)
     }
@@ -138,19 +210,19 @@ class JSONFormatter extends FileFormatter {
           trick.cards.map { case (card, player) => Json.obj(
             "card" -> CardJsonFormatter.createCardJson(card),
             "player" -> PlayerJsonFormatter.createPlayerJson(player)
-          )}.toList
+          )
+          }.toList
         ),
         "firstCard" -> (if (trick.firstCard.isDefined) CardJsonFormatter.createCardJson(trick.firstCard.get) else JsString("")),
-        "winner" -> (if (trick.winner != null) PlayerJsonFormatter.createPlayerJson(trick.winner) else JsString("")),
-        "finished" -> JsBoolean(trick.finished)
+        "winner" -> (if (trick.winner.isDefined) PlayerJsonFormatter.createPlayerJson(trick.winner.get) else JsString("")),
       )
     }
 
-    def parseTrickJson(trickJson: JsObject, playerUtil: PlayerUtil, cardManager: CardManager): Trick = {
+    def parseTrickJson(trickJson: JsObject, playerUtil: PlayerUtil, cc: List[Card]): Trick = {
       val plays = (trickJson \ "plays").get
       val playsList = plays.asInstanceOf[JsArray].value.map(playJson => {
         val card = CardJsonFormatter.parseCardJson((playJson \ "card").get.asInstanceOf[JsObject])
-        val player = PlayerJsonFormatter.parsePlayerJson((playJson \ "player").get.asInstanceOf[JsObject], playerUtil, cardManager)
+        val player = PlayerJsonFormatter.parsePlayerJson((playJson \ "player").get.asInstanceOf[JsObject], playerUtil, cc)
         (card, player)
       }).groupBy(_._1).map((card, list) => (card, list.map(_._2).head))
       val firstCard = if ((trickJson \ "firstCard").get.isInstanceOf[JsString]) {
@@ -159,13 +231,12 @@ class JSONFormatter extends FileFormatter {
         Some(CardJsonFormatter.parseCardJson((trickJson \ "firstCard").get.asInstanceOf[JsObject]))
       }
       val winner = if ((trickJson \ "winner").get.isInstanceOf[JsString]) {
-        null
+        None
       } else {
-        PlayerJsonFormatter.parsePlayerJson((trickJson \ "winner").get.asInstanceOf[JsObject], playerUtil, cardManager)
+        Some(PlayerJsonFormatter.parsePlayerJson((trickJson \ "winner").get.asInstanceOf[JsObject], playerUtil, cc))
       }
-      val finished = (trickJson \ "finished").get.asInstanceOf[JsBoolean].value
-      val hashed = HashMap(playsList.toSeq*)
-      Trick(hashed, winner, finished, firstCard)
+      val hashed = HashMap(playsList.toSeq *)
+      Trick(hashed, winner, firstCard)
     }
   }
 
@@ -176,46 +247,23 @@ class JSONFormatter extends FileFormatter {
         "tricks" -> JsArray(
           round.tricklist.map(trick => TrickJsonFormatter.createTrickJson(trick))
         ),
-        "playersin" -> JsArray(
-          round.playersin.map(player => PlayerJsonFormatter.createPlayerJson(player))
-        ),
-        round.playersout match {
-          case null => "playersout" -> JsString("None")
-          case default =>
-            "playersout" -> JsArray(
-              round.playersout.map(player => PlayerJsonFormatter.createPlayerJson(player))
-            )
-        },
-        "queue" -> Json.obj(
-          "currentIndx" -> round.playerQueue.currentIndex,
-          "players" -> JsArray(
-            round.playerQueue.convertToArray().map(player => PlayerJsonFormatter.createPlayerJson(player))
-          )
-        ),
         "trumpSuit" -> JsNumber(round.trumpSuit.ordinal),
-        "startingPlayer" -> JsNumber(round.playerQueue.currentIndex),
-        "winner" -> (if (round.winner != null) PlayerJsonFormatter.createPlayerJson(round.winner) else JsString("None")),
+        "winner" -> (if (round.winner.isDefined) PlayerJsonFormatter.createPlayerJson(round.winner.get) else JsString("None")),
         "firstRound" -> JsBoolean(round.firstRound)
       )
     }
 
-    def parseRoundJson(roundJson: JsObject, playerUtil: PlayerUtil, cardManager: CardManager): Round = {
+    def parseRoundJson(roundJson: JsObject, playerUtil: PlayerUtil, cc: List[Card]): Round = {
       val tricks = (roundJson \ "tricks").get
-      val tricksList = tricks.asInstanceOf[JsArray].value.map(trickJson => TrickJsonFormatter.parseTrickJson(trickJson.asInstanceOf[JsObject], playerUtil, cardManager)).toList
-      val playersin = (roundJson \ "playersin").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cardManager)).toList
-      val playersout = (roundJson \ "playersout").get match {
-        case JsString("None") => List()
-        case default => (roundJson \ "playersout").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cardManager)).toList
-      }
+      val tricksList = tricks.asInstanceOf[JsArray].value.map(trickJson => TrickJsonFormatter.parseTrickJson(trickJson.asInstanceOf[JsObject], playerUtil, cc)).toList
       val trumpSuit = Suit.fromOrdinal((roundJson \ "trumpSuit").get.asInstanceOf[JsNumber].value.toInt)
-      val startingPlayer = (roundJson \ "startingPlayer").get.asInstanceOf[JsNumber].value.toInt
       val winner = if ((roundJson \ "winner").get.isInstanceOf[JsString]) {
-        null
+        None
       } else {
-        PlayerJsonFormatter.parsePlayerJson((roundJson \ "winner").get.asInstanceOf[JsObject], playerUtil, cardManager)
+        Some(PlayerJsonFormatter.parsePlayerJson((roundJson \ "winner").get.asInstanceOf[JsObject], playerUtil, cc))
       }
       val firstRound = (roundJson \ "firstRound").get.asInstanceOf[JsBoolean].value
-      Round(trumpSuit = trumpSuit, tricklist = tricksList, playersin = playersin, playersout = playersout, startingPlayer = startingPlayer, winner = winner, firstRound = firstRound)
+      Round(trumpSuit = trumpSuit, tricklist = tricksList, winner = winner, firstRound = firstRound)
     }
   }
 
@@ -226,6 +274,9 @@ class JSONFormatter extends FileFormatter {
         "totalplayers" -> JsArray(
           matchImpl.totalplayers.map(player => PlayerJsonFormatter.createPlayerJson(player))
         ),
+        "playerIn" -> JsArray(
+          matchImpl.playersIn.map(player => PlayerJsonFormatter.createPlayerJson(player))
+        ),
         "numberofcards" -> JsNumber(matchImpl.numberofcards),
         "dogLife" -> JsBoolean(matchImpl.dogLife),
         "roundlist" -> JsArray(
@@ -234,12 +285,13 @@ class JSONFormatter extends FileFormatter {
       )
     }
 
-    def parseMatchJson(matchJson: JsObject, playerUtil: PlayerUtil, cardManager: CardManager): Match = {
-      val totalplayers = (matchJson \ "totalplayers").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cardManager)).toList
+    def parseMatchJson(matchJson: JsObject, playerUtil: PlayerUtil, cc: List[Card]): Match = {
+      val totalplayers = (matchJson \ "totalplayers").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cc)).toList
+      val playersIn = (matchJson \ "playerIn").get.asInstanceOf[JsArray].value.map(playerJson => PlayerJsonFormatter.parsePlayerJson(playerJson.asInstanceOf[JsObject], playerUtil, cc)).toList
       val numberofcards = (matchJson \ "numberofcards").get.asInstanceOf[JsNumber].value.toInt
       val dogLife = (matchJson \ "dogLife").get.asInstanceOf[JsBoolean].value
-      val roundlist = (matchJson \ "roundlist").get.asInstanceOf[JsArray].value.map(roundJson => RoundJsonFormatter.parseRoundJson(roundJson.asInstanceOf[JsObject], playerUtil, cardManager)).toList
-      Match(totalplayers, numberofcards, dogLife, roundlist, cardManager)
+      val roundlist = (matchJson \ "roundlist").get.asInstanceOf[JsArray].value.map(roundJson => RoundJsonFormatter.parseRoundJson(roundJson.asInstanceOf[JsObject], playerUtil, cc)).toList
+      Match(totalplayers, playersIn, numberofcards, dogLife, roundlist)
     }
 
   }
@@ -257,29 +309,6 @@ class JSONFormatter extends FileFormatter {
       val value = (cardJson \ "value").get.asInstanceOf[JsNumber].value.toInt
       val suit = (cardJson \ "suit").get.asInstanceOf[JsNumber].value.toInt
       Card(CardValue.fromOrdinal(value), Suit.fromOrdinal(suit))
-    }
-
-  }
-
-  private object CardManagerJsonFormatter {
-    def createCardManagerJson(cardManager: CardManager): JsObject = {
-      Json.obj(
-        "cardContainer" -> Json.obj(
-          "card" -> JsArray(
-            cardManager.cardContainer.map(card => CardJsonFormatter.createCardJson(card))
-          )
-        ),
-        "currentIdx" -> JsNumber(cardManager.currentIndx)
-      )
-    }
-
-    def parseCardManagerJson(cardManagerJson: JsObject): CardManager = {
-      val cardContainer = (cardManagerJson \ "cardContainer").get.asInstanceOf[JsObject]
-      val cards = (cardContainer \ "card").get.asInstanceOf[JsArray].value.map(cardJson => CardJsonFormatter.parseCardJson(cardJson.asInstanceOf[JsObject])).toList
-      val currentIdx = (cardManagerJson \ "currentIdx").get.asInstanceOf[JsNumber].value.toInt
-      val cardManager = KnockOutWhist.config.cardManager
-      cardManager.setState(cards, currentIdx)
-      cardManager
     }
 
   }

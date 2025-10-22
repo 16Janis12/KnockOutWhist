@@ -2,11 +2,9 @@ package de.knockoutwhist.ui.gui
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Suit
-import de.knockoutwhist.control.controllerBaseImpl.PlayerLogic
-import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.directional.RequestPickTrumpsuitEvent
-import de.knockoutwhist.events.ui.GameState.{INGAME, MAIN_MENU}
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.control.ControlThread
+import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.undo.commands.SelectTrumpSuitCommand
 import de.knockoutwhist.utils.gui.Animations
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, TopCenter}
@@ -19,10 +17,13 @@ import scalafx.util.Duration
 
 import scala.util.Try
 
-object PickTrumsuit {
+class PickTrumsuit(gui: GUIMain) {
 
-  def showPickTrumpsuit(event: RequestPickTrumpsuitEvent): Unit = {
-    MainMenu.changeChild(
+  def showPickTrumpsuit(player: AbstractPlayer): Unit = {
+    if (gui.logic.isEmpty) throw new IllegalStateException("Game logic is not initialized in GUI")
+    val logicImpl = gui.logic.get
+    
+    gui.mainMenu.changeChild(
       new StackPane {
         children = Seq(
           new VBox {
@@ -54,9 +55,13 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
-                          Suit.Spades
-                        }, event.remaining_players, event.firstRound, event.player)
+                        logicImpl.undoManager.doStep(
+                          SelectTrumpSuitCommand(
+                            logicImpl.createSnapshot(),
+                            logicImpl.playerTieLogic.createSnapshot(),
+                            Suit.Spades
+                          )
+                        )
                       }
 
                     }
@@ -73,9 +78,13 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
-                          Suit.Clubs
-                        }, event.remaining_players, event.firstRound, event.player)
+                        logicImpl.undoManager.doStep(
+                          SelectTrumpSuitCommand(
+                            logicImpl.createSnapshot(),
+                            logicImpl.playerTieLogic.createSnapshot(),
+                            Suit.Clubs
+                          )
+                        )
                       }
 
                     }
@@ -91,9 +100,13 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try {
-                          Suit.Hearts
-                        }, event.remaining_players, event.firstRound, event.player)
+                        logicImpl.undoManager.doStep(
+                          SelectTrumpSuitCommand(
+                            logicImpl.createSnapshot(),
+                            logicImpl.playerTieLogic.createSnapshot(),
+                            Suit.Hearts
+                          )
+                        )
                       }
 
 
@@ -111,7 +124,13 @@ object PickTrumsuit {
                       }
                       slideOut.play()
                       ControlThread.runLater {
-                        KnockOutWhist.config.playerlogcomponent.trumpSuitSelected(event.matchImpl, Try{Suit.Diamonds}, event.remaining_players, event.firstRound, event.player)
+                        logicImpl.undoManager.doStep(
+                          SelectTrumpSuitCommand(
+                            logicImpl.createSnapshot(),
+                            logicImpl.playerTieLogic.createSnapshot(),
+                            Suit.Diamonds
+                          )
+                        )
                       }
                     }
                   },
@@ -128,7 +147,7 @@ object PickTrumsuit {
                 alignment = BottomCenter
                 spacing = 10
                 margin = Insets(100, 0, 20, 0)
-                children = event.player.currentHand().get.cards.map( i => new ImageView {
+                children = player.currentHand().get.cards.map( i => new ImageView {
                   image = CardUtils.cardtoImage(i)
                   fitWidth = 170
                   fitHeight = 250

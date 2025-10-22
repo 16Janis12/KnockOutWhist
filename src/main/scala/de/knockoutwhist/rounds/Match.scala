@@ -7,7 +7,7 @@ import de.knockoutwhist.utils.Implicits.*
 import java.util.UUID
 import scala.collection.immutable.List
 
-case class Match(totalplayers: List[AbstractPlayer], numberofcards: Int = 7, dogLife: Boolean = false, roundlist: List[Round] = List[Round](), cardManager: CardManager) {
+case class Match(totalplayers: List[AbstractPlayer], playersIn: List[AbstractPlayer] = List(), numberofcards: Int = 7, dogLife: Boolean = false, roundlist: List[Round] = List[Round]()) {
   
   def addRound(round: Round): Match = {
     this.copy(roundlist = roundlist :+ round)
@@ -21,8 +21,16 @@ case class Match(totalplayers: List[AbstractPlayer], numberofcards: Int = 7, dog
     this.copy(dogLife = true)
   }
   
-  def updatePlayers(totalplayers: List[AbstractPlayer]): Match = {
-    this.copy(totalplayers = totalplayers)
+  def updatePlayersIn(playersIn: List[AbstractPlayer]): Match = {
+    this.copy(playersIn = playersIn)
+  }
+  
+  def playersOut: List[AbstractPlayer] = {
+    totalplayers.diff(playersIn)
+  }
+  
+  def isOver: Boolean = {
+    playersIn.size <= 1
   }
   
   override def toString: String = {

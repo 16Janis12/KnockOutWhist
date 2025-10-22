@@ -28,6 +28,12 @@ trait CustomPlayerQueue[A] extends Iterable[A] {
   def resetAndSetStart(player: A): Boolean
 
   /**
+   * Retuns how many players have played since the last reset.
+   * @return the number of players since the last reset.
+   */
+  def playersSinceLastReset(): Int
+
+  /**
    * Let's the iterator start at a specific index.
    * @param start the index to start at.
    * @return the iterator.

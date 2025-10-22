@@ -5,18 +5,20 @@ import de.knockoutwhist.player.AbstractPlayer
 
 import scala.collection.immutable
 
-case class Trick (cards: immutable.HashMap[Card, AbstractPlayer] = immutable.HashMap[Card, AbstractPlayer](), winner: AbstractPlayer = null, finished: Boolean = false, firstCard: Option[Card] = None) {
+case class Trick (cards: immutable.HashMap[Card, AbstractPlayer] = immutable.HashMap[Card, AbstractPlayer](), winner: Option[AbstractPlayer] = None, firstCard: Option[Card] = None) {
 
+  def finished: Boolean = winner.isDefined
+  
   def addCard(card: Card, player: AbstractPlayer): Trick = {
-    Trick(cards + (card -> player), winner, finished, firstCard)
+    Trick(cards + (card -> player), winner, firstCard)
   }
   
   def setfirstcard(card: Card): Trick = {
-    Trick(cards, winner, finished, Some(card))
+    Trick(cards, winner, Some(card))
   }
 
   override def toString: String = {
-    s"$cards, $winner, $finished"
+    s"$cards, $winner"
   }
 }
 

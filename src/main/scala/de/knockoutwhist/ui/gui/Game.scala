@@ -1,14 +1,13 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.{Card, Hand, Suit}
 import de.knockoutwhist.control.ControlThread
-import de.knockoutwhist.events.ShowPlayerStatus
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestDogPlayCardEvent}
+import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.{MatchUtil, PlayerUtil}
+import de.knockoutwhist.events.global.TrickEndEvent
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.rounds.{Round, Trick}
-import de.knockoutwhist.undo.UndoManager
+import de.knockoutwhist.rounds.Trick
+import de.knockoutwhist.undo.commands.{PlayCardCommand, PlayDogCardCommand}
 import de.knockoutwhist.utils.CustomPlayerQueue
 import de.knockoutwhist.utils.Implicits.*
 import de.knockoutwhist.utils.gui.Animations
@@ -27,10 +26,9 @@ import scalafx.util.Duration
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import scala.util.Try
 
 
-object Game {
+class Game(gui: GUIMain) {
 
   private val statusLabel: Label = new Label {
     alignment = Center
@@ -96,8 +94,8 @@ object Game {
   }
 
   def createGame(): Unit = {
-    GUIMain.stage.maximized = true
-    MainMenu.changeChild(new BorderPane {
+    gui.stage.maximized = true
+    gui.mainMenu.changeChild(new BorderPane {
       val myBI = new BackgroundImage(new Image("/background.png", 32, 32, false, true),
         BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
         BackgroundSize.DEFAULT)
@@ -124,7 +122,7 @@ object Game {
                 font = Font.font(20)
                 styleClass += Styles.WARNING
                 onMouseClicked = _ => {
-                  KnockOutWhist.config.persistenceManager.saveFile("currentSnapshot")
+                  gui.logic.get.persistenceManager.saveFile("currentSnapshot")
                   new Alert(AlertType.Information) {
                     title = "Game Saved"
                     headerText = "Game Saved"
@@ -140,7 +138,7 @@ object Game {
                 font = Font.font(20)
                 styleClass += Styles.WARNING
                 onMouseClicked = _ => {
-                  UndoManager.undoStep()
+                  gui.logic.get.undoManager.undoStep()
                 }
               },
               new Button {
@@ -149,7 +147,9 @@ object Game {
                 text = "Exit Game"
                 font = Font.font(20)
                 styleClass += Styles.DANGER
-                onMouseClicked = _ => System.exit(0)
+                onMouseClicked = _ => {
+                  gui.logic.get.endSession()
+                }
               }
             )
           },
@@ -219,7 +219,7 @@ object Game {
     playerCards.visible = visible
   }
 
-  def firstCardvisible(visible: Boolean): Unit = {
+  private def firstCardvisible(visible: Boolean): Unit = {
     firstCard.visible = visible
   }
 
@@ -232,7 +232,16 @@ object Game {
     firstCard.image = new Image("cards/1B.png")
   }
 
-  def updatePlayerCards(hand: Hand): Unit = {
+  def updatePlayerCards(player: AbstractPlayer): Unit = {
+    if (gui.logic.isEmpty) throw new IllegalStateException("Logic is not initialized!")
+    val logic = gui.logic.get
+    if (logic.getCurrentMatch.isEmpty) throw new IllegalStateException("No current match available!")
+    val currentMatch = logic.getCurrentMatch.get
+    if (logic.getCurrentRound.isEmpty) throw new IllegalStateException("No current round available!")
+    val currentRound = logic.getCurrentRound.get
+    if (player.currentHand().isEmpty) throw new IllegalStateException("Player has no hand!")
+    val hand: Hand = player.currentHand().get
+    
     val cards = ListBuffer[Node]()
     playerCards.children.clear()
     for (card <- hand.cards) {
@@ -242,45 +251,37 @@ object Game {
         fitWidth = 170
         fitHeight = 250
           onMouseClicked = _ => {
-            if (requestCard.isDefined) {
-              val event = requestCard.get
-              if (KnockOutWhist.config.trickcomponent.alternativeCards(card, event.round, event.trick, event.player).nonEmpty) {
-                val pulse = Animations.pulse(this, Duration(400))
-                pulse.play()
-              } else {
-                requestCard = None
-                hideCards(this)
-                val slideOut = Animations.slideOutUp(this, Duration(400), -350)
-                slideOut.onFinished = _ => {
-                  visible = false
-                  ControlThread.runLater {
-                    KnockOutWhist.config.trickcomponent.controlSuitplayed(Try {
-                      card
-                    }, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+            if (logic.getCurrentTrick.isEmpty) throw new IllegalStateException("No current trick available!")
+            val currentTrick = logic.getCurrentTrick.get
+            if (logic.getCurrentPlayer.isDefined && logic.isWaitingForInput) {
+              val currentPlayer = logic.getCurrentPlayer.get
+              if (!currentPlayer.isInDogLife) {
+                if (!PlayerUtil.canPlayCard(card, currentRound, currentTrick, currentPlayer)) {
+                  val pulse = Animations.pulse(this, Duration(400))
+                  pulse.play()
+                } else {
+                  hideCards(this)
+                  val slideOut = Animations.slideOutUp(this, Duration(400), -350)
+                  slideOut.onFinished = _ => {
+                    visible = false
+                    ControlThread.runLater {
+                      logic.undoManager.doStep(
+                        PlayCardCommand(
+                          logic.createSnapshot(),
+                          logic.playerTieLogic.createSnapshot(),
+                          card
+                        )
+                      )
+                    }
                   }
-                }
-                slideOut.play()
-              }
-            } else if(requestDogCard.isDefined) {
-              val event = requestDogCard.get
-              requestDogCard = None
-              hideCards(this)
-              val slideOutDog = Animations.slideOutUp(this, Duration(400), -350)
-              slideOutDog.onFinished = _ => {
-                visible = false
-                ControlThread.runLater {
-                  KnockOutWhist.config.trickcomponent.controlDogPlayed(Try {Some(
-                    card)
-                  }, event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
+                  slideOut.play()
                 }
               }
-              slideOutDog.play()
             }
           }
         }
       }
-    if (requestDogCard.isDefined && !requestDogCard.get.needstoplay) {
-      //if (requestDogCard.get.player.doglife) {
+    if (player.isInDogLife && !MatchUtil.dogNeedsToPlay(currentMatch, currentRound)) {
       cards += new Button {
         alignmentInParent = BottomCenter
         styleClass += Styles.SUCCESS
@@ -290,29 +291,36 @@ object Game {
         minHeight = 250
         maxHeight = 250
         onMouseClicked = _ => {
-          if (requestDogCard.isDefined) {
-            val event = requestDogCard.get
-            requestDogCard = None
-            hideCards(this)
-            val slideOutDog = Animations.slideOutUp(this, Duration(400), -350)
-            slideOutDog.onFinished = _ => {
-              visible = false
-              ControlThread.runLater {
-                KnockOutWhist.config.trickcomponent.controlDogPlayed(Try(None), event.matchImpl, event.round, event.trick, event.currentIndex, event.player)
-              }
+          hideCards(this)
+          val slideOutDog = Animations.slideOutUp(this, Duration(400), -350)
+          slideOutDog.onFinished = _ => {
+            visible = false
+            ControlThread.runLater {
+              logic.undoManager.doStep(
+                PlayDogCardCommand(
+                  logic.createSnapshot(),
+                  logic.playerTieLogic.createSnapshot(),
+                  None
+                )
+              )
             }
-            slideOutDog.play()
           }
+          slideOutDog.play()
         }
       }
     }
     playerCards.children = cards.toList
   }
     
-  def visibilityPlayedCards(visible: Boolean): Unit = {
+  private def visibilityPlayedCards(visible: Boolean): Unit = {
     playedCards.visible = visible
   }
-  def updatePlayedCards(trick: Trick): Unit = {
+  
+  def updatePlayedCards(): Unit = {
+    if (gui.logic.isEmpty) throw new IllegalStateException("Logic is not initialized!")
+    val logic = gui.logic.get
+    if (logic.getCurrentTrick.isEmpty) throw new IllegalStateException("No current trick available!")
+    val trick: Trick = logic.getCurrentTrick.get
     visibilityPlayedCards(true)
     val cards = ListBuffer[Node]()
     for (card <- trick.cards) {
@@ -355,14 +363,12 @@ object Game {
   def updateNextPlayer(queue: CustomPlayerQueue[AbstractPlayer], currendIndx: Int): Unit = {
     val queueDupli = queue.duplicate()
     nextPlayers.children = queueDupli.iteratorWithStart(currendIndx).map(player => new Label {
-      text = !player.doglife ? player.name |: s"${player.name} (Doglife)"
+      text = !player.isInDogLife ? player.name |: s"${player.name} (Doglife)"
       font = Font.font(20)
     }).toSeq
   }
-  private[gui] var requestCard: Option[RequestCardEvent] = None
-  private[gui] var requestDogCard: Option[RequestDogPlayCardEvent] = None
-  def showWon(round: Round): Unit = {
-    val playerwon = round.winner
+
+  def showWon(winner: AbstractPlayer, amountOfTricks: Int): Unit = {
     nextPlayers.visible = false
     playerCards.visible = false
     yourCardslabel.visible = false
@@ -371,16 +377,16 @@ object Game {
     firstCard.visible = false
     suitLabel.visible = false
     nextPlayers.visible = false
-    val wontricks = round.tricklist.count(trick => trick.winner == round.winner)
-    if (wontricks == 1) statusLabel.text = s"${playerwon.name} won the round with $wontricks trick!"
-    else statusLabel.text = s"${playerwon.name} won the round with $wontricks tricks!"
+    if (amountOfTricks == 1) statusLabel.text = s"${winner.name} won the round with $amountOfTricks trick!"
+    else statusLabel.text = s"${winner.name} won the round with $amountOfTricks tricks!"
   }
-  def showFinishedTrick(event: ShowPlayerStatus): Unit = {
+  
+  def showFinishedTrick(event: TrickEndEvent): Unit = {
     nextPlayers.visible = false
     playerCards.visible = false
     yourCardslabel.visible = false
     playedCardslabel.visible = false
-    statusLabel.text = s"${event.player} won the trick"
-    Game.updatePlayedCards(event.objects.head.asInstanceOf[Trick])
+    statusLabel.text = s"${event.winner.name} won the trick"
+    updatePlayedCards()
   }
 }

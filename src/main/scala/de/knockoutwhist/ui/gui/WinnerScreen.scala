@@ -4,7 +4,6 @@ import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.ControlThread
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.ui.gui.TieMenu.{nextPlayer, selectButton, selectedCutCards, slider, tiewinner, toplabel}
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
 import scalafx.scene.control.{Button, Label}
@@ -13,7 +12,7 @@ import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.Font
 import scalafx.util.Duration
 
-object WinnerScreen {
+class WinnerScreen(gui: GUIMain) {
   private val winnerLabel: Label = new Label {
     text = ""
     alignment = Center
@@ -31,7 +30,7 @@ object WinnerScreen {
         styleClass += Styles.SUCCESS
         onMouseClicked = _ => {
           ControlThread.runLater {
-            KnockOutWhist.config.maincomponent.startMatch()
+            gui.logic.foreach(_.createSession())
           }
         }
       },
@@ -53,7 +52,7 @@ object WinnerScreen {
     margin = Insets(50,0,0,0)
   }
   def spawnWinnerScreen(player: AbstractPlayer): Unit = {
-    MainMenu.changeChild(
+    gui.mainMenu.changeChild(
       new VBox {
         alignment = TopCenter
         spacing = 10

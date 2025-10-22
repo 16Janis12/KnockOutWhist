@@ -1,7 +1,9 @@
 package de.knockoutwhist.ui
 
+import de.knockoutwhist.control.GameLogic
+
 trait UI {
   
-  def initial: Boolean
+  def initial(gameLogic: GameLogic): Boolean
 
 }

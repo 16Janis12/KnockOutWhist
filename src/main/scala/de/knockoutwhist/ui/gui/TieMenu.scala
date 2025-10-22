@@ -3,24 +3,22 @@ package de.knockoutwhist.ui.gui
 import atlantafx.base.theme.Styles
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
-import de.knockoutwhist.control.{ControlHandler, ControlThread}
-import de.knockoutwhist.events.{ShowGlobalStatus, ShowPlayerStatus}
-import de.knockoutwhist.events.directional.{RequestCardEvent, RequestTieNumberEvent}
-import de.knockoutwhist.events.ui.GameState.MAIN_MENU
-import de.knockoutwhist.events.ui.GameStateUpdateEvent
+import de.knockoutwhist.control.{ControlThread, GameLogic}
+import de.knockoutwhist.events.global.tie.{TieTieEvent, TieWinningPlayersEvent}
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.rounds.{Match, Round}
+import de.knockoutwhist.undo.commands.SelectTieNumberCommand
 import de.knockoutwhist.utils.gui.Animations
 import javafx.scene.layout.{BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize}
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
-import scalafx.scene.{Node, Parent, layout}
 import scalafx.scene.control.{Button, Label, Slider}
 import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.*
 import scalafx.scene.layout.Priority.Always
-import scalafx.scene.layout.{Background, BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.text.Font
+import scalafx.scene.{Node, Parent, layout}
 import scalafx.util.Duration
 
 import scala.collection.immutable
@@ -28,7 +26,11 @@ import scala.collection.mutable.ListBuffer
 import scala.compiletime.uninitialized
 import scala.util.Try
 
-object TieMenu {
+class TieMenu(gui: GUIMain) {
+  
+  private def logic: GameLogic = {
+    gui.logic.get
+  }
 
   private val tieMenu: StackPane = new StackPane()
   def current_root: Parent = tieMenu
@@ -74,18 +76,24 @@ object TieMenu {
     text = "Select"
     styleClass += Styles.ACCENT
     onMouseClicked = _ => {
-      if (requestInfo.isDefined) {
-        val event = requestInfo.get
+      if (slider.value.toInt >= 1 && slider.value.toInt <= logic.playerTieLogic.highestAllowedNumber() && logic.isWaitingForInput) {
         ControlThread.runLater {
-          KnockOutWhist.config.playerlogcomponent.selectedTie(event.winner, event.matchImpl, event.round, event.playersout, event.cut, Try(slider.value.toInt), event.currentStep, event.remaining, event.currentIndex)
+          logic.undoManager.doStep(
+            SelectTieNumberCommand(
+              logic.createSnapshot(),
+              logic.playerTieLogic.createSnapshot(),
+              slider.value.toInt
+            )
+          )
         }
       }
-      //slider.value = 1
     }
   }
-  def updateWinnerLabel(event: ShowGlobalStatus) : Unit = {
-    if (!(event.objects.length != 1 || !event.objects.head.isInstanceOf[AbstractPlayer])) {
-      tiewinner.text = s"${event.objects.head.asInstanceOf[AbstractPlayer].name} wins the cut!"
+  def updateWinnerLabel(event: TieWinningPlayersEvent) : Unit = {
+    if (event.isSingleWinner) {
+      tiewinner.text = s"${event.winners.head.name} wins the cut!"
+    } else {
+      tiewinner.text = ""
     }
     slider.visible = false
     toplabel.visible = false
@@ -100,7 +108,7 @@ object TieMenu {
     selectButton.visible = true
     selectedCutCards.visible = false
   }
-  def showTieAgain(event: ShowGlobalStatus): Unit = {
+  def showTieAgain(event: TieTieEvent): Unit = {
     tiewinner.text = "It's a tie again! Let's cut again."
     slider.visible = false
     selectButton.visible = false
@@ -139,14 +147,8 @@ object TieMenu {
     nextPlayer.font = Font.font(20)
     nextPlayer.text = s"It's $player's turn to select the tie card."
   }
-  private[gui] var requestInfo: Option[RequestTieNumberEvent] = None
   def spawnTieMain(): Unit = {
-    MainMenu.changeChild(//new StackPane {
-//      val myBI = new BackgroundImage(new Image("/background.png", 32, 32, false, true),
-//        BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, 
-//        BackgroundSize.DEFAULT)
-//      background = Background(Array(new layout.BackgroundImage(myBI)))
-//      padding = Insets(10, 10, 10, 10)
+    gui.mainMenu.changeChild(
       new VBox {
         alignment = TopCenter
         spacing = 10
