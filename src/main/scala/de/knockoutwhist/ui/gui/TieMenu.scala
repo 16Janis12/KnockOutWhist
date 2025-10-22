@@ -76,7 +76,7 @@ class TieMenu(gui: GUIMain) {
     text = "Select"
     styleClass += Styles.ACCENT
     onMouseClicked = _ => {
-      if (slider.value.toInt >= 1 && slider.value.toInt < logic.playerTieLogic.highestAllowedNumber() && logic.isWaitingForInput) {
+      if (slider.value.toInt >= 1 && slider.value.toInt <= logic.playerTieLogic.highestAllowedNumber() && logic.isWaitingForInput) {
         ControlThread.runLater {
           logic.undoManager.doStep(
             SelectTieNumberCommand(
