@@ -29,6 +29,29 @@ import scala.collection.mutable.ListBuffer
 
 
 class Game(gui: GUIMain) {
+  
+  private[ui] def reloadAll(): Unit = {
+    if (gui.logic.isEmpty) throw new IllegalStateException("Logic is not initialized!")
+    val logic = gui.logic.get
+    if (logic.getCurrentRound.isEmpty) throw new IllegalStateException("No current round available!")
+    val currentRound = logic.getCurrentRound.get
+    if (logic.getCurrentTrick.isEmpty) throw new IllegalStateException("No current trick available!")
+    val currentTrick = logic.getCurrentTrick.get
+    if (logic.getCurrentPlayer.isEmpty) throw new IllegalStateException("No current player available!")
+    val currentPlayer = logic.getCurrentPlayer.get
+
+    updateStatus(currentPlayer)
+    updateNextPlayer(logic.getPlayerQueue.get, logic.getPlayerQueue.get.currentIndex)
+    updatePlayedCards()
+    if (currentTrick.firstCard.isDefined) {
+      updateFirstCard(currentTrick.firstCard.get)
+    } else {
+      resetFirstCard()
+    }
+    updateTrumpSuit(currentRound.trumpSuit)
+    updatePlayerCards(currentPlayer)
+    createGame()
+  }
 
   private val statusLabel: Label = new Label {
     alignment = Center

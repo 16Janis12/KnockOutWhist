@@ -1,22 +1,18 @@
 package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.Styles
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Card
 import de.knockoutwhist.control.{ControlThread, GameLogic}
 import de.knockoutwhist.events.global.tie.{TieTieEvent, TieWinningPlayersEvent}
 import de.knockoutwhist.player.AbstractPlayer
-import de.knockoutwhist.rounds.{Match, Round}
 import de.knockoutwhist.undo.commands.SelectTieNumberCommand
 import de.knockoutwhist.utils.gui.Animations
-import javafx.scene.layout.{BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize}
 import scalafx.animation.Timeline
 import scalafx.geometry.Insets
-import scalafx.geometry.Pos.{BottomCenter, Center, TopCenter}
+import scalafx.geometry.Pos.{BottomCenter, TopCenter}
 import scalafx.scene.control.{Button, Label, Slider}
-import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.image.ImageView
 import scalafx.scene.layout.*
-import scalafx.scene.layout.Priority.Always
 import scalafx.scene.text.Font
 import scalafx.scene.{Node, Parent, layout}
 import scalafx.util.Duration
@@ -24,9 +20,20 @@ import scalafx.util.Duration
 import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
 import scala.compiletime.uninitialized
-import scala.util.Try
 
 class TieMenu(gui: GUIMain) {
+
+  private[ui] def reloadAll(): Unit = {
+    if (gui.logic.isEmpty) throw new IllegalStateException("Logic is not initialized!")
+    val logic = gui.logic.get
+
+    val player = logic.playerTieLogic.currentTiePlayer()
+    updatePlayerLabel(player)
+
+    changeSlider(logic.playerTieLogic.highestAllowedNumber())
+    showNeccessary()
+    spawnTieMain()
+  }
   
   private def logic: GameLogic = {
     gui.logic.get

@@ -26,7 +26,7 @@ case class SelectTrumpSuitCommand[
     glSnapshot.restore(gameLogic.asInstanceOf[GL])
     ptlSnapshot.restore(gameLogic.playerTieLogic.asInstanceOf[PT])
     ControlThread.runLater {
-      gameLogic.controlMatch()
+      gameLogic.controlPreRound()
     }
   }
 }

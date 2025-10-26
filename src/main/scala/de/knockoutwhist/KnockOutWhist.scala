@@ -33,7 +33,6 @@ object KnockOutWhist {
     _config = Some(configuration)
     val baseLogic = BaseGameLogic(configuration)
     for (handler <- configuration.listener) baseLogic.addListener(handler)
-    ControlThread.start()
     for (ui <- configuration.uis) {
       if (!ui.initial(baseLogic)) throw new IllegalStateException(s"${ui.getClass.getName} could not be started.")
       ui match {

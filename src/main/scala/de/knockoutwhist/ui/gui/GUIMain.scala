@@ -2,22 +2,20 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.control.GameLogic
-import de.knockoutwhist.control.GameState.{InGame, Lobby, MainMenu, TieBreak}
-import de.knockoutwhist.events.global.tie.{TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
+import de.knockoutwhist.control.GameState.{InGame, Lobby, MainMenu, SelectTrump, TieBreak}
 import de.knockoutwhist.events.global.*
+import de.knockoutwhist.events.global.tie.{TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
 import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}
-import de.knockoutwhist.player.AbstractPlayer
+import de.knockoutwhist.events.util.ReloadAllEvent
 import de.knockoutwhist.ui.UI
 import de.knockoutwhist.utils.CustomThread
 import de.knockoutwhist.utils.events.{EventListener, SimpleEvent}
-import javafx.application as jfxa
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.beans.property.ObjectProperty
 import scalafx.scene.{Parent, Scene}
 
 import scala.compiletime.uninitialized
-import scala.util.Try
 
 class GUIMain extends JFXApp3 with EventListener with UI {
 
@@ -71,6 +69,7 @@ class GUIMain extends JFXApp3 with EventListener with UI {
           _game.showWon(event.winner, event.amountOfTricks)
         case event: TurnEvent =>
           _game.updateStatus(event.player)
+          _game.updateNextPlayer(_logic.get.getPlayerQueue.get, _logic.get.getPlayerQueue.get.currentIndex)
         case event: TieShowPlayerCardsEvent =>
           val cards = logic.get.playerTieLogic.getSelectedCard
           _tieMenu.addCutCards(cards.map((p, c) => (p, c)).toList)
@@ -81,18 +80,24 @@ class GUIMain extends JFXApp3 with EventListener with UI {
         case event: TrumpSelectedEvent =>
           _game.updateTrumpSuit(event.suit)
         case event: RequestCardEvent =>
-          _game.updateNextPlayer(_logic.get.getPlayerQueue.get, _logic.get.getPlayerQueue.get.currentIndex)
-          _game.updateTrumpSuit(_logic.get.getCurrentRound.get.trumpSuit)
           _game.updatePlayerCards(event.player)
-          _game.updatePlayedCards()
-          if (_logic.get.getCurrentTrick.get.firstCard.isDefined)
-            _game.updateFirstCard(_logic.get.getCurrentTrick.get.firstCard.get)
-          else
-            _game.resetFirstCard()
         case event: RequestTieChoiceEvent =>
           _tieMenu.showNeccessary()
         case event: RequestTrumpSuitEvent =>
           _pickTrumpsuit.showPickTrumpsuit(event.player)
+        case event: ReloadAllEvent =>
+          if (_logic.isEmpty) throw new Exception("Logic is not initialized!")
+          val logicImpl = _logic.get
+          if (logicImpl.getCurrentState == MainMenu)
+            _mainMenu.createMainMenu
+          else if (logicImpl.getCurrentState == Lobby)
+            _mainMenu.createPlayeramountmenu()
+          else if (logicImpl.getCurrentState == InGame)
+            _game.reloadAll()
+          else if (logicImpl.getCurrentState == TieBreak)
+            _tieMenu.reloadAll()
+          else if (logicImpl.getCurrentState == SelectTrump)
+            _pickTrumpsuit.reloadAll()
         case _ => None
       }
     }

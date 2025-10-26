@@ -18,8 +18,9 @@ final class BasePlayerInputLogic(gameLogic: BaseGameLogic) extends PlayerInputLo
   }
   
   override def receivedTrumpSuit(suit: Suit): Unit = {
-    val newRound = RoundUtil.createRound(suit)
+    if (!_waitingForInput) throw new IllegalStateException("Not waiting for input")
     _waitingForInput = false
+    val newRound = RoundUtil.createRound(suit)
     gameLogic.currentRound = Some(newRound)
     gameLogic.invoke(TrumpSelectedEvent(suit))
     gameLogic.controlRound()
@@ -31,12 +32,14 @@ final class BasePlayerInputLogic(gameLogic: BaseGameLogic) extends PlayerInputLo
   }
   
   override def receivedCard(card: Card): Unit = {
+    if (!_waitingForInput) throw new IllegalStateException("Not waiting for input")
+    _waitingForInput = false
+    
     if (gameLogic.currentTrick.isEmpty) throw new IllegalStateException("No current trick set")
     val trickImpl = gameLogic.currentTrick.get
     if (gameLogic.currentPlayer.isEmpty) throw new IllegalStateException("No current player set")
     val player = gameLogic.currentPlayer.get
-
-    _waitingForInput = false
+    
 
     val newTrick = if (trickImpl.firstCard.isEmpty) {
        trickImpl
@@ -56,12 +59,13 @@ final class BasePlayerInputLogic(gameLogic: BaseGameLogic) extends PlayerInputLo
   }
   
   override def receivedDog(dog: Option[Card]): Unit = {
+    if (!_waitingForInput) throw new IllegalStateException("Not waiting for input")
+    _waitingForInput = false
+    
     if (gameLogic.currentTrick.isEmpty) throw new IllegalStateException("No current trick set")
     val trickImpl = gameLogic.currentTrick.get
     if (gameLogic.currentPlayer.isEmpty) throw new IllegalStateException("No current player set")
     val player = gameLogic.currentPlayer.get
-    
-    _waitingForInput = false
     
     if (dog.isDefined) {
       val newTrick = if (trickImpl.firstCard.isEmpty) {

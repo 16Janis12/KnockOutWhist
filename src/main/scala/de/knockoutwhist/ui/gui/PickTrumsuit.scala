@@ -1,6 +1,5 @@
 package de.knockoutwhist.ui.gui
 
-import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.control.ControlThread
 import de.knockoutwhist.player.AbstractPlayer
@@ -15,9 +14,20 @@ import scalafx.scene.layout.{HBox, StackPane, VBox}
 import scalafx.scene.text.Font
 import scalafx.util.Duration
 
-import scala.util.Try
-
 class PickTrumsuit(gui: GUIMain) {
+
+  private[ui] def reloadAll(): Unit = {
+    if (gui.logic.isEmpty) throw new IllegalStateException("Logic is not initialized!")
+    val logic = gui.logic.get
+    if (logic.getCurrentMatch.isEmpty) throw new IllegalStateException("No current match set")
+    val matchImpl = logic.getCurrentMatch.get
+    //Check if the last round had a winner
+    val lastRound = matchImpl.roundlist.last
+    if (lastRound.winner.isEmpty)
+      throw new IllegalStateException("Last round had no winner")
+    val lastWinner = lastRound.winner.get
+    showPickTrumpsuit(lastWinner)
+  }
 
   def showPickTrumpsuit(player: AbstractPlayer): Unit = {
     if (gui.logic.isEmpty) throw new IllegalStateException("Game logic is not initialized in GUI")

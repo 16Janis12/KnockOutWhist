@@ -89,14 +89,15 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
    * @param number the index of the selected card
    */
   override def receivedTieBreakerCard(number: Int): Unit = {
+    if (!_waitingForInput) throw new IllegalStateException("Not waiting for input")
+    _waitingForInput = false
+
     val player = tiedPlayers(tieBreakerIndex)
     val highestNumber = highestAllowedNumber()
     if (number < 0 || number > highestNumber)
       throw new IllegalArgumentException(s"Selected number $number is out of allowed range (0 to $highestNumber)")
 
     if (gameLogic.cardManager.isEmpty) throw new IllegalStateException("No card manager set")
-    
-    _waitingForInput = false
     
     val cardManager = gameLogic.cardManager.get
     val card = cardManager.removeCards(number).last

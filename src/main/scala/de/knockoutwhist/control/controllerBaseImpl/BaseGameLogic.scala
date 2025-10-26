@@ -103,26 +103,33 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
 
       matchImpl.playersIn.foreach(player => {invoke(ReceivedHandEvent(player))})
 
-      //Check if the last round had a winner
-      val lastRound = matchImpl.roundlist.last
-      if (lastRound.winner.isEmpty)
-        throw new IllegalStateException("Last round had no winner")
-      val lastWinner = lastRound.winner.get
-
-      //Create new player queue starting with last round winner
-      
-      playerQueue = Some(config.createRightQueue(
-        matchImpl.playersIn.toArray,
-        matchImpl.playersIn.indexOf(lastWinner)
-      ))
-
-      invoke(GameStateChangeEvent(state, SelectTrump))
-      state = SelectTrump
-
-      invoke(TrumpSelectEvent(lastWinner))
-      
-      playerInputLogic.requestTrumpSuit(lastWinner)
+      controlPreRound()
     }
+  }
+  
+  //
+  override def controlPreRound(): Unit = {
+    if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
+    val matchImpl = currentMatch.get
+    //Check if the last round had a winner
+    val lastRound = matchImpl.roundlist.last
+    if (lastRound.winner.isEmpty)
+      throw new IllegalStateException("Last round had no winner")
+    val lastWinner = lastRound.winner.get
+
+    //Create new player queue starting with last round winner
+
+    playerQueue = Some(config.createRightQueue(
+      matchImpl.playersIn.toArray,
+      matchImpl.playersIn.indexOf(lastWinner)
+    ))
+
+    invoke(GameStateChangeEvent(state, SelectTrump))
+    state = SelectTrump
+
+    invoke(TrumpSelectEvent(lastWinner))
+
+    playerInputLogic.requestTrumpSuit(lastWinner)
   }
   
   override def controlRound(): Unit = {

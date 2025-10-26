@@ -5,6 +5,7 @@ import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
 import de.knockoutwhist.control.controllerBaseImpl.sublogic.BasePlayerTieLogic
 import de.knockoutwhist.control.sublogic.{PersistenceManager, PlayerTieLogic}
 import de.knockoutwhist.control.{GameLogic, LogicSnapshot}
+import de.knockoutwhist.events.util.ReloadAllEvent
 import de.knockoutwhist.persistence.formats.JSONFormatter
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
@@ -29,6 +30,7 @@ class BasePersistenceManager(val gameLogic: BaseGameLogic) extends PersistenceMa
     if currentSnapshot.entryPoint.isEmpty then
       throw new IllegalStateException("Loaded snapshot does not contain an entry point!")
     currentSnapshot.gameLogicSnapShot.foreach(_.restore(gameLogic))
+    gameLogic.invoke(ReloadAllEvent())
     currentSnapshot.entryPoint.get match {
       case MethodEntryPoint.ControlMatch =>
         gameLogic.controlMatch()

@@ -1,13 +1,9 @@
 package de.knockoutwhist.control
 
-import de.knockoutwhist.utils.CustomThread
+object ControlThread {
 
-object ControlThread extends CustomThread {
-  
-  setName("ControlThread")
-  
-  def isControlThread: Boolean = Thread.currentThread().equals(ControlThread)
-
-  override def instance: CustomThread = ControlThread
+  def runLater[R](op: => R): Unit = {
+    op
+  }
   
 }

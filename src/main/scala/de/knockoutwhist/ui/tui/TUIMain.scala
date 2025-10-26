@@ -412,6 +412,20 @@ class TUIMain extends CustomThread with EventListener with UI {
   }
 
   private def reqpicktevmet(event: RequestTrumpSuitEvent): Option[Boolean] = {
+    println(s"${event.player.name}, please select a trump suit:")
+    println("1. Hearts")
+    println("2. Diamonds")
+    println("3. Clubs")
+    println("4. Spades")
+    println()
+    println("Your cards are:")
+    if (event.player.currentHand().isEmpty) {
+      println("You have no cards! This should not happen.")
+      return Some(true)
+    }
+    val hand = event.player.currentHand().get
+    TUICards.renderHandEvent(hand, false).foreach(println(_))
+    println()
     val trySuit = Try {
       val suit = input().toInt
       suit match {
