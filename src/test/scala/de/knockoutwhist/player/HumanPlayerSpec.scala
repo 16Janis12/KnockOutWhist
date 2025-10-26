@@ -1,9 +1,9 @@
 package de.knockoutwhist.player
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
+import de.knockoutwhist.cards.{Card, CardValue, Hand, Suit}
 import de.knockoutwhist.player.baseImpl.HumanPlayer
-import de.knockoutwhist.cards.{Card, CardValue, Suit, Hand}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class HumanPlayerSpec extends AnyWordSpec with Matchers {
 

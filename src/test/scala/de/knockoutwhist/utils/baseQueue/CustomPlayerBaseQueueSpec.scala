@@ -1,8 +1,8 @@
 package de.knockoutwhist.utils.baseQueue
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
 import de.knockoutwhist.player.StubPlayer
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class CustomPlayerBaseQueueSpec extends AnyWordSpec with Matchers {
 

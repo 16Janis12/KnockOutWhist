@@ -1,8 +1,8 @@
 package de.knockoutwhist.cards.base
 
-import org.scalatest.wordspec.AnyWordSpec
+import de.knockoutwhist.cards.*
 import org.scalatest.matchers.should.Matchers
-import de.knockoutwhist.cards._
+import org.scalatest.wordspec.AnyWordSpec
 
 class CardBaseManagerSpec extends AnyWordSpec with Matchers {
 

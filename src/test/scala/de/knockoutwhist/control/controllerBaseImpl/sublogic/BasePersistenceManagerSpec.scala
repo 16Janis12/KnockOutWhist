@@ -1,14 +1,14 @@
 package de.knockoutwhist.control.controllerBaseImpl.sublogic
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
+import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.components.Configuration
+import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
 import de.knockoutwhist.persistence.MethodEntryPoint
 import de.knockoutwhist.persistence.formats.FileFormatter
-import de.knockoutwhist.cards.base.CardBaseManager
 import de.knockoutwhist.player.AbstractPlayer
 import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
-import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class BasePersistenceManagerSpec extends AnyWordSpec with Matchers {
 

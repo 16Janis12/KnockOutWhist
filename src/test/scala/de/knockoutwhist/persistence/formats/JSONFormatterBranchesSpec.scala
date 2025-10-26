@@ -1,11 +1,11 @@
 package de.knockoutwhist.persistence.formats
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
-import play.api.libs.json._
-import de.knockoutwhist.persistence._
-import de.knockoutwhist.control.GameState
 import de.knockoutwhist.cards.{CardValue, Suit}
+import de.knockoutwhist.control.GameState
+import de.knockoutwhist.persistence.*
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.*
 
 import java.util.UUID
 

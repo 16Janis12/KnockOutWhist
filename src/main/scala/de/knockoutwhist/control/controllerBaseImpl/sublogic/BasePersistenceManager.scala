@@ -2,13 +2,10 @@ package de.knockoutwhist.control.controllerBaseImpl.sublogic
 
 import de.knockoutwhist.KnockOutWhist
 import de.knockoutwhist.control.controllerBaseImpl.BaseGameLogic
-import de.knockoutwhist.control.controllerBaseImpl.sublogic.BasePlayerTieLogic
-import de.knockoutwhist.control.sublogic.{PersistenceManager, PlayerTieLogic}
+import de.knockoutwhist.control.sublogic.PersistenceManager
 import de.knockoutwhist.control.{GameLogic, LogicSnapshot}
 import de.knockoutwhist.events.util.ReloadAllEvent
-import de.knockoutwhist.persistence.formats.JSONFormatter
 import de.knockoutwhist.persistence.{MatchSnapshot, MethodEntryPoint}
-import de.knockoutwhist.rounds.{Match, Round, Trick}
 
 class BasePersistenceManager(val gameLogic: BaseGameLogic) extends PersistenceManager {
 

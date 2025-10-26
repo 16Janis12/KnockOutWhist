@@ -1,14 +1,14 @@
 package de.knockoutwhist.control.controllerBaseImpl.sublogic.util
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
-import de.knockoutwhist.components.Configuration
 import de.knockoutwhist.cards.base.CardBaseManager
-import de.knockoutwhist.persistence.formats.FileFormatter
+import de.knockoutwhist.components.Configuration
 import de.knockoutwhist.control.controllerBaseImpl.{BaseGameLogic, BaseGameLogicSnapshot}
-import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory, Playertype}
 import de.knockoutwhist.control.{GameLogic, GameState, SnapshottingGameLogic}
+import de.knockoutwhist.persistence.formats.FileFormatter
+import de.knockoutwhist.player.{AbstractPlayer, PlayerFactory, Playertype}
 import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class SnapshotUtilSpec extends AnyWordSpec with Matchers {
 

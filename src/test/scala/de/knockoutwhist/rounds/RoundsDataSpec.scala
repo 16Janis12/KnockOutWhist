@@ -1,9 +1,9 @@
 package de.knockoutwhist.rounds
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import de.knockoutwhist.cards.{Card, CardValue, Suit}
 import de.knockoutwhist.player.{PlayerFactory, Playertype}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class RoundsDataSpec extends AnyWordSpec with Matchers {
 

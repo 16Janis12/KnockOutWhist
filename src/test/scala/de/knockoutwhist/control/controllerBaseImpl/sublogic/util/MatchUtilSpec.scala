@@ -1,10 +1,10 @@
 package de.knockoutwhist.control.controllerBaseImpl.sublogic.util
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import de.knockoutwhist.cards.Suit
 import de.knockoutwhist.player.{PlayerFactory, Playertype}
 import de.knockoutwhist.rounds.{Match, Round, Trick}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class MatchUtilSpec extends AnyWordSpec with Matchers {
 

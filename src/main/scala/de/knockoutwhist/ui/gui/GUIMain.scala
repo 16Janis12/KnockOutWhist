@@ -2,7 +2,7 @@ package de.knockoutwhist.ui.gui
 
 import atlantafx.base.theme.PrimerDark
 import de.knockoutwhist.control.GameLogic
-import de.knockoutwhist.control.GameState.{InGame, Lobby, MainMenu, SelectTrump, TieBreak}
+import de.knockoutwhist.control.GameState.*
 import de.knockoutwhist.events.global.*
 import de.knockoutwhist.events.global.tie.{TieShowPlayerCardsEvent, TieTieEvent, TieTurnEvent, TieWinningPlayersEvent}
 import de.knockoutwhist.events.player.{RequestCardEvent, RequestTieChoiceEvent, RequestTrumpSuitEvent}

@@ -1,8 +1,8 @@
 package de.knockoutwhist.persistence.formats
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
 import de.knockoutwhist.persistence.*
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class JSONFormatterSpec extends AnyWordSpec with Matchers {
 

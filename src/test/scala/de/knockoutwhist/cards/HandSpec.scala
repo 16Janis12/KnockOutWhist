@@ -1,7 +1,7 @@
 package de.knockoutwhist.cards
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class HandSpec extends AnyWordSpec with Matchers {
 

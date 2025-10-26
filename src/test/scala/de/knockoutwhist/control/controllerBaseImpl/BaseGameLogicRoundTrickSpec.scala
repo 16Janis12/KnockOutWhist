@@ -1,16 +1,17 @@
 package de.knockoutwhist.control.controllerBaseImpl
 
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.should.Matchers
-import de.knockoutwhist.components.Configuration
-import de.knockoutwhist.persistence.formats.FileFormatter
 import de.knockoutwhist.cards.base.CardBaseManager
-import de.knockoutwhist.player.{StubPlayer, AbstractPlayer}
-import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
-import de.knockoutwhist.rounds.Trick
 import de.knockoutwhist.cards.{Card, CardValue, Suit}
-import scala.collection.immutable.HashMap
+import de.knockoutwhist.components.Configuration
 import de.knockoutwhist.control.controllerBaseImpl.sublogic.util.{ResultPlayer, RoundResult}
+import de.knockoutwhist.persistence.formats.FileFormatter
+import de.knockoutwhist.player.{AbstractPlayer, StubPlayer}
+import de.knockoutwhist.rounds.Trick
+import de.knockoutwhist.utils.baseQueue.CustomPlayerBaseQueue
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
+import scala.collection.immutable.HashMap
 
 class BaseGameLogicRoundTrickSpec extends AnyWordSpec with Matchers {
 
