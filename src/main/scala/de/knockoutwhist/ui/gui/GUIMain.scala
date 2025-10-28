@@ -64,6 +64,7 @@ class GUIMain extends JFXApp3 with EventListener with UI {
           _tieMenu.changeSlider(logic.get.playerTieLogic.highestAllowedNumber())
         case event: NewRoundEvent =>
           _game.updateTrumpSuit(logic.get.getCurrentRound.get.trumpSuit)
+        case event: NewTrickEvent =>
           _game.resetFirstCard()
         case event: RoundEndEvent =>
           _game.showWon(event.winner, event.amountOfTricks)
