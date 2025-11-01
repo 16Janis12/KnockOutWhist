@@ -33,6 +33,7 @@ trait GameLogic extends EventHandler with SnapshottingGameLogic  {
   def getCurrentRound: Option[Round]
   def getCurrentTrick: Option[Trick]
   def getCurrentPlayer: Option[AbstractPlayer]
+  def getTrumpPlayer: Option[AbstractPlayer]
   def getPlayerQueue: Option[CustomPlayerQueue[AbstractPlayer]]
   
 }

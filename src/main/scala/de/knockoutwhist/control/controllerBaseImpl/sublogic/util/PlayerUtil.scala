@@ -34,4 +34,19 @@ object PlayerUtil {
     Nil
   }
 
+  def playableCards(round: Round, trick: Trick, player: AbstractPlayer): List[Card] = {
+    val handOption = player.currentHand()
+    if (handOption.isEmpty) {
+      throw new IllegalStateException("You have no cards!")
+    }
+    val hand = handOption.get
+    if (trick.firstCard.isEmpty) {
+      return hand.cards
+    }
+    val playableCards: List[Card] = for cardInHand <- hand.cards
+                                        if canPlayCard(cardInHand, round, trick, player)
+    yield cardInHand
+    playableCards
+  }
+
 }

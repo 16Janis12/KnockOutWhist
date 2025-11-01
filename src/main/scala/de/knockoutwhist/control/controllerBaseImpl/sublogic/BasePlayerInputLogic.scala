@@ -10,7 +10,10 @@ import de.knockoutwhist.player.AbstractPlayer
 
 final class BasePlayerInputLogic(gameLogic: BaseGameLogic) extends PlayerInputLogic {
 
+  val TIME_TO_RESPOND: Int = 30 // seconds
+
   private var _waitingForInput: Boolean = false
+  
   
   override def requestTrumpSuit(player: AbstractPlayer): Unit = {
     _waitingForInput = true

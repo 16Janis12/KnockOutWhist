@@ -18,7 +18,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
   private[control] var lastNumber = -1
   private[control] var selectedCard: Map[AbstractPlayer, Card] = Map.empty
   private var _waitingForInput: Boolean = false
-  
+
   override def handleTie(roundResult: RoundResult): Unit = {
     this.roundResult = Some(roundResult)
     tiedPlayers = roundResult.winners

@@ -112,24 +112,22 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
     val matchImpl = currentMatch.get
     //Check if the last round had a winner
-    val lastRound = matchImpl.roundlist.last
-    if (lastRound.winner.isEmpty)
-      throw new IllegalStateException("Last round had no winner")
-    val lastWinner = lastRound.winner.get
+    val lastWinner = getTrumpPlayer
+    if (lastWinner.isEmpty) throw new IllegalStateException("No last round winner found")
 
     //Create new player queue starting with last round winner
 
     playerQueue = Some(config.createRightQueue(
       matchImpl.playersIn.toArray,
-      matchImpl.playersIn.indexOf(lastWinner)
+      matchImpl.playersIn.indexOf(lastWinner.get)
     ))
 
     invoke(GameStateChangeEvent(state, SelectTrump))
     state = SelectTrump
 
-    invoke(TrumpSelectEvent(lastWinner))
+    invoke(TrumpSelectEvent(lastWinner.get))
 
-    playerInputLogic.requestTrumpSuit(lastWinner)
+    playerInputLogic.requestTrumpSuit(lastWinner.get)
   }
   
   override def controlRound(): Unit = {
@@ -307,8 +305,15 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   override def getCurrentTrick: Option[Trick] = currentTrick
   override def getCurrentPlayer: Option[AbstractPlayer] = currentPlayer
   override def getPlayerQueue: Option[CustomPlayerQueue[AbstractPlayer]] = playerQueue
-  
-  
+
+  override def getTrumpPlayer: Option[AbstractPlayer] = {
+    if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
+    val matchImpl = currentMatch.get
+    if (matchImpl.roundlist.isEmpty) return None
+    val roundImpl = matchImpl.roundlist.last
+    if (roundImpl.winner.isEmpty) return None
+    Some(roundImpl.winner.get)
+  }
   //Snapshotting
 
   override def createSnapshot(): LogicSnapshot[BaseGameLogic.this.type] = {
@@ -316,8 +321,15 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   }
 
   override def endSession(): Unit = {
-    //TODO Return to main menu
-    System.exit(0)
+    cardManager = None
+    currentMatch = None
+    currentRound = None
+    currentTrick = None
+    currentPlayer = None
+    playerQueue = None
+    invoke(SessionClosed())
+    invoke(GameStateChangeEvent(state, MainMenu))
+    state = MainMenu
   }
 }
 
