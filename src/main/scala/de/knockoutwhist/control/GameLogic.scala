@@ -16,6 +16,7 @@ trait GameLogic extends EventHandler with SnapshottingGameLogic  {
   def controlPreRound(): Unit
   def controlRound(): Unit
   def endRound(winner: AbstractPlayer, roundResult: RoundResult): Match
+  def returnFromTie(winner: AbstractPlayer): Unit
   def controlTrick(): Unit
   def endTrick(): Round
   def controlPlayerPlay(): Unit

@@ -80,12 +80,13 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       if (matchImpl.roundlist.isEmpty) {
         if (cardManager.isEmpty) throw new IllegalStateException("No card manager set")
         val cardManagerImpl = cardManager.get
+        cardManagerImpl.shuffleAndReset()
         val firstCard = cardManagerImpl.nextCard()
         val newRound = RoundUtil.createRound(firstCard.suit, true)
 
         providePlayersWithCards()
         
-        val randomPlayer: Int = 1//Random.nextInt(matchImpl.playersIn.size)
+        val randomPlayer: Int = Random.nextInt(matchImpl.playersIn.size)
         playerQueue = Some(config.createRightQueue(matchImpl.playersIn.toArray, randomPlayer))
         
         matchImpl.playersIn.foreach(player => {invoke(ReceivedHandEvent(player))})
@@ -105,6 +106,18 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
 
       controlPreRound()
     }
+  }
+
+  override def returnFromTie(winner: AbstractPlayer): Unit = {
+    if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
+    val matchImpl = currentMatch.get
+    if (currentRound.isEmpty) throw new IllegalStateException("No current round set")
+    val roundImpl = currentRound.get
+
+    val roundResult: RoundResult = RoundUtil.finishRound(roundImpl, matchImpl)
+    val newMatch = endRound(winner, roundResult)
+    currentMatch = Some(newMatch)
+    controlMatch()
   }
   
   //
@@ -185,7 +198,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     ).map(rp => rp.amountOfTricks).sum))
     invoke(DelayEvent(2000))
 
-    if (roundResult.notTricked.nonEmpty && !roundImpl.firstRound) {
+    if (roundResult.notTricked.nonEmpty) {
       if (matchImpl.dogLife) {
         invoke(ShowPlayersOutEvent(roundResult.notTricked))
         invoke(DelayEvent(2000))

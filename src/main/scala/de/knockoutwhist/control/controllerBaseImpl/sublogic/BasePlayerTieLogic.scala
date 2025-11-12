@@ -70,7 +70,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
       
       val winner = winners.head
       // Inform game logic about the winner
-      
+      gameLogic.returnFromTie(winner)
     }
   }
 
@@ -111,7 +111,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
     
     // The highest allowed number is total cards minus the number of tied players already selected
     // This ensures that each tied player can select a unique card
-    remainingCards - (tiedPlayers.size - selectedCard.size - 1)
+    remainingCards - (tiedPlayers.size - (selectedCard.size + 1)) - 1
   }
 
   override def isWaitingForInput: Boolean = _waitingForInput

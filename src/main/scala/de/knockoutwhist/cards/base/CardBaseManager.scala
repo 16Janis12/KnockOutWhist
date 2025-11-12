@@ -37,13 +37,11 @@ class CardBaseManager extends CardManager {
   }
 
   override def nextCard(): Card = {
-    val card = cc(currentIdx)
-    if (currentIdx + 1 > 51) {
+    if (currentIdx > 51)
       throw new IndexOutOfBoundsException("Trying to access card 53(out of bounds)")
-    } else {
-      currentIdx += 1
-      card
-    }
+    val card = cc(currentIdx)
+    currentIdx += 1
+    card
   }
   
   override def removeCards(amount: Int): List[Card] = {
