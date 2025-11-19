@@ -17,7 +17,7 @@ object MatchUtil {
   }
 
   def dogNeedsToPlay(matchImpl: Match, roundImpl: Round): Boolean = {
-    remainingRounds(matchImpl, roundImpl) == 1
+    remainingRounds(matchImpl, roundImpl) <= 1
   }
   
 }

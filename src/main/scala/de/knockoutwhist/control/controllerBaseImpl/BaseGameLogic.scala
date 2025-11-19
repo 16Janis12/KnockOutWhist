@@ -198,7 +198,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     ).map(rp => rp.amountOfTricks).sum))
     invoke(DelayEvent(2000))
 
-    if (roundResult.notTricked.nonEmpty) {
+    if (roundResult.notTricked.nonEmpty && !resultingRound.firstRound) {
       if (matchImpl.dogLife) {
         invoke(ShowPlayersOutEvent(roundResult.notTricked))
         invoke(DelayEvent(2000))
@@ -319,6 +319,14 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   override def getCurrentPlayer: Option[AbstractPlayer] = currentPlayer
   override def getPlayerQueue: Option[CustomPlayerQueue[AbstractPlayer]] = playerQueue
 
+  
+  override def getWinner: Option[AbstractPlayer] = {
+    if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
+    val matchImpl = currentMatch.get
+    if (!matchImpl.isOver) return None
+    Some(matchImpl.playersIn.head)
+  }
+  
   override def getTrumpPlayer: Option[AbstractPlayer] = {
     if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
     val matchImpl = currentMatch.get
