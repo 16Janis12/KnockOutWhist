@@ -10,7 +10,10 @@ object DelayHandler extends EventListener {
   override def listen(event: SimpleEvent): Unit = {
     event match {
       case event: DelayEvent =>
-        if(activateDelay) Thread.sleep(event.delay)
+        if(activateDelay) {
+          println(s"Delaying for ${event.delay}ms")
+          Thread.sleep(event.delay)
+        }
       case _ =>
     }
   }

@@ -241,6 +241,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       queueImpl.resetAndSetStart(winner)
       controlRound()
     } else {
+      invoke(DelayEvent(2000))
       val playerImpl = queueImpl.nextPlayer()
       currentPlayer = Some(playerImpl)
       controlPlayerPlay()
