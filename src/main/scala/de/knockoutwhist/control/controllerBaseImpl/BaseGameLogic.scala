@@ -69,6 +69,9 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
 
     persistenceManager.update(ControlMatch)
 
+    if (state != InGame)
+      invoke(GameStateChangeEvent(state, InGame))
+
     if (matchImpl.isOver) {
       //Winner is the last person in the playersIn list
       val winner = matchImpl.playersIn.head
