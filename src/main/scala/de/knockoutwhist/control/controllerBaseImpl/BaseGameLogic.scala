@@ -53,8 +53,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     currentTrick = None
     currentPlayer = None
     playerQueue = None
-    invoke(GameStateChangeEvent(state, Lobby))
-    state = Lobby
+    changeState(Lobby)
   }
 
   override def createMatch(players: List[AbstractPlayer]): Match = {
@@ -69,17 +68,16 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
 
     persistenceManager.update(ControlMatch)
 
-    if (state != InGame)
-      invoke(GameStateChangeEvent(state, InGame))
-
     if (matchImpl.isOver) {
       //Winner is the last person in the playersIn list
       val winner = matchImpl.playersIn.head
-      
-      invoke(GameStateChangeEvent(state, FinishedMatch))
-      state = FinishedMatch
+
+      changeState(FinishedMatch)
       invoke(MatchEndEvent(winner))
     } else {
+      
+      changeState(InGame)
+      
       if (matchImpl.roundlist.isEmpty) {
         if (cardManager.isEmpty) throw new IllegalStateException("No card manager set")
         val cardManagerImpl = cardManager.get
@@ -138,8 +136,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       matchImpl.playersIn.indexOf(lastWinner.get)
     ))
 
-    invoke(GameStateChangeEvent(state, SelectTrump))
-    state = SelectTrump
+    changeState(SelectTrump)
 
     invoke(TrumpSelectEvent(lastWinner.get))
 
@@ -147,9 +144,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
   }
   
   override def controlRound(): Unit = {
-    if (state != InGame)
-      invoke(GameStateChangeEvent(state, InGame))
-    state = InGame
+    changeState(InGame)
     if (currentMatch.isEmpty) throw new IllegalStateException("No current match set")
     val matchImpl = currentMatch.get
     if (currentRound.isEmpty) throw new IllegalStateException("No current round set")
@@ -160,8 +155,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     if (MatchUtil.isRoundOver(matchImpl, roundImpl)) {
       val roundResult: RoundResult = RoundUtil.finishRound(roundImpl, matchImpl)
       if (roundResult.isTie) {
-        invoke(GameStateChangeEvent(state, TieBreak))
-        state = TieBreak
+        changeState(TieBreak)
 
         invoke(TieEvent(roundResult.winners))
         invoke(DelayEvent(2000))
@@ -315,7 +309,11 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     })
   }
   
-  
+  override def changeState(gameState: GameState): Unit = {
+    if(state == gameState) return
+    invoke(GameStateChangeEvent(state, gameState))
+    state = gameState
+  }
   
   // Getters
   
@@ -356,8 +354,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     currentPlayer = None
     playerQueue = None
     invoke(SessionClosed())
-    invoke(GameStateChangeEvent(state, MainMenu))
-    state = MainMenu
+    changeState(MainMenu)
   }
 }
 

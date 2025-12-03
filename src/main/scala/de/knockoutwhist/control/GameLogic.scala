@@ -28,7 +28,8 @@ trait GameLogic extends EventHandler with SnapshottingGameLogic  {
   def playerTieLogic: PlayerTieLogic
   def undoManager: UndoManager
   def persistenceManager: PersistenceManager
-
+  def changeState(gameState: GameState): Unit
+  
   def getCurrentState: GameState
   def getCurrentMatch: Option[Match]
   def getCurrentRound: Option[Round]
