@@ -27,7 +27,7 @@ class TieMenu(gui: GUIMain) {
     if (gui.logic.isEmpty) throw new IllegalStateException("Logic is not initialized!")
     val logic = gui.logic.get
 
-    val player = logic.playerTieLogic.currentTiePlayer()
+    val player = logic.playerTieLogic.currentTiePlayer().get
     updatePlayerLabel(player)
 
     changeSlider(logic.playerTieLogic.highestAllowedNumber())

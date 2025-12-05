@@ -33,7 +33,7 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
   override def handleNextTieBreakerPlayer(): Unit = {
     tieBreakerIndex += 1
     if(tieBreakerIndex >= 0 && tieBreakerIndex < tiedPlayers.size) {
-      requestTieChoice(currentTiePlayer())
+      requestTieChoice(currentTiePlayer().get)
     } else {
       // All players have selected their tie-breaker cards
       // Find the highest card among selected cards
@@ -74,8 +74,10 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
     }
   }
 
-  override def currentTiePlayer(): AbstractPlayer = {
-    tiedPlayers(tieBreakerIndex)
+  override def currentTiePlayer(): Option[AbstractPlayer] = {
+    if (tieBreakerIndex < 0 || tieBreakerIndex >= tiedPlayers.size)
+      return None
+    Some(tiedPlayers(tieBreakerIndex))
   }
 
   override def requestTieChoice(player: AbstractPlayer): Unit = {

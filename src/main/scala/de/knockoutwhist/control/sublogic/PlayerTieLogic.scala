@@ -9,7 +9,7 @@ trait PlayerTieLogic extends SnapshottingGameLogic {
 
   def handleTie(roundResult: RoundResult): Unit
   def handleNextTieBreakerPlayer(): Unit
-  def currentTiePlayer(): AbstractPlayer
+  def currentTiePlayer(): Option[AbstractPlayer]
   def requestTieChoice(player: AbstractPlayer): Unit
   def receivedTieBreakerCard(number: Int): Unit
   def highestAllowedNumber(): Int

@@ -52,7 +52,7 @@ class BasePlayerTieLogicSpec extends AnyWordSpec with Matchers {
       tieLogic.getTiedPlayers should contain inOrder (p1, p2)
       tieLogic.getTieBreakerIndex shouldBe 0
       tieLogic.isWaitingForInput shouldBe true
-      tieLogic.currentTiePlayer() shouldBe p1
+      tieLogic.currentTiePlayer().get shouldBe p1
       tieLogic.highestAllowedNumber() shouldBe (logic.cardManager.get.remainingCards - (2 - 0 - 1))
     }
 

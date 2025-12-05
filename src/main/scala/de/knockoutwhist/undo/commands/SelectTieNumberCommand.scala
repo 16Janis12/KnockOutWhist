@@ -26,7 +26,7 @@ case class SelectTieNumberCommand[
     glSnapshot.restore(gameLogic.asInstanceOf[GL])
     ptlSnapshot.restore(gameLogic.playerTieLogic.asInstanceOf[PT])
     ControlThread.runLater {
-      gameLogic.playerTieLogic.requestTieChoice(gameLogic.playerTieLogic.currentTiePlayer())
+      gameLogic.playerTieLogic.requestTieChoice(gameLogic.playerTieLogic.currentTiePlayer().get)
     }
   }
 }
