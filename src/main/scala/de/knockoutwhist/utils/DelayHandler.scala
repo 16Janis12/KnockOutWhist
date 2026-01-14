@@ -11,7 +11,6 @@ object DelayHandler extends EventListener {
     event match {
       case event: DelayEvent =>
         if(activateDelay) {
-          println(s"Delaying for ${event.delay}ms")
           Thread.sleep(event.delay)
         }
       case _ =>

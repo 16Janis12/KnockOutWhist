@@ -95,7 +95,6 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
         currentRound = Some(newRound)
 
         invoke(NewRoundEvent())
-        invoke(DelayEvent(500))
         
         controlRound()
         return
@@ -158,7 +157,6 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
         changeState(TieBreak)
 
         invoke(TieEvent(roundResult.winners))
-        invoke(DelayEvent(2000))
 
         playerTieLogic.handleTie(roundResult)
         return
@@ -169,7 +167,6 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     } else {
       
       invoke(NewTrickEvent())
-      invoke(DelayEvent(1000))
 
       val trick = Trick()
       currentTrick = Some(trick)
@@ -193,7 +190,6 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
     invoke(RoundEndEvent(winner, roundResult.tricked.filter(
       rp => rp.player == winner
     ).map(rp => rp.amountOfTricks).sum))
-    invoke(DelayEvent(2000))
 
     if (roundResult.notTricked.nonEmpty && !resultingRound.firstRound) {
       // When the number of cards is less than 2, dog life ends automatically
@@ -201,11 +197,9 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       
       if (matchImpl.dogLife && !cantDogLife) {
         invoke(ShowPlayersOutEvent(roundResult.notTricked))
-        invoke(DelayEvent(2000))
         matchImpl = matchImpl.updatePlayersIn(matchImpl.playersIn.filterNot(roundResult.notTricked.contains(_)))
       } else {
         invoke(ShowDogsEvent(roundResult.notTricked))
-        invoke(DelayEvent(2000))
         matchImpl = matchImpl.setDogLife()
         // Make players dogs
         roundResult.notTricked.foreach(player => {
@@ -237,11 +231,9 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       
       invoke(TrickEndEvent(winner))
       invoke(DelayEvent(2000))
-      
       queueImpl.resetAndSetStart(winner)
       controlRound()
     } else {
-      invoke(DelayEvent(2000))
       val playerImpl = queueImpl.nextPlayer()
       currentPlayer = Some(playerImpl)
       controlPlayerPlay()

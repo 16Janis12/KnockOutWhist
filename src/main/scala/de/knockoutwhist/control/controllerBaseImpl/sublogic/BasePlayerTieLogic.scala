@@ -39,8 +39,9 @@ final class BasePlayerTieLogic(gameLogic: BaseGameLogic) extends PlayerTieLogic 
       // Find the highest card among selected cards
       
       gameLogic.invoke(TieAllPlayersSelectedEvent())
-      gameLogic.invoke(DelayEvent(2000))
+      gameLogic.invoke(DelayEvent(200))
       gameLogic.invoke(TieShowPlayerCardsEvent())
+      gameLogic.invoke(DelayEvent(2000))
       
       val winningEntry = selectedCard.values.maxBy(_.cardValue.ordinal)
       val winners = selectedCard.filter((_, card) => card == winningEntry).keySet.toList
