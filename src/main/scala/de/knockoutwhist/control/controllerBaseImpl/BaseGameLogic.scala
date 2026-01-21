@@ -195,7 +195,7 @@ final class BaseGameLogic(val config: Configuration) extends EventHandler with G
       // When the number of cards is less than 2, dog life ends automatically
       val cantDogLife = (matchImpl.numberofcards - 1) < 2
       
-      if (matchImpl.dogLife && !cantDogLife) {
+      if (matchImpl.dogLife || cantDogLife) {
         invoke(ShowPlayersOutEvent(roundResult.notTricked))
         matchImpl = matchImpl.updatePlayersIn(matchImpl.playersIn.filterNot(roundResult.notTricked.contains(_)))
       } else {
